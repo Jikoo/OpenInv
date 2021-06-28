@@ -1,0 +1,31 @@
+# Translated into Chinese Simplified by Flandre_tw
+messages:
+  error:
+    consoleUnsupported: 该命令无法在后执行。
+    lootNotGenerated: '&c奖励箱尚未生成 ！ 请关闭 &b/silentcontainer&c。'
+    invalidMaterial: '&c无效的物品 ： "%target%"'
+    invalidNumber: '&c无效的数字 ： "%target%"'
+    invalidPlayer: '&c玩家不存在 ！'
+    permissionOpenSelf: '&c你无法开启自己的物品栏。'
+    permissionEnderAll: '&c你无法开启其他玩家的末影箱。'
+    permissionExempt: '&c%target% 的物品栏受到保护。'
+    permissionCrossWorld: '&c%target% 不在你所在的世界。'
+    permissionPlayerOnline: '&c你无法开启线上玩家的物品栏。'
+    permissionPlayerOffline: '&c你无法开启离线玩家的物品栏。'
+    commandException: '&c发生错误，请查看后台。'
+  info:
+    containerBlocked: 你正在开启受阻挡的储物箱。
+    containerBlockedSilent: 你正在悄悄开启受阻挡的储物箱。
+    containerSilent: 你正在悄悄开启储物箱。
+    settingState: '%setting% ： %state%'
+    player:
+      noMatches: 找不到持有 %target% 的玩家。
+      matches: '找到持有 %target% 的玩家 ： %detail%'
+    container:
+      noMatches: 找不到放有 %target% 的储物箱。
+      matches: '找到放有 %target% 的储物箱 ： %detail%'
+    'true': '开启'
+    'false': '关闭'
+container:
+  player: '%player% 的物品栏'
+  enderchest: '%player% 的末影箱' 
