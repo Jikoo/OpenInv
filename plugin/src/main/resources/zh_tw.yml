@@ -17,7 +17,7 @@ messages:
     containerBlocked: 你正在開啟受阻擋的儲物箱。
     containerBlockedSilent: 你正在悄悄開啟受阻擋的儲物箱。
     containerSilent: 你正在悄悄開啟儲物箱。
-    settingState: '%setting%: %state%'
+    settingState: '%setting% ： %state%'
     player:
       noMatches: 找不到持有 %target% 的玩家。
       matches: '找到持有 %target% 的玩家 ： %detail%'
