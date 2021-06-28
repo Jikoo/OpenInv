@@ -1,7 +1,7 @@
 # Translated into Chinese Simplified by Flandre_tw
 messages:
   error:
-    consoleUnsupported: 该命令无法在后执行。
+    consoleUnsupported: 该命令无法在后台执行。
     lootNotGenerated: '&c奖励箱尚未生成 ！ 请关闭 &b/silentcontainer&c。'
     invalidMaterial: '&c无效的物品 ： "%target%"'
     invalidNumber: '&c无效的数字 ： "%target%"'
