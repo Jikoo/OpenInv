@@ -67,7 +67,7 @@ public class OpenPlayer extends CraftPlayer {
             File file2 = new File(worldNBTStorage.getPlayerDir(), player.getStringUUID() + ".dat_old");
             Util.safeReplaceFile(file1, file, file2);
         } catch (Exception e) {
-            LogManager.getLogger().warn("Failed to save player data for {}", player.getName().getString());
+            LogManager.getLogger().warn("Failed to save player data for {}: {}", player.getName().getString(), e.getMessage());
         }
     }
 
