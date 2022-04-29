@@ -91,6 +91,12 @@
         <groupId>com.lishid</groupId>
         <scope>compile</scope>
         <version>4.1.11-SNAPSHOT</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.lishid</groupId>
+            <artifactId>openinvapi</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -128,7 +134,7 @@
             </execution>
           </executions>
           <groupId>org.apache.maven.plugins</groupId>
-          <version>3.2.4</version>
+          <version>3.3.0</version>
         </plugin>
 
         <plugin>

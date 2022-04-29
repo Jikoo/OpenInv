@@ -49,10 +49,6 @@
       <classifier>remapped-mojang</classifier>
     </dependency>
     <dependency>
-      <artifactId>openinvapi</artifactId>
-      <groupId>com.lishid</groupId>
-    </dependency>
-    <dependency>
       <artifactId>openinvplugincore</artifactId>
       <groupId>com.lishid</groupId>
     </dependency>
@@ -66,7 +62,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <!-- Cannot use minimizeJar until maven-shade-plugin 3.3.0 releases; ASM used does not support Java 17. -->
+        <!-- Cannot use minimizeJar: MSHADE-366 -->
         <configuration>
           <minimizeJar>false</minimizeJar>
         </configuration>
