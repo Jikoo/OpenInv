@@ -47,6 +47,23 @@ jobs:
           name: api
           path: ./api/target/openinvapi*.jar
 
+  merge-dependabot:
+    name: Auto-merge Dependabot PRs
+    needs: [ build ]
+    if: github.event.name == 'pull_request_target' && github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: approve
+        uses: hmarr/auto-approve-action@v2.0.0
+          with:
+            github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: merge
+        uses: "pascalgn/automerge-action@v0.15.2"
+          env:
+            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+            MERGE_LABELS: "dependencies"
+            MERGE_METHOD: "squash"
+
   release:
     name: Create Github Release
     needs: [ build ]
@@ -66,7 +83,7 @@ jobs:
 
       - name: Create Release
         id: create-release
-        uses: softprops/action-gh-release@v0.1.5
+        uses: softprops/action-gh-release@v0.1.14
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
