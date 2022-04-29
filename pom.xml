@@ -27,8 +27,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>16</maven.compiler.source>
+    <maven.compiler.target>16</maven.compiler.target>
     <!-- Silence IDE warning - property is declared in individual internal modules. -->
     <spigot.version>unknown</spigot.version>
   </properties>
@@ -72,13 +72,13 @@
         <artifactId>annotations</artifactId>
         <groupId>org.jetbrains</groupId>
         <scope>provided</scope>
-        <version>21.0.1</version>
+        <version>23.0.0</version>
       </dependency>
       <dependency>
         <artifactId>spigot-api</artifactId>
         <groupId>org.spigotmc</groupId>
         <scope>provided</scope>
-        <version>1.16.5-R0.1-SNAPSHOT</version>
+        <version>1.17.1-R0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <artifactId>openinvapi</artifactId>
@@ -146,7 +146,7 @@
         <plugin>
           <groupId>net.md-5</groupId>
           <artifactId>specialsource-maven-plugin</artifactId>
-          <version>1.2.2</version>
+          <version>1.2.4</version>
           <executions>
             <execution>
               <phase>package</phase>
