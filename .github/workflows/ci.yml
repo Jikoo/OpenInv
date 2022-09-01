@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Approve
-        uses: hmarr/auto-approve-action@v2.2.1
+        uses: hmarr/auto-approve-action@v2.4.0
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Merge
