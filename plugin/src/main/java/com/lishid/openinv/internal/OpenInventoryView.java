@@ -67,7 +67,7 @@ public class OpenInventoryView extends InventoryView {
 
             String localTitle = OpenInv.getPlugin(OpenInv.class)
                     .getLocalizedMessage(
-                            owner,
+                            player,
                             titleKey,
                             "%player%",
                             owner.getName());
