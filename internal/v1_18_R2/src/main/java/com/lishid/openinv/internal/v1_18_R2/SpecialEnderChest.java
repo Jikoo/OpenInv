@@ -67,18 +67,34 @@ public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpe
 
     @Override
     public void setPlayerOnline(@NotNull final org.bukkit.entity.Player player) {
-        if (!this.playerOnline) {
-            try {
-                this.owner = PlayerDataManager.getHandle(player);
-                PlayerEnderChestContainer enderChest = owner.getEnderChestInventory();
-                for (int i = 0; i < enderChest.getContainerSize(); ++i) {
-                    enderChest.setItem(i, this.items.get(i));
-                }
-                this.items = enderChest.items;
-                enderChest.transaction.addAll(this.transaction);
-            } catch (Exception ignored) {}
-            this.playerOnline = true;
+        if (this.playerOnline) {
+            return;
         }
+
+        ServerPlayer offlinePlayer = this.owner;
+        ServerPlayer onlinePlayer = PlayerDataManager.getHandle(player);
+
+        // Remove advancement listeners for old loaded player.
+        if (offlinePlayer != onlinePlayer) {
+            offlinePlayer.getAdvancements().stopListening();
+        }
+
+        // Set owner to new player.
+        this.owner = onlinePlayer;
+
+        // Set player's ender chest contents to our modified contents.
+        PlayerEnderChestContainer onlineEnderChest = onlinePlayer.getEnderChestInventory();
+        for (int i = 0; i < onlineEnderChest.getContainerSize(); ++i) {
+            onlineEnderChest.setItem(i, this.items.get(i));
+        }
+
+        // Set our item array to the new inventory's array.
+        this.items = onlineEnderChest.items;
+
+        // Add viewers to new inventory.
+        onlineEnderChest.transaction.addAll(offlinePlayer.getEnderChestInventory().transaction);
+
+        this.playerOnline = true;
     }
 
     @Override
@@ -317,7 +333,7 @@ public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpe
 
     @Override
     public String toString() {
-        return this.items.stream().filter((itemStack) -> !itemStack.isEmpty()).collect(Collectors.toList()).toString();
+        return this.items.stream().filter((itemStack) -> !itemStack.isEmpty()).toList().toString();
     }
 
     @Override

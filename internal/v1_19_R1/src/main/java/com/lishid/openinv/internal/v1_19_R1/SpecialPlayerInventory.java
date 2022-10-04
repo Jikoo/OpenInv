@@ -77,20 +77,42 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
 
     @Override
     public void setPlayerOnline(@NotNull org.bukkit.entity.Player player) {
-        if (!this.playerOnline) {
-            Player entityPlayer = PlayerDataManager.getHandle(player);
-            entityPlayer.getInventory().transaction.addAll(this.transaction);
-            this.player = entityPlayer;
-            for (int i = 0; i < getContainerSize(); ++i) {
-                this.player.getInventory().setItem(i, getRawItem(i));
-            }
-            this.player.getInventory().selected = this.selected;
-            this.items = this.player.getInventory().items;
-            this.armor = this.player.getInventory().armor;
-            this.offhand = this.player.getInventory().offhand;
-            this.compartments = ImmutableList.of(this.items, this.armor, this.offhand);
-            this.playerOnline = true;
+        if (this.playerOnline) {
+            return;
         }
+
+        Player offlinePlayer = this.player;
+        Player onlinePlayer = PlayerDataManager.getHandle(player);
+        onlinePlayer.getInventory().transaction.addAll(this.transaction);
+
+        // Remove advancement listeners for old loaded player.
+        if (offlinePlayer != onlinePlayer && offlinePlayer instanceof ServerPlayer serverPlayer) {
+            serverPlayer.getAdvancements().stopListening();
+        }
+
+        // Set owner to new player.
+        this.player = onlinePlayer;
+
+        // Set player's inventory contents to our modified contents.
+        Inventory onlineInventory = onlinePlayer.getInventory();
+        for (int i = 0; i < getContainerSize(); ++i) {
+            onlineInventory.setItem(i, getRawItem(i));
+        }
+        onlineInventory.selected = this.selected;
+
+        // Set our item arrays to the new inventory's arrays.
+        this.items = onlineInventory.items;
+        this.armor = onlineInventory.armor;
+        this.offhand = onlineInventory.offhand;
+        this.compartments = ImmutableList.of(this.items, this.armor, this.offhand);
+
+        // Add existing viewers to new viewer list.
+        Inventory offlineInventory = offlinePlayer.getInventory();
+        // Remove self from listing - player is always a viewer of their own inventory, prevent duplicates.
+        offlineInventory.transaction.remove(offlinePlayer.getBukkitEntity());
+        onlineInventory.transaction.addAll(offlineInventory.transaction);
+
+        this.playerOnline = true;
     }
 
     @Override
