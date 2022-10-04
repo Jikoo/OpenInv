@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2021 lishid. All rights reserved.
+ * Copyright (C) 2011-2022 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,13 @@ public interface IPlayerDataManager {
      * @return the Player
      */
     @NotNull Player inject(@NotNull Player player);
+
+    /**
+     * Release data that is not garbage collected when a Player is unloaded.
+     *
+     * @param player the Player unloading
+     */
+    void releasePlayer(@NotNull Player player);
 
     /**
      * Opens an ISpecialInventory for a Player.

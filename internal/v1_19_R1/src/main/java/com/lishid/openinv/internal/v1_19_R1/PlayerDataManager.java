@@ -142,6 +142,12 @@ public class PlayerDataManager implements IPlayerDataManager {
         }
     }
 
+    @Override
+    public void releasePlayer(@NotNull Player player) {
+        ServerPlayer nmsPlayer = getHandle(player);
+        nmsPlayer.getAdvancements().stopListening();
+    }
+
     @Nullable
     @Override
     public InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {

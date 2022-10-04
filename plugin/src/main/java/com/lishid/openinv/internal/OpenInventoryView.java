@@ -27,13 +27,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class OpenInventoryView extends InventoryView {
 
-    private final Player player;
-    private final ISpecialInventory inventory;
-    private final String titleKey;
-    private final String titleDefaultSuffix;
+    private final @NotNull Player player;
+    private final @NotNull ISpecialInventory inventory;
+    private final @NotNull String titleKey;
+    private final @NotNull String titleDefaultSuffix;
     private String title;
 
-    public OpenInventoryView(Player player, ISpecialInventory inventory, String titleKey, String titleDefaultSuffix) {
+    public OpenInventoryView(
+            @NotNull Player player,
+            @NotNull ISpecialInventory inventory,
+            @NotNull String titleKey,
+            @NotNull String titleDefaultSuffix) {
         this.player = player;
         this.inventory = inventory;
         this.titleKey = titleKey;
