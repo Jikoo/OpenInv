@@ -104,6 +104,16 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <!--
+            ~ This plugin is used in scripts to determine if NMS dependencies need to be installed. This must be
+            ~ declared so that we don't run into MDEP-204; the default SuperPOM declares version 2.8.0.
+            -->
+          <artifactId>maven-dependency-plugin</artifactId>
+          <groupId>org.apache.maven.plugins</groupId>
+          <version>3.3.0</version>
+        </plugin>
+
+        <plugin>
           <artifactId>maven-shade-plugin</artifactId>
           <configuration>
             <filters>

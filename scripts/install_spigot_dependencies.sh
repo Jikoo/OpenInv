@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2011-2021 lishid. All rights reserved.
+# Copyright (C) 2011-2022 lishid. All rights reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,9 +34,7 @@ readarray -t versions <<< "$(. ./scripts/get_spigot_versions.sh)"
 echo Found Spigot dependencies: "${versions[@]}"
 
 # Install dependencies aside from Spigot prior to running in offline mode.
-# Note that the default SuperPOM declares maven-dependency-plugin 2.8.0.
-# Unfortunately, we run into MDEP-204 and require a version >= 3.1.2.
-mvn org.apache.maven.plugins:maven-dependency-plugin:3.2.0:go-offline -DexcludeArtifactIds=spigot
+mvn dependency:go-offline -DexcludeArtifactIds=spigot
 
 for version in "${versions[@]}"; do
   set -e
