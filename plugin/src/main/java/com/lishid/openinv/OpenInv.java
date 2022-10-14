@@ -22,7 +22,6 @@ import com.lishid.openinv.commands.SearchContainerCommand;
 import com.lishid.openinv.commands.SearchEnchantCommand;
 import com.lishid.openinv.commands.SearchInvCommand;
 import com.lishid.openinv.internal.IAnySilentContainer;
-import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
@@ -105,9 +104,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
                 .distinct()
                 .forEach(player -> {
                     if (!player.isOnline()) {
-                        IPlayerDataManager dataManager = accessor.getPlayerDataManager();
-                        player = dataManager.inject(player);
-                        dataManager.releasePlayer(player);
+                        player = accessor.getPlayerDataManager().inject(player);
                     }
                     player.saveData();
                 });
@@ -477,12 +474,11 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             // Re-fetch from map - prevents duplicate saves on multi-close.
             ISpecialInventory current = map.remove(key);
 
-            if (current != null && current.getPlayer() instanceof Player player && !player.isOnline()) {
-                IPlayerDataManager dataManager = this.accessor.getPlayerDataManager();
-                if (!disableSaving()) {
-                    dataManager.inject(player).saveData();
-                }
-                dataManager.releasePlayer(player);
+            if (!disableSaving()
+                    && current != null
+                    && current.getPlayer() instanceof Player player
+                    && !player.isOnline()) {
+                    this.accessor.getPlayerDataManager().inject(player).saveData();
             }
         });
     }

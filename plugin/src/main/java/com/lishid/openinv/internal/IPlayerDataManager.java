@@ -42,13 +42,6 @@ public interface IPlayerDataManager {
     @NotNull Player inject(@NotNull Player player);
 
     /**
-     * Release data that is not garbage collected when a Player is unloaded.
-     *
-     * @param player the Player unloading
-     */
-    void releasePlayer(@NotNull Player player);
-
-    /**
      * Opens an ISpecialInventory for a Player.
      *
      * @param player the Player opening the ISpecialInventory

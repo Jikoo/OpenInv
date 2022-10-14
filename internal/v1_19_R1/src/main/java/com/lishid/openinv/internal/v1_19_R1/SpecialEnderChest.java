@@ -74,11 +74,6 @@ public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpe
         ServerPlayer offlinePlayer = this.owner;
         ServerPlayer onlinePlayer = PlayerDataManager.getHandle(player);
 
-        // Remove advancement listeners for old loaded player.
-        if (offlinePlayer != onlinePlayer) {
-            offlinePlayer.getAdvancements().stopListening();
-        }
-
         // Set owner to new player.
         this.owner = onlinePlayer;
 

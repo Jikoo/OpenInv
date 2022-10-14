@@ -85,11 +85,6 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
         Player onlinePlayer = PlayerDataManager.getHandle(player);
         onlinePlayer.getInventory().transaction.addAll(this.transaction);
 
-        // Remove advancement listeners for old loaded player.
-        if (offlinePlayer != onlinePlayer && offlinePlayer instanceof ServerPlayer serverPlayer) {
-            serverPlayer.getAdvancements().stopListening();
-        }
-
         // Set owner to new player.
         this.player = onlinePlayer;
 

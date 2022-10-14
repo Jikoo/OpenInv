@@ -100,6 +100,9 @@ public class PlayerDataManager implements IPlayerDataManager {
 
         ServerPlayer entity = new ServerPlayer(server, worldServer, profile, null);
 
+        // Stop listening for advancement progression - if this is not cleaned up, loading causes a memory leak.
+        entity.getAdvancements().stopListening();
+
         try {
             injectPlayer(entity);
         } catch (IllegalAccessException e) {
@@ -140,12 +143,6 @@ public class PlayerDataManager implements IPlayerDataManager {
             e.printStackTrace();
             return player;
         }
-    }
-
-    @Override
-    public void releasePlayer(@NotNull Player player) {
-        ServerPlayer nmsPlayer = getHandle(player);
-        nmsPlayer.getAdvancements().stopListening();
     }
 
     @Nullable
