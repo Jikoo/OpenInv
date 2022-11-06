@@ -1,11 +1,11 @@
 name: OpenInv
 main: com.lishid.openinv.OpenInv
-version: ${project.version}
+version: ${version}
 author: lishid
 authors: [Jikoo, ShadowRanger]
 description: >
              This plugin allows you to open a player's inventory as a chest and interact with it in real time.
-api-version: "1.16"
+api-version: "1.18"
 
 permissions:
   OpenInv.any.default:

@@ -2,9 +2,11 @@
 **/.project
 **/.classpath
 **/.idea/
+**/.gradle/
 **.iml
 **/target/
 **/bin/
 **/out/
+**/build/
 **/dependency-reduced-pom.xml
 **/pom.xml.versionsBackup
