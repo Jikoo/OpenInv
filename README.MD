@@ -124,16 +124,6 @@ The OpenInv API is available via [JitPack](https://jitpack.io/).
 ```
 
 ### Compilation
-To compile, the relevant Spigot jars must be installed in the local repository.
-As OpenInv is compiled against Mojang's mappings, you must run BuildTools with the `--remapped` argument:  
-`java -jar BuildTools.jar --remapped --rev $serverVersion`  
-`$serverVersion` is the version of the server, i.e. `1.18.1`
+To compile you simply have to run `./gradlew build` or execute the build task in your IDE.
 
-To compile for a single version, specify the module you are targeting:  
-`mvn -pl $moduleName -am clean install`  
-`$moduleName` is the name of the module, i.e. `internal/v1_18_R1`.
-
-To compile for a set of versions, use a profile. Select a profile using the `-P` argument:  
-`mvn clean package -am -P all`  
-The only provided profile is `all`. The final file is `target/OpenInv.jar`  
-For more information, check out the [official Maven guide](http://maven.apache.org/guides/introduction/introduction-to-profiles.html).
+Build output can be found under `plugin/build/libs`
