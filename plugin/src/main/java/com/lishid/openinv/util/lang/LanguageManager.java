@@ -26,8 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +59,30 @@ public class LanguageManager {
             return loaded;
         }
 
+        File file = new File(plugin.getDataFolder(), locale + ".yml");
+
+        // Load locale config from disk and bundled locale defaults.
+        YamlConfiguration localeConfig = loadLocale(locale, file);
+
+        // If the locale is not the default locale, also handle any missing translations from the default locale.
+        if (!locale.equals(defaultLocale)) {
+            addTranslationFallthrough(locale, localeConfig, file);
+
+            if (localeConfig.isConfigurationSection("guess")) {
+                // Warn that guess section exists. This should run once per language per server restart
+                // when accessed by a user to hint to server owners that they can make UX improvements.
+                plugin.getLogger().info(() -> "[LanguageManager] Missing translations from " + locale + ".yml! Check the guess section!");
+            }
+        }
+
+        locales.put(locale, localeConfig);
+        return localeConfig;
+    }
+
+    private @NotNull YamlConfiguration loadLocale(
+            @NotNull String locale,
+            @NotNull File file) {
+        // Load defaults from the plugin's bundled resources.
         InputStream resourceStream = plugin.getResource("locale/" + locale + ".yml");
         YamlConfiguration localeConfigDefaults;
         if (resourceStream == null) {
@@ -69,71 +96,96 @@ public class LanguageManager {
             }
         }
 
-        File file = new File(plugin.getDataFolder(), locale + ".yml");
-        YamlConfiguration localeConfig;
-
         if (!file.exists()) {
-            localeConfig = localeConfigDefaults;
+            // If the file does not exist on disk, save bundled defaults.
             try {
                 localeConfigDefaults.save(file);
             } catch (IOException e) {
                 plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
             }
-        } else {
-            localeConfig = YamlConfiguration.loadConfiguration(file);
+            // Return loaded bundled locale.
+            return localeConfigDefaults;
+        }
 
-            // Add new language keys
-            List<String> newKeys = new ArrayList<>();
-            for (String key : localeConfigDefaults.getKeys(true)) {
-                if (localeConfigDefaults.isConfigurationSection(key)) {
-                    continue;
-                }
+        // If the file does exist on disk, load it.
+        YamlConfiguration localeConfig = YamlConfiguration.loadConfiguration(file);
+        // Check for missing translations from the bundled file.
+        List<String> newKeys = getMissingKeys(localeConfigDefaults, localeConfig::isSet);
 
-                if (localeConfig.isSet(key)) {
-                    continue;
-                }
+        if (newKeys.isEmpty()) {
+            return localeConfig;
+        }
 
-                localeConfig.set(key, localeConfigDefaults.get(key));
-                newKeys.add(key);
-            }
+        // Get guess section for missing keys.
+        ConfigurationSection guess = localeConfig.getConfigurationSection("guess");
 
-            if (!newKeys.isEmpty()) {
-                plugin.getLogger().info(() -> "[LanguageManager] Added new language keys: " + String.join(", ", newKeys));
-                try {
-                    localeConfig.save(file);
-                } catch (IOException e) {
-                    plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
-                }
+        for (String newKey : newKeys) {
+            // Set all missing keys to defaults.
+            localeConfig.set(newKey, localeConfigDefaults.get(newKey));
+
+            // Delete relevant guess keys in case this is a new translation.
+            if (guess != null) {
+                guess.set(newKey, null);
             }
         }
 
-        if (!locale.equals(defaultLocale)) {
-            localeConfigDefaults = locales.get(defaultLocale);
-
-            // Check for missing keys
-            List<String> newKeys = new ArrayList<>();
-            for (String key : localeConfigDefaults.getKeys(true)) {
-                if (localeConfigDefaults.isConfigurationSection(key)) {
-                    continue;
-                }
-
-                if (localeConfig.isSet(key)) {
-                    continue;
-                }
-
-                newKeys.add(key);
-            }
-
-            if (!newKeys.isEmpty()) {
-                plugin.getLogger().info(() -> "[LanguageManager] Missing translations from " + locale + ".yml: " + String.join(", ", newKeys));
-            }
-
-            // Fall through to default locale
-            localeConfig.setDefaults(localeConfigDefaults);
+        // If guess section is empty, delete it.
+        if (guess != null && guess.getKeys(false).isEmpty()) {
+            localeConfig.set("guess", null);
         }
 
-        locales.put(locale, localeConfig);
+        plugin.getLogger().info(() -> "[LanguageManager] Added new translation keys to " + locale + ".yml: " + String.join(", ", newKeys));
+
+        // Write new keys to disk.
+        try {
+            localeConfig.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
+        }
+
         return localeConfig;
+    }
+
+    private void addTranslationFallthrough(
+            @NotNull String locale,
+            @NotNull YamlConfiguration localeConfig,
+            @NotNull File file) {
+        YamlConfiguration defaultLocaleConfig = locales.get(defaultLocale);
+
+        // Get missing keys. Keys that already have a guess value are not new and don't need to trigger another write.
+        List<String> missingKeys = getMissingKeys(
+                defaultLocaleConfig,
+                key -> localeConfig.isSet(key) || localeConfig.isSet("guess." + key));
+
+        if (!missingKeys.isEmpty()) {
+            // Set up guess section for missing keys.
+            for (String key : missingKeys) {
+                localeConfig.set("guess." + key, defaultLocaleConfig.get(key));
+            }
+
+            // Write modified guess section to disk.
+            try {
+                localeConfig.save(file);
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
+            }
+        }
+
+        // Fall through to default locale.
+        localeConfig.setDefaults(defaultLocaleConfig);
+    }
+
+    private @NotNull List<String> getMissingKeys(
+            @NotNull Configuration configurationDefault,
+            @NotNull Predicate<String> nodeSetPredicate) {
+        List<String> missingKeys = new ArrayList<>();
+        for (String key : configurationDefault.getKeys(true)) {
+            if (!configurationDefault.isConfigurationSection(key) && !nodeSetPredicate.test(key)) {
+                // Missing keys are non-section keys that fail the predicate.
+                missingKeys.add(key);
+            }
+        }
+        return missingKeys;
     }
 
     public @Nullable String getValue(@NotNull String key, @Nullable String locale) {
