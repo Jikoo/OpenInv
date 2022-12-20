@@ -28,6 +28,7 @@ import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.util.ConfigUpdater;
 import com.lishid.openinv.util.LanguageManager;
 import com.lishid.openinv.util.Permissions;
+import com.lishid.openinv.util.StringMetric;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -308,6 +310,76 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             return null;
         }
 
+        return player;
+    }
+
+    @Override
+    public @Nullable OfflinePlayer matchPlayer(@NotNull String name) {
+
+        // Warn if called on the main thread - if we resort to searching offline players, this may take several seconds.
+        if (Bukkit.getServer().isPrimaryThread()) {
+            this.getLogger().warning("Call to OpenInv#matchPlayer made on the main thread!");
+            this.getLogger().warning("This can cause the server to hang, potentially severely.");
+            this.getLogger().log(Level.WARNING, "Current stack trace", new Throwable("Current stack trace"));
+        }
+
+        OfflinePlayer player;
+
+        try {
+            UUID uuid = UUID.fromString(name);
+            player = Bukkit.getOfflinePlayer(uuid);
+            // Ensure player is an existing player.
+            if (player.hasPlayedBefore() || player.isOnline()) {
+                return player;
+            }
+            // Return null otherwise.
+            return null;
+        } catch (IllegalArgumentException ignored) {
+            // Not a UUID
+        }
+
+        // Exact online match first.
+        player = Bukkit.getServer().getPlayerExact(name);
+
+        if (player != null) {
+            return player;
+        }
+
+        // Exact offline match second - ensure offline access works when matchable users are online.
+        player = Bukkit.getServer().getOfflinePlayer(name);
+
+        if (player.hasPlayedBefore()) {
+            return player;
+        }
+
+        // Inexact online match.
+        player = Bukkit.getServer().getPlayer(name);
+
+        if (player != null) {
+            return player;
+        }
+
+        // Finally, inexact offline match.
+        float bestMatch = 0;
+        for (OfflinePlayer offline : Bukkit.getServer().getOfflinePlayers()) {
+            if (offline.getName() == null) {
+                // Loaded by UUID only, name has never been looked up.
+                continue;
+            }
+
+            float currentMatch = StringMetric.compareJaroWinkler(name, offline.getName());
+
+            if (currentMatch == 1.0F) {
+                return offline;
+            }
+
+            if (currentMatch > bestMatch) {
+                bestMatch = currentMatch;
+                player = offline;
+            }
+        }
+
+        // Only null if no players have played ever, otherwise even the worst match will do.
         return player;
     }
 
