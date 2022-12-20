@@ -16,6 +16,8 @@
 
 package com.lishid.openinv;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.lishid.openinv.commands.ContainerSettingCommand;
 import com.lishid.openinv.commands.OpenInvCommand;
 import com.lishid.openinv.commands.SearchContainerCommand;
@@ -30,6 +32,7 @@ import com.lishid.openinv.util.LanguageManager;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.StringMetric;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -54,6 +57,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.profile.PlayerProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,6 +68,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class OpenInv extends JavaPlugin implements IOpenInv {
 
+    private final Cache<String, PlayerProfile> offlineLookUpCache = CacheBuilder.newBuilder().maximumSize(10).build();
     private final Map<UUID, ISpecialPlayerInventory> inventories = new ConcurrentHashMap<>();
     private final Map<UUID, ISpecialEnderChest> enderChests = new ConcurrentHashMap<>();
 
@@ -345,10 +350,23 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             return player;
         }
 
+        // Cached offline match.
+        PlayerProfile cachedResult = offlineLookUpCache.getIfPresent(name);
+        if (cachedResult != null && cachedResult.getUniqueId() != null) {
+            player = Bukkit.getOfflinePlayer(cachedResult.getUniqueId());
+            // Ensure player is an existing player.
+            if (player.hasPlayedBefore() || player.isOnline()) {
+                return player;
+            }
+            // Return null otherwise.
+            return null;
+        }
+
         // Exact offline match second - ensure offline access works when matchable users are online.
         player = Bukkit.getServer().getOfflinePlayer(name);
 
         if (player.hasPlayedBefore()) {
+            offlineLookUpCache.put(name, player.getPlayerProfile());
             return player;
         }
 
@@ -379,8 +397,14 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             }
         }
 
-        // Only null if no players have played ever, otherwise even the worst match will do.
-        return player;
+        if (player != null) {
+            // If a match was found, store it.
+            offlineLookUpCache.put(name, player.getPlayerProfile());
+            return player;
+        }
+
+        // No players have ever joined the server.
+        return null;
     }
 
     @Override
@@ -564,6 +588,45 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
     void setPlayerOnline(@NotNull Player player) {
         setPlayerOnline(inventories, player, player::updateInventory);
         setPlayerOnline(enderChests, player, null);
+
+        if (player.hasPlayedBefore()) {
+            return;
+        }
+
+        // New player may have a name that already points to someone else in lookup cache.
+        String name = player.getName();
+        this.offlineLookUpCache.invalidate(name);
+
+        // If no offline matches are mapped, don't hit scheduler.
+        if (this.offlineLookUpCache.size() == 0) {
+            return;
+        }
+
+        // New player may also be a more exact match than one already in the cache.
+        // I.e. new player "lava1" is a better match for "lava" than "lava123"
+        // Player joins are already quite intensive, so this is run on a delay.
+        this.getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
+            Iterator<Map.Entry<String, PlayerProfile>> iterator = this.offlineLookUpCache.asMap().entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, PlayerProfile> entry = iterator.next();
+                String oldMatch = entry.getValue().getName();
+
+                // Shouldn't be possible - all profiles should be complete.
+                if (oldMatch == null) {
+                    iterator.remove();
+                    continue;
+                }
+
+                String lookup = entry.getKey();
+                float oldMatchScore = StringMetric.compareJaroWinkler(lookup, oldMatch);
+                float newMatchScore = StringMetric.compareJaroWinkler(lookup, name);
+
+                // If new match exceeds old match, delete old match.
+                if (newMatchScore > oldMatchScore) {
+                    iterator.remove();
+                }
+            }
+        }, 101L); // Odd delay for pseudo load balancing; Player tasks are usually scheduled with full seconds.
     }
 
     private void setPlayerOnline(
