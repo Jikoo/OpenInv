@@ -68,7 +68,8 @@ public class LanguageManager {
         if (!locale.equals(defaultLocale)) {
             addTranslationFallthrough(locale, localeConfig, file);
 
-            if (localeConfig.isConfigurationSection("guess")) {
+            if (plugin.getConfig().getBoolean("settings.secret.warn-about-guess-section", true)
+                    && localeConfig.isConfigurationSection("guess")) {
                 // Warn that guess section exists. This should run once per language per server restart
                 // when accessed by a user to hint to server owners that they can make UX improvements.
                 plugin.getLogger().info(() -> "[LanguageManager] Missing translations from " + locale + ".yml! Check the guess section!");
