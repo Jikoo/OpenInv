@@ -64,7 +64,7 @@ public class LanguageManager {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream))) {
                 localeConfigDefaults = YamlConfiguration.loadConfiguration(reader);
             } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, "[LanguageManager] Unable to load resource " + locale + ".yml", e);
+                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to load resource " + locale + ".yml");
                 localeConfigDefaults = new YamlConfiguration();
             }
         }
@@ -77,7 +77,7 @@ public class LanguageManager {
             try {
                 localeConfigDefaults.save(file);
             } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, "[LanguageManager] Unable to save resource " + locale + ".yml", e);
+                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
             }
         } else {
             localeConfig = YamlConfiguration.loadConfiguration(file);
@@ -98,11 +98,11 @@ public class LanguageManager {
             }
 
             if (!newKeys.isEmpty()) {
-                plugin.getLogger().info("[LanguageManager] Added new language keys: " + String.join(", ", newKeys));
+                plugin.getLogger().info(() -> "[LanguageManager] Added new language keys: " + String.join(", ", newKeys));
                 try {
                     localeConfig.save(file);
                 } catch (IOException e) {
-                    plugin.getLogger().log(Level.WARNING, "[LanguageManager] Unable to save resource " + locale + ".yml", e);
+                    plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
                 }
             }
         }
@@ -125,7 +125,7 @@ public class LanguageManager {
             }
 
             if (!newKeys.isEmpty()) {
-                plugin.getLogger().info("[LanguageManager] Missing translations from " + locale + ".yml: " + String.join(", ", newKeys));
+                plugin.getLogger().info(() -> "[LanguageManager] Missing translations from " + locale + ".yml: " + String.join(", ", newKeys));
             }
 
             // Fall through to default locale
