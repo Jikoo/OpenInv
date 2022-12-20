@@ -71,6 +71,7 @@ public record ConfigUpdater(OpenInv plugin) {
     private void updateConfig5To6() {
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             plugin.getConfig().set("settings.command.open.no-args-opens-self", false);
+            plugin.getConfig().set("settings.command.searchcontainer.max-radius", 10);
             plugin.getConfig().set("config-version", 6);
         });
     }

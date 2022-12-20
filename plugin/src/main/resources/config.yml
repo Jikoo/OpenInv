@@ -3,6 +3,8 @@ settings:
   command:
     open:
       no-args-opens-self: false
+    searchcontainer:
+      max-radius: 10
   disable-offline-access: false
   disable-saving: false
   locale: 'en_us'

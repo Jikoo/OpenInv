@@ -76,6 +76,10 @@ public class SearchContainerCommand implements TabExecutor {
             }
         }
 
+        // Clamp radius.
+        int configMax = Math.max(0, plugin.getConfig().getInt("settings.command.searchcontainer.max-radius", 10));
+        radius = Math.max(0, Math.min(radius, configMax));
+
         World world = senderPlayer.getWorld();
         Chunk centerChunk = senderPlayer.getLocation().getChunk();
         StringBuilder locations = new StringBuilder();
