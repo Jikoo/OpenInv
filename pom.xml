@@ -21,7 +21,7 @@
   <artifactId>openinvparent</artifactId>
   <name>OpenInv</name>
   <url>http://dev.bukkit.org/bukkit-plugins/openinv/</url>
-  <version>4.2.3-SNAPSHOT</version>
+  <version>4.3.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -78,19 +78,19 @@
         <artifactId>spigot-api</artifactId>
         <groupId>org.spigotmc</groupId>
         <scope>provided</scope>
-        <version>1.17.1-R0.1-SNAPSHOT</version>
+        <version>1.18.2-R0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <artifactId>openinvapi</artifactId>
         <groupId>com.lishid</groupId>
         <scope>compile</scope>
-        <version>4.2.3-SNAPSHOT</version>
+        <version>4.3.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <artifactId>openinvplugincore</artifactId>
         <groupId>com.lishid</groupId>
         <scope>compile</scope>
-        <version>4.2.3-SNAPSHOT</version>
+        <version>4.3.0-SNAPSHOT</version>
         <exclusions>
           <exclusion>
             <groupId>com.lishid</groupId>

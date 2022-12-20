@@ -22,9 +22,7 @@ import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.util.InventoryAccess;
-import com.lishid.openinv.util.StringMetric;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -64,6 +62,15 @@ public interface IOpenInv {
      * @since 4.2.0
      */
     boolean disableOfflineAccess();
+
+    /**
+     * Check the configuration value for whether OpenInv uses history for opening commands. If false, OpenInv will use
+     * the previous parameterized search when no parameters are provided.
+     *
+     * @return false unless configured otherwise
+     * @since 4.3.0
+     */
+    boolean noArgsOpensSelf();
 
     /**
      * Get the active {@link IAnySilentContainer} implementation.
@@ -219,74 +226,7 @@ public interface IOpenInv {
      * @param name the string to match
      * @return the user with the closest matching name
      */
-    default @Nullable OfflinePlayer matchPlayer(@NotNull String name) {
-
-        // Warn if called on the main thread - if we resort to searching offline players, this may take several seconds.
-        if (Bukkit.getServer().isPrimaryThread()) {
-            this.getLogger().warning("Call to OpenInv#matchPlayer made on the main thread!");
-            this.getLogger().warning("This can cause the server to hang, potentially severely.");
-            this.getLogger().log(Level.WARNING, "Current stack trace", new Throwable("Current stack trace"));
-        }
-
-        OfflinePlayer player;
-
-        try {
-            UUID uuid = UUID.fromString(name);
-            player = Bukkit.getOfflinePlayer(uuid);
-            // Ensure player is an existing player.
-            if (player.hasPlayedBefore() || player.isOnline()) {
-                return player;
-            }
-            // Return null otherwise.
-            return null;
-        } catch (IllegalArgumentException ignored) {
-            // Not a UUID
-        }
-
-        // Exact online match first.
-        player = Bukkit.getServer().getPlayerExact(name);
-
-        if (player != null) {
-            return player;
-        }
-
-        // Exact offline match second - ensure offline access works when matchable users are online.
-        player = Bukkit.getServer().getOfflinePlayer(name);
-
-        if (player.hasPlayedBefore()) {
-            return player;
-        }
-
-        // Inexact online match.
-        player = Bukkit.getServer().getPlayer(name);
-
-        if (player != null) {
-            return player;
-        }
-
-        // Finally, inexact offline match.
-        float bestMatch = 0;
-        for (OfflinePlayer offline : Bukkit.getServer().getOfflinePlayers()) {
-            if (offline.getName() == null) {
-                // Loaded by UUID only, name has never been looked up.
-                continue;
-            }
-
-            float currentMatch = StringMetric.compareJaroWinkler(name, offline.getName());
-
-            if (currentMatch == 1.0F) {
-                return offline;
-            }
-
-            if (currentMatch > bestMatch) {
-                bestMatch = currentMatch;
-                player = offline;
-            }
-        }
-
-        // Only null if no players have played ever, otherwise even the worst match will do.
-        return player;
-    }
+    @Nullable OfflinePlayer matchPlayer(@NotNull String name);
 
     /**
      * @deprecated OpenInv uses action bar chat for notifications. Whether they show is based on language settings.
