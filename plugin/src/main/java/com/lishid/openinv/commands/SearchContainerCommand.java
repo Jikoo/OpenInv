@@ -18,6 +18,7 @@ package com.lishid.openinv.commands;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.TabCompleter;
+import com.lishid.openinv.util.lang.Replacement;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.Chunk;
@@ -57,7 +58,10 @@ public class SearchContainerCommand implements TabExecutor {
         Material material = Material.getMaterial(args[0].toUpperCase());
 
         if (material == null) {
-            plugin.sendMessage(sender, "messages.error.invalidMaterial", "%target%", args[0]);
+            plugin.sendMessage(
+                    sender,
+                    "messages.error.invalidMaterial",
+                    new Replacement("%target%", args[0]));
             return false;
         }
 
@@ -100,13 +104,18 @@ public class SearchContainerCommand implements TabExecutor {
         if (locations.length() > 0) {
             locations.delete(locations.length() - 2, locations.length());
         } else {
-            plugin.sendMessage(sender, "messages.info.container.noMatches",
-                    "%target%", material.name());
+            plugin.sendMessage(
+                    sender,
+                    "messages.info.container.noMatches",
+                    new Replacement("%target%", material.name()));
             return true;
         }
 
-        plugin.sendMessage(sender, "messages.info.container.matches",
-                "%target%", material.name(), "%detail%", locations.toString());
+        plugin.sendMessage(
+                sender,
+                "messages.info.container.matches",
+                new Replacement("%target%", material.name()),
+                new Replacement("%detail%", locations.toString()));
         return true;
     }
 

@@ -26,8 +26,9 @@ import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.util.ConfigUpdater;
-import com.lishid.openinv.util.LanguageManager;
+import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.Permissions;
+import com.lishid.openinv.util.lang.Replacement;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -362,7 +363,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
     public @Nullable String getLocalizedMessage(
             @NotNull CommandSender sender,
             @NotNull String key,
-            String @NotNull ... replacements) {
+            Replacement @NotNull ... replacements) {
         return this.languageManager.getValue(key, getLocale(sender), replacements);
     }
 
@@ -382,7 +383,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         }
     }
 
-    public void sendMessage(@NotNull CommandSender sender, @NotNull String key, String @NotNull... replacements) {
+    public void sendMessage(@NotNull CommandSender sender, @NotNull String key, Replacement @NotNull... replacements) {
         String message = getLocalizedMessage(sender, key, replacements);
 
         if (message != null && !message.isEmpty()) {

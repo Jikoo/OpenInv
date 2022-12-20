@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2021 lishid. All rights reserved.
+ * Copyright (C) 2011-2022 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@ package com.lishid.openinv.commands;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.TabCompleter;
+import com.lishid.openinv.util.lang.Replacement;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.Material;
@@ -46,7 +47,10 @@ public class SearchInvCommand implements TabExecutor {
         }
 
         if (material == null) {
-            plugin.sendMessage(sender, "messages.error.invalidMaterial", "%target%", args.length > 0 ? args[0] : "null");
+            plugin.sendMessage(
+                    sender,
+                    "messages.error.invalidMaterial",
+                    new Replacement("%target%", args.length > 0 ? args[0] : "null"));
             return false;
         }
 
@@ -56,7 +60,10 @@ public class SearchInvCommand implements TabExecutor {
             try {
                 count = Integer.parseInt(args[1]);
             } catch (NumberFormatException ex) {
-                plugin.sendMessage(sender, "messages.error.invalidNumber", "%target%", args[1]);
+                plugin.sendMessage(
+                        sender,
+                        "messages.error.invalidNumber",
+                        new Replacement("%target%", args[1]));
                 return false;
             }
         }
@@ -74,13 +81,18 @@ public class SearchInvCommand implements TabExecutor {
         if (players.length() > 0) {
             players.delete(players.length() - 2, players.length());
         } else {
-            plugin.sendMessage(sender, "messages.info.player.noMatches",
-                    "%target%", material.name());
+            plugin.sendMessage(
+                    sender,
+                    "messages.info.player.noMatches",
+                    new Replacement("%target%", material.name()));
             return true;
         }
 
-        plugin.sendMessage(sender, "messages.info.player.matches",
-                "%target%", material.name(), "%detail%", players.toString());
+        plugin.sendMessage(
+                sender,
+                "messages.info.player.matches",
+                new Replacement("%target%", material.name()),
+                new Replacement("%detail%", players.toString()));
         return true;
     }
 

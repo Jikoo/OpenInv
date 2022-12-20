@@ -18,6 +18,7 @@ package com.lishid.openinv.commands;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.TabCompleter;
+import com.lishid.openinv.util.lang.Replacement;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.Material;
@@ -114,14 +115,18 @@ public class SearchEnchantCommand implements TabExecutor {
             // Matches found, delete trailing comma and space
             players.delete(players.length() - 2, players.length());
         } else {
-            plugin.sendMessage(sender, "messages.info.player.noMatches",
-                    "%target%", (enchant != null ? enchant.getKey().toString() : "") + " >= " + level);
+            plugin.sendMessage(
+                    sender,
+                    "messages.info.player.noMatches",
+                    new Replacement("%target%", (enchant != null ? enchant.getKey().toString() : "") + " >= " + level));
             return true;
         }
 
-        plugin.sendMessage(sender, "messages.info.player.matches",
-                "%target%", (enchant != null ? enchant.getKey().toString() : "") + " >= " + level,
-                "%detail%", players.toString());
+        plugin.sendMessage(
+                sender,
+                "messages.info.player.matches",
+                new Replacement("%target%", (enchant != null ? enchant.getKey().toString() : "") + " >= " + level),
+                        new Replacement("%detail%", players.toString()));
         return true;
     }
 

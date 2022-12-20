@@ -20,6 +20,7 @@ import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.TabCompleter;
+import com.lishid.openinv.util.lang.Replacement;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -171,16 +172,20 @@ public class OpenInvCommand implements TabExecutor {
             // Protected check
             if (!Permissions.OVERRIDE.hasPermission(player)
                     && Permissions.EXEMPT.hasPermission(onlineTarget)) {
-                plugin.sendMessage(player, "messages.error.permissionExempt",
-                        "%target%", onlineTarget.getDisplayName());
+                plugin.sendMessage(
+                        player,
+                        "messages.error.permissionExempt",
+                        new Replacement("%target%", onlineTarget.getDisplayName()));
                 return;
             }
 
             // Crossworld check
             if (!Permissions.CROSSWORLD.hasPermission(player)
                     && !onlineTarget.getWorld().equals(player.getWorld())) {
-                plugin.sendMessage(player, "messages.error.permissionCrossWorld",
-                        "%target%", onlineTarget.getDisplayName());
+                plugin.sendMessage(
+                        player,
+                        "messages.error.permissionCrossWorld",
+                        new Replacement("%target%", onlineTarget.getDisplayName()));
                 return;
             }
         }

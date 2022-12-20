@@ -18,6 +18,7 @@ package com.lishid.openinv.commands;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.TabCompleter;
+import com.lishid.openinv.util.lang.Replacement;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -69,7 +70,11 @@ public class ContainerSettingCommand implements TabExecutor {
             onOff = String.valueOf(getSetting.test(player));
         }
 
-        plugin.sendMessage(sender, "messages.info.settingState","%setting%", any ? "AnyContainer" : "SilentContainer", "%state%", onOff);
+        plugin.sendMessage(
+                sender,
+                "messages.info.settingState",
+                new Replacement("%setting%", any ? "AnyContainer" : "SilentContainer"),
+                new Replacement("%state%", onOff));
 
         return true;
     }

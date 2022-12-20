@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.util;
+package com.lishid.openinv.util.lang;
 
 import com.lishid.openinv.OpenInv;
 import java.io.BufferedReader;
@@ -147,19 +147,15 @@ public class LanguageManager {
         return value;
     }
 
-    public @Nullable String getValue(@NotNull String key, @Nullable String locale, String @NotNull ... replacements) {
-        if (replacements.length % 2 != 0) {
-            plugin.getLogger().log(Level.WARNING, "[LanguageManager] Replacement data is uneven", new Exception());
-        }
-
+    public @Nullable String getValue(@NotNull String key, @Nullable String locale, Replacement @NotNull ... replacements) {
         String value = getValue(key, locale);
 
         if (value == null) {
             return null;
         }
 
-        for (int i = 0; i < replacements.length; i += 2) {
-            value = value.replace(replacements[i], replacements[i + 1]);
+        for (Replacement replacement : replacements) {
+            value = value.replace(replacement.placeholder(), replacement.value());
         }
 
         return value;

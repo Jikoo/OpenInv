@@ -17,6 +17,7 @@
 package com.lishid.openinv.internal;
 
 import com.lishid.openinv.OpenInv;
+import com.lishid.openinv.util.lang.Replacement;
 import java.util.Objects;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -73,8 +74,7 @@ public class OpenInventoryView extends InventoryView {
                     .getLocalizedMessage(
                             player,
                             titleKey,
-                            "%player%",
-                            owner.getName());
+                            new Replacement("%player%", owner.getName()));
             title = Objects.requireNonNullElseGet(localTitle, () -> owner.getName() + titleDefaultSuffix);
         }
 
