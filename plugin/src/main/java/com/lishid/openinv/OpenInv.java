@@ -198,6 +198,11 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
     }
 
     @Override
+    public boolean noArgsOpensSelf() {
+        return this.getConfig().getBoolean("settings.command.open.no-args-opens-self", false);
+    }
+
+    @Override
     public @NotNull IAnySilentContainer getAnySilentContainer() {
         return this.accessor.getAnySilentContainer();
     }

@@ -64,6 +64,15 @@ public interface IOpenInv {
     boolean disableOfflineAccess();
 
     /**
+     * Check the configuration value for whether OpenInv uses history for opening commands. If false, OpenInv will use
+     * the previous parameterized search when no parameters are provided.
+     *
+     * @return false unless configured otherwise
+     * @since 4.3.0
+     */
+    boolean noArgsOpensSelf();
+
+    /**
      * Get the active {@link IAnySilentContainer} implementation.
      *
      * @return the active implementation for the server version

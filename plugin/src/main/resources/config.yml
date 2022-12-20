@@ -1,5 +1,8 @@
-config-version: 5
+config-version: 6
 settings:
+  command:
+    open:
+      no-args-opens-self: false
   disable-offline-access: false
   disable-saving: false
   locale: 'en_us'

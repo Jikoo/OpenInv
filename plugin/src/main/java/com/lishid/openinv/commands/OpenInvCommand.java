@@ -57,19 +57,23 @@ public class OpenInvCommand implements TabExecutor {
             return true;
         }
 
-        // History management
-        String history = (openInv ? this.openInvHistory : this.openEnderHistory).get(player);
+        String noArgValue;
+        if (plugin.noArgsOpensSelf()) {
+            noArgValue = player.getUniqueId().toString();
+        } else {
+            // History management
+            noArgValue = (openInv ? this.openInvHistory : this.openEnderHistory).get(player);
 
-        if (history == null || history.isEmpty()) {
-            history = player.getName();
-            (openInv ? this.openInvHistory : this.openEnderHistory).put(player, history);
+            if (noArgValue == null || noArgValue.isEmpty()) {
+                noArgValue = player.getUniqueId().toString();
+                (openInv ? this.openInvHistory : this.openEnderHistory).put(player, noArgValue);
+            }
         }
 
         final String name;
 
-        // Read from history if target is not named
         if (args.length < 1) {
-            name = history;
+            name = noArgValue;
         } else {
             name = args[0];
         }
@@ -185,8 +189,10 @@ public class OpenInvCommand implements TabExecutor {
             }
         }
 
-        // Record the target
-        (openinv ? this.openInvHistory : this.openEnderHistory).put(player, target.getUniqueId().toString());
+        if (!plugin.noArgsOpensSelf()) {
+            // Record the target
+            (openinv ? this.openInvHistory : this.openEnderHistory).put(player, target.getUniqueId().toString());
+        }
 
         // Create the inventory
         final ISpecialInventory inv;

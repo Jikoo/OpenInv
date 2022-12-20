@@ -57,11 +57,21 @@ public record ConfigUpdater(OpenInv plugin) {
             if (version < 5) {
                 updateConfig4To5();
             }
+            if (version < 6) {
+                updateConfig5To6();
+            }
 
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 plugin.saveConfig();
                 plugin.getLogger().info("Configuration update complete!");
             });
+        });
+    }
+
+    private void updateConfig5To6() {
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            plugin.getConfig().set("settings.command.open.no-args-opens-self", false);
+            plugin.getConfig().set("config-version", 6);
         });
     }
 
