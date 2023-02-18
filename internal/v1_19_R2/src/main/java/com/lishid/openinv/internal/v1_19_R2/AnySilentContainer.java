@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 lishid. All rights reserved.
+ * Copyright (C) 2011-2023 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.ShulkerBox;
@@ -227,7 +228,7 @@ public class AnySilentContainer implements IAnySilentContainer {
 
     @Override
     public void deactivateContainer(@NotNull final Player bukkitPlayer) {
-        if (this.serverPlayerGameModeGameType == null) {
+        if (this.serverPlayerGameModeGameType == null || bukkitPlayer.getGameMode() == GameMode.SPECTATOR) {
             return;
         }
 
