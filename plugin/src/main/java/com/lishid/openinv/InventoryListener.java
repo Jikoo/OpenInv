@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 lishid. All rights reserved.
+ * Copyright (C) 2011-2023 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.bukkit.GameMode;
+import org.bukkit.block.Container;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -53,7 +54,9 @@ record InventoryListener(OpenInv plugin) implements Listener {
             return;
         }
 
-        if (this.plugin.getSilentContainerStatus(player)) {
+        if (this.plugin.getSilentContainerStatus(player)
+                && event.getInventory().getHolder() instanceof Container container
+                && this.plugin.getAnySilentContainer().isAnySilentContainer(container)) {
             this.plugin.getAnySilentContainer().deactivateContainer(player);
         }
 

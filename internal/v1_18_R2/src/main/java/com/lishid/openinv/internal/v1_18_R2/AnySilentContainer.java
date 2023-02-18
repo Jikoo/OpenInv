@@ -56,7 +56,6 @@ import org.bukkit.Statistic;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -234,17 +233,6 @@ public class AnySilentContainer implements IAnySilentContainer {
     public void deactivateContainer(@NotNull final Player bukkitPlayer) {
         if (this.serverPlayerGameModeGameType == null || bukkitPlayer.getGameMode() == GameMode.SPECTATOR) {
             return;
-        }
-
-        InventoryView view = bukkitPlayer.getOpenInventory();
-        switch (view.getType()) {
-            case CHEST:
-            case ENDER_CHEST:
-            case SHULKER_BOX:
-            case BARREL:
-                break;
-            default:
-                return;
         }
 
         ServerPlayer player = PlayerDataManager.getHandle(bukkitPlayer);

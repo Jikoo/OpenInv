@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 lishid. All rights reserved.
+ * Copyright (C) 2011-2023 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
 
 package com.lishid.openinv.internal;
 
-import org.bukkit.Material;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -148,13 +147,20 @@ public interface IAnySilentContainer {
      * @return true if the type is a supported container
      */
     default boolean isAnySilentContainer(@NotNull Block block) {
-        if (block.getType() == Material.ENDER_CHEST) {
-            return true;
-        }
-        BlockState state = block.getState();
-        return state instanceof org.bukkit.block.Chest
-                || state instanceof org.bukkit.block.ShulkerBox
-                || state instanceof org.bukkit.block.Barrel;
+        return isAnySilentContainer(block.getState());
+    }
+
+    /**
+     * Check if the given {@link BlockState} is a container which can be unblocked or silenced.
+     *
+     * @param blockState the potential container
+     * @return true if the type is a supported container
+     */
+    default boolean isAnySilentContainer(@NotNull BlockState blockState) {
+        return blockState instanceof org.bukkit.block.EnderChest
+                || blockState instanceof org.bukkit.block.Chest
+                || blockState instanceof org.bukkit.block.ShulkerBox
+                || blockState instanceof org.bukkit.block.Barrel;
     }
 
 }
