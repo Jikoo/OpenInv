@@ -1,0 +1,26 @@
+name: Auto-merge Dependabot PRs
+
+on:
+  workflow_run:
+    workflows: [ "OpenInv CI" ]
+    types: [ completed ]
+
+jobs:
+  merge-dependabot:
+    if: "github.actor == 'dependabot[bot]'
+      && github.event.workflow_run.event == 'pull_request'
+      && github.event.workflow_run.conclusion == 'success'"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Approve
+        uses: hmarr/auto-approve-action@v3.1.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          pull-request-number: "${{ github.event.workflow_run.event.pull_request.id }}"
+      - name: Merge
+        uses: pascalgn/automerge-action@v0.15.5
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_LABELS: "dependencies,java"
+          MERGE_METHOD: "squash"
+          PULL_REQUEST: "${{ github.event.workflow_run.event.pull_request.id }}"
