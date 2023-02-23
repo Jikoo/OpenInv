@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2011-2021 lishid. All rights reserved.
+# Copyright (C) 2011-2023 lishid. All rights reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ function get_minecraft_versions() {
 
   for version in "${versions[@]}"; do
     # Append comma if variable is set, then append version
-    minecraft_versions="${minecraft_versions:+${minecraft_versions},}${version%%-R*}"
+    minecraft_versions="${minecraft_versions:+${minecraft_versions}, }${version%%-R*}"
   done
 
   echo "${minecraft_versions}"
