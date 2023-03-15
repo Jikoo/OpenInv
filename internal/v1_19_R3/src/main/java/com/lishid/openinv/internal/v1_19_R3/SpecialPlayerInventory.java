@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 lishid. All rights reserved.
+ * Copyright (C) 2011-2023 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_19_R1;
+package com.lishid.openinv.internal.v1_19_R3;
 
 import com.google.common.collect.ImmutableList;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
@@ -33,6 +33,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -46,8 +47,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventory;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
@@ -719,7 +720,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
 
             for (int index : armorIndices) {
                 ItemStack itemstack = this.armor.get(index);
-                if ((!damagesource.isFire() || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
+                if ((!damagesource.is(DamageTypeTags.IS_FIRE) || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
                     itemstack.hurtAndBreak((int) damage, this.player, localPlayer -> localPlayer.broadcastBreakEvent(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index)));
                 }
             }

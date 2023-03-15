@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 lishid. All rights reserved.
+ * Copyright (C) 2011-2023 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_19_R1;
+package com.lishid.openinv.internal.v1_19_R3;
 
 import java.io.File;
 import net.minecraft.Util;
@@ -23,8 +23,8 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import org.apache.logging.log4j.LogManager;
-import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 
 public class OpenPlayer extends CraftPlayer {
 

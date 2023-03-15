@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_19_R1;
+package com.lishid.openinv.internal.v1_19_R3;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IAnySilentContainer;
@@ -54,7 +54,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.ShulkerBox;
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,8 +66,6 @@ public class AnySilentContainer implements IAnySilentContainer {
     public AnySilentContainer() {
         try {
             try {
-                // IDE warns about field not existing, but SpecialSource does not remap strings used in reflection.
-                // The warning is not suppressed as a reminder that it must manually be checked on updates.
                 this.serverPlayerGameModeGameType = ServerPlayerGameMode.class.getDeclaredField("b");
                 this.serverPlayerGameModeGameType.setAccessible(true);
             } catch (NoSuchFieldException e) {

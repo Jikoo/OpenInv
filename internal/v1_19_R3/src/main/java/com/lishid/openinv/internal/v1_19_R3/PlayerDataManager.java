@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 lishid. All rights reserved.
+ * Copyright (C) 2011-2023 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_19_R1;
+package com.lishid.openinv.internal.v1_19_R3;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IPlayerDataManager;
@@ -35,10 +35,10 @@ import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_19_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftContainer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
@@ -98,7 +98,7 @@ public class PlayerDataManager implements IPlayerDataManager {
             return null;
         }
 
-        ServerPlayer entity = new ServerPlayer(server, worldServer, profile, null);
+        ServerPlayer entity = new ServerPlayer(server, worldServer, profile);
 
         // Stop listening for advancement progression - if this is not cleaned up, loading causes a memory leak.
         entity.getAdvancements().stopListening();
