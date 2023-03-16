@@ -37,7 +37,7 @@ public class OpenPlayer extends CraftPlayer {
         // See CraftPlayer#loadData
         CompoundTag loaded = this.server.getHandle().playerIo.load(this.getHandle());
         if (loaded != null) {
-            readExtraData(loaded);
+            getHandle().readAdditionalSaveData(loaded);
         }
     }
 
@@ -67,7 +67,7 @@ public class OpenPlayer extends CraftPlayer {
             File file2 = new File(worldNBTStorage.getPlayerDir(), player.getStringUUID() + ".dat_old");
             Util.safeReplaceFile(file1, file, file2);
         } catch (Exception e) {
-            LogManager.getLogger().warn("Failed to save player data for {}: {}", player.getName().getString(), e.getMessage());
+            LogManager.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
         }
     }
 
