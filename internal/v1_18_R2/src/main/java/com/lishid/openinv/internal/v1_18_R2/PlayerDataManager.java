@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 lishid. All rights reserved.
+ * Copyright (C) 2011-2023 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import com.lishid.openinv.internal.OpenInventoryView;
 import com.mojang.authlib.GameProfile;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.MinecraftServer;
@@ -108,14 +109,25 @@ public class PlayerDataManager implements IPlayerDataManager {
             e.printStackTrace();
         }
 
-        // Get the bukkit entity
-        Player target = entity.getBukkitEntity();
-        if (target != null) {
-            // Load data
-            target.loadData();
+        // Load data. This also reads basic data into the player.
+        // See CraftPlayer#loadData
+        CompoundTag loadedData = server.getPlayerList().playerIo.load(entity);
+
+        if (loadedData == null) {
+            // Exceptions with loading are logged by Mojang.
+            return null;
         }
-        // Return the entity
-        return target;
+
+        // Also read "extra" data.
+        entity.readAdditionalSaveData(loadedData);
+
+        if (entity.level == null) {
+            // Paper: Move player to spawn
+            entity.spawnIn(null);
+        }
+
+        // Return the Bukkit entity.
+        return entity.getBukkitEntity();
     }
 
     void injectPlayer(ServerPlayer player) throws IllegalAccessException {
