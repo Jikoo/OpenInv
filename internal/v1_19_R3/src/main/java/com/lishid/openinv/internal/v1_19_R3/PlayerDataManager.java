@@ -21,6 +21,7 @@ import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.OpenInventoryView;
 import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 import net.minecraft.nbt.CompoundTag;
@@ -121,6 +122,14 @@ public class PlayerDataManager implements IPlayerDataManager {
 
         // Also read "extra" data.
         entity.readAdditionalSaveData(loadedData);
+
+        if (entity.level == null) {
+            // Weird edge case guard - world could not be read?
+            // In that case the server implementation is supposed to set their world to the default overworld.
+            // It exists and is not null or else we would have returned null prior to constructing our ServerPlayer.
+            entity.setLevel(worldServer);
+            LogUtils.getLogger().warn("Encountered null world while loading {}", entity.getScoreboardName());
+        }
 
         // Return the Bukkit entity.
         return entity.getBukkitEntity();
