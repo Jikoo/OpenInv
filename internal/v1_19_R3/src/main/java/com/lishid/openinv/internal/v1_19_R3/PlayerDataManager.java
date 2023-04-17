@@ -33,10 +33,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R3.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftContainer;
@@ -124,7 +126,21 @@ public class PlayerDataManager implements IPlayerDataManager {
 
         if (entity.level == null) {
             // Paper: Move player to spawn
-            entity.spawnIn(null);
+            // SPIGOT-7340: Cannot call ServerPlayer#spawnIn with a null world
+            ServerLevel level = null;
+            Vec3 position = null;
+            if (entity.getRespawnDimension() != null) {
+                level = entity.server.getLevel(entity.getRespawnDimension());
+                if (level != null && entity.getRespawnPosition() != null) {
+                    position = net.minecraft.world.entity.player.Player.findRespawnPositionAndUseSpawnBlock(level, entity.getRespawnPosition(), entity.getRespawnAngle(), false, false).orElse(null);
+                }
+            }
+            if (level == null || position == null) {
+                level = ((CraftWorld) server.server.getWorlds().get(0)).getHandle();
+                position = Vec3.atCenterOf(level.getSharedSpawnPos());
+            }
+            entity.level = level;
+            entity.setPos(position);
         }
 
         // Return the Bukkit entity.
