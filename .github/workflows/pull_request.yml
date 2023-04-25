@@ -1,0 +1,23 @@
+name: Pull Request
+
+on:
+  pull_request:
+
+jobs:
+  run-ci:
+    runs-on: ubuntu-latest
+    uses: Jikoo/OpenInv/.github/workflows/ci.yml@master
+  store-dependabot-pr-data:
+    if: "github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'"
+    runs-on: ubuntu-latest
+    steps:
+      # Note: this is directly from GitHub's example for using data from a triggering workflow:
+      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#using-data-from-the-triggering-workflow
+      - name: Store Pull Number
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }} > ./pr/pr_number
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pr_number
+          path: pr/

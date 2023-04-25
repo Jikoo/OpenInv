@@ -2,7 +2,12 @@ name: OpenInv CI
 
 on:
   push:
-  pull_request:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  # Enable running CI via other Actions, i.e. for drafting releases and handling PRs.
+  workflow_call:
 
 jobs:
   build:
