@@ -7,7 +7,6 @@ on:
 
 jobs:
   run-ci:
-    runs-on: ubuntu-latest
     uses: Jikoo/OpenInv/.github/workflows/ci.yml@master
   draft-release:
     needs: [ run-ci ]
