@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 lishid. All rights reserved.
+ * Copyright (C) 2011-2023 lishid. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,6 +161,7 @@ public interface IOpenInv {
      * @return the identifier
      * @throws IllegalStateException if the server version is unsupported
      */
+    @Deprecated(forRemoval = true)
     default @NotNull String getPlayerID(@NotNull OfflinePlayer offline) {
         return offline.getUniqueId().toString();
     }
