@@ -26,6 +26,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Chest;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
@@ -157,10 +158,21 @@ public interface IAnySilentContainer {
      * @return true if the type is a supported container
      */
     default boolean isAnySilentContainer(@NotNull BlockState blockState) {
-        return blockState instanceof org.bukkit.block.EnderChest
-                || blockState instanceof org.bukkit.block.Chest
-                || blockState instanceof org.bukkit.block.ShulkerBox
-                || blockState instanceof org.bukkit.block.Barrel;
+        return blockState instanceof InventoryHolder holder && isAnySilentContainer(holder);
+    }
+
+    /**
+     * Check if the given {@link InventoryHolder} is a container which can be unblocked or silenced.
+     *
+     * @param holder the potential container
+     * @return true if the type is a supported container
+     */
+    default boolean isAnySilentContainer(@NotNull InventoryHolder holder) {
+        return holder instanceof org.bukkit.block.EnderChest
+                || holder instanceof org.bukkit.block.Chest
+                || holder instanceof org.bukkit.block.DoubleChest
+                || holder instanceof org.bukkit.block.ShulkerBox
+                || holder instanceof org.bukkit.block.Barrel;
     }
 
 }

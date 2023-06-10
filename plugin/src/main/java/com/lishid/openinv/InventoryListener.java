@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.bukkit.GameMode;
-import org.bukkit.block.Container;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,6 +35,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -54,9 +54,10 @@ record InventoryListener(OpenInv plugin) implements Listener {
             return;
         }
 
+        InventoryHolder holder = event.getInventory().getHolder();
         if (this.plugin.getSilentContainerStatus(player)
-                && event.getInventory().getHolder() instanceof Container container
-                && this.plugin.getAnySilentContainer().isAnySilentContainer(container)) {
+                && holder != null
+                && this.plugin.getAnySilentContainer().isAnySilentContainer(holder)) {
             this.plugin.getAnySilentContainer().deactivateContainer(player);
         }
 
