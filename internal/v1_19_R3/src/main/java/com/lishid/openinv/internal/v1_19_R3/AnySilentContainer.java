@@ -20,7 +20,6 @@ import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.util.ReflectionHelper;
 import java.lang.reflect.Field;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.minecraft.core.BlockPos;
@@ -28,7 +27,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
-import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.monster.Shulker;
@@ -39,11 +37,9 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.DoubleBlockCombiner;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.TrappedChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
@@ -160,32 +156,12 @@ public class AnySilentContainer implements IAnySilentContainer {
         if (block instanceof ChestBlock chestBlock) {
 
             // boolean flag: do not check if chest is blocked
-            Optional<MenuProvider> menuOptional = chestBlock.combine(blockState, level, blockPos, true).apply(
-                    // Combiner is a copy of private ChestBlock.MENU_PROVIDER_COMBINER
-                    new DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<MenuProvider>>() {
-                        @Override
-                        public Optional<MenuProvider> acceptDouble(ChestBlockEntity localChest1, ChestBlockEntity localChest2) {
-                            CompoundContainer doubleChest = new CompoundContainer(localChest1, localChest2);
-                            return Optional.of(new ChestBlock.DoubleInventory(localChest1, localChest2, doubleChest));
-                        }
+            menuProvider = chestBlock.getMenuProvider(blockState, level, blockPos, true);
 
-                        @Override
-                        public Optional<MenuProvider> acceptSingle(ChestBlockEntity localChest) {
-                            return Optional.of(localChest);
-                        }
-
-                        @Override
-                        public Optional<MenuProvider> acceptNone() {
-                            return Optional.empty();
-                        }
-                    });
-
-            if (menuOptional.isEmpty()) {
+            if (menuProvider == null) {
                 OpenInv.getPlugin(OpenInv.class).sendSystemMessage(bukkitPlayer, "messages.error.lootNotGenerated");
                 return false;
             }
-
-            menuProvider = menuOptional.get();
 
             if (block instanceof TrappedChestBlock) {
                 bukkitPlayer.incrementStatistic(Statistic.TRAPPED_CHEST_TRIGGERED);
