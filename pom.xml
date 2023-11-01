@@ -112,7 +112,7 @@
             -->
           <artifactId>maven-dependency-plugin</artifactId>
           <groupId>org.apache.maven.plugins</groupId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
         </plugin>
 
         <plugin>
