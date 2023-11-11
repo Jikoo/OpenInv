@@ -21,7 +21,9 @@ import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.OpenInventoryView;
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.MinecraftServer;
@@ -33,22 +35,38 @@ import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R2.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public class PlayerDataManager implements IPlayerDataManager {
+
+    private static boolean paper;
+
+    static {
+        try {
+            Class.forName("io.papermc.paper.configuration.Configuration");
+            paper = true;
+        } catch (ClassNotFoundException ignored) {
+            paper = false;
+        }
+    }
 
     private @Nullable Field bukkitEntity;
 
@@ -56,8 +74,8 @@ public class PlayerDataManager implements IPlayerDataManager {
         try {
             bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
         } catch (NoSuchFieldException e) {
-            Logger logger = OpenInv.getPlugin(OpenInv.class).getLogger();
-            logger.warning("Unable to obtain field to inject custom save process - players' mounts may be deleted when loaded.");
+            Logger logger = JavaPlugin.getPlugin(OpenInv.class).getLogger();
+            logger.warning("Unable to obtain field to inject custom save process - certain player data may be lost when saving!");
             logger.log(java.util.logging.Level.WARNING, e.getMessage(), e);
             bukkitEntity = null;
         }
@@ -77,7 +95,7 @@ public class PlayerDataManager implements IPlayerDataManager {
 
         if (nmsPlayer == null) {
             // Could use reflection to examine fields, but it's honestly not worth the bother.
-            throw new RuntimeException("Unable to fetch EntityPlayer from provided Player implementation");
+            throw new RuntimeException("Unable to fetch EntityPlayer from Player implementation " + player.getClass().getName());
         }
 
         return nmsPlayer;
@@ -90,17 +108,36 @@ public class PlayerDataManager implements IPlayerDataManager {
             return null;
         }
 
-        // Create a profile and entity to load the player data
-        // See net.minecraft.server.players.PlayerList#canPlayerLogin
-        // and net.minecraft.server.network.ServerLoginPacketListenerImpl#handleHello
-        GameProfile profile = new GameProfile(offline.getUniqueId(),
-                offline.getName() != null ? offline.getName() : offline.getUniqueId().toString());
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
         ServerLevel worldServer = server.getLevel(Level.OVERWORLD);
 
         if (worldServer == null) {
             return null;
         }
+
+        // Create a new ServerPlayer.
+        ServerPlayer entity = createNewPlayer(server, worldServer, offline);
+
+        // Stop listening for advancement progression - if this is not cleaned up, loading causes a memory leak.
+        entity.getAdvancements().stopListening();
+
+        // Try to load the player's data.
+        if (loadData(entity)) {
+            // If data is loaded successfully, return the Bukkit entity.
+            return entity.getBukkitEntity();
+        }
+
+        return null;
+    }
+
+    private @NotNull ServerPlayer createNewPlayer(
+        @NotNull MinecraftServer server,
+        @NotNull ServerLevel worldServer,
+        @NotNull final OfflinePlayer offline) {
+        // See net.minecraft.server.players.PlayerList#canPlayerLogin(ServerLoginPacketListenerImpl, GameProfile)
+        // See net.minecraft.server.network.ServerLoginPacketListenerImpl#handleHello(ServerboundHelloPacket)
+        GameProfile profile = new GameProfile(offline.getUniqueId(),
+            offline.getName() != null ? offline.getName() : offline.getUniqueId().toString());
 
         ClientInformation dummyInfo = new ClientInformation(
             "en_us",
@@ -115,37 +152,66 @@ public class PlayerDataManager implements IPlayerDataManager {
 
         ServerPlayer entity = new ServerPlayer(server, worldServer, profile, dummyInfo);
 
-        // Stop listening for advancement progression - if this is not cleaned up, loading causes a memory leak.
-        entity.getAdvancements().stopListening();
-
         try {
             injectPlayer(entity);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            JavaPlugin.getPlugin(OpenInv.class).getLogger().log(
+                java.util.logging.Level.WARNING,
+                e,
+                () -> "Unable to inject ServerPlayer, certain player data may be lost when saving!");
         }
 
-        // Load data. This also reads basic data into the player.
+        return entity;
+    }
+
+    static boolean loadData(@NotNull ServerPlayer player) {
         // See CraftPlayer#loadData
-        CompoundTag loadedData = server.getPlayerList().playerIo.load(entity);
+        CompoundTag loadedData = player.server.getPlayerList().playerIo.load(player);
 
         if (loadedData == null) {
             // Exceptions with loading are logged by Mojang.
-            return null;
+            return false;
         }
 
+        // Read basic data into the player.
+        player.load(loadedData);
         // Also read "extra" data.
-        entity.readAdditionalSaveData(loadedData);
+        player.readAdditionalSaveData(loadedData);
 
-        if (entity.level() == null) {
-            // Paper: Move player to spawn
-            entity.spawnIn(null);
+        if (paper) {
+            // Paper: world is not loaded by ServerPlayer#load(CompoundTag).
+            parseWorld(player, loadedData);
         }
 
-        // Return the Bukkit entity.
-        return entity.getBukkitEntity();
+        return true;
     }
 
-    void injectPlayer(ServerPlayer player) throws IllegalAccessException {
+    private static void parseWorld(@NotNull ServerPlayer player, @NotNull CompoundTag loadedData) {
+        // See PlayerList#placeNewPlayer
+        World bukkitWorld;
+        if (loadedData.contains("WorldUUIDMost") && loadedData.contains("WorldUUIDLeast")) {
+            // Modern Bukkit world.
+            bukkitWorld = org.bukkit.Bukkit.getServer().getWorld(new UUID(loadedData.getLong("WorldUUIDMost"), loadedData.getLong("WorldUUIDLeast")));
+        } else if (loadedData.contains("world", net.minecraft.nbt.Tag.TAG_STRING)) {
+            // Legacy Bukkit world.
+            bukkitWorld = org.bukkit.Bukkit.getServer().getWorld(loadedData.getString("world"));
+        } else {
+            // Vanilla player data.
+            DimensionType.parseLegacy(new Dynamic<>(NbtOps.INSTANCE, loadedData.get("Dimension")))
+                .resultOrPartial(JavaPlugin.getPlugin(OpenInv.class).getLogger()::warning)
+                .map(player.server::getLevel)
+                // If ServerLevel exists, set, otherwise move to spawn.
+                .ifPresentOrElse(player::setServerLevel, () -> player.spawnIn(null));
+            return;
+        }
+        if (bukkitWorld == null) {
+            player.spawnIn(null);
+            return;
+        }
+        player.setServerLevel(((CraftWorld) bukkitWorld).getHandle());
+    }
+
+    private void injectPlayer(ServerPlayer player) throws IllegalAccessException {
         if (bukkitEntity == null) {
             return;
         }
@@ -155,9 +221,8 @@ public class PlayerDataManager implements IPlayerDataManager {
         bukkitEntity.set(player, new OpenPlayer(player.server.server, player));
     }
 
-    @NotNull
     @Override
-    public Player inject(@NotNull Player player) {
+    public @NotNull Player inject(@NotNull Player player) {
         try {
             ServerPlayer nmsPlayer = getHandle(player);
             if (nmsPlayer.getBukkitEntity() instanceof OpenPlayer openPlayer) {
@@ -166,14 +231,16 @@ public class PlayerDataManager implements IPlayerDataManager {
             injectPlayer(nmsPlayer);
             return nmsPlayer.getBukkitEntity();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            JavaPlugin.getPlugin(OpenInv.class).getLogger().log(
+                java.util.logging.Level.WARNING,
+                e,
+                () -> "Unable to inject ServerPlayer, certain player data may be lost when saving!");
             return player;
         }
     }
 
-    @Nullable
     @Override
-    public InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
+    public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
 
         ServerPlayer nmsPlayer = getHandle(player);
 
