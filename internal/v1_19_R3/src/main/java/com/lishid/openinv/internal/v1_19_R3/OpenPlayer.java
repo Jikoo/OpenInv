@@ -95,9 +95,9 @@ public class OpenPlayer extends CraftPlayer {
         }
 
         // Revert automatic updates to play timestamps.
-        copyValue(newData, oldData, "bukkit", "lastPlayed", NumericTag.class);
-        copyValue(newData, oldData, "Paper", "LastSeen", NumericTag.class);
-        copyValue(newData, oldData, "Paper", "LastLogin", NumericTag.class);
+        copyValue(oldData, newData, "bukkit", "lastPlayed", NumericTag.class);
+        copyValue(oldData, newData, "Paper", "LastSeen", NumericTag.class);
+        copyValue(oldData, newData, "Paper", "LastLogin", NumericTag.class);
     }
 
     private <T extends Tag> void copyValue(
