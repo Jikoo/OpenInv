@@ -20,6 +20,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
@@ -81,7 +82,14 @@ public class OpenPlayer extends CraftPlayer {
         if (oldData.contains("RootVehicle", Tag.TAG_COMPOUND)) {
             // See net.minecraft.server.players.PlayerList#save(ServerPlayer)
             // See net.minecraft.server.level.ServerPlayer#addAdditionalSaveData(CompoundTag)
-            newData.putUUID("Attach", oldData.getUUID("Attach"));
+            try {
+                Tag attach = oldData.get("Attach");
+                if (attach != null) {
+                    newData.putUUID("Attach", NbtUtils.loadUUID(attach));
+                }
+            } catch (IllegalArgumentException ignored) {
+                // Likely will not re-mount successfully, but at least the mount will not be deleted.
+            }
             newData.put("Entity", oldData.getCompound("Entity"));
             newData.put("RootVehicle", oldData.getCompound("RootVehicle"));
         }
