@@ -59,6 +59,36 @@ public class OpenPlayer extends CraftPlayer {
                     // See net.minecraft.server.PlayerList#a(NetworkManager, EntityPlayer) and net.minecraft.server.EntityPlayer#b(NBTTagCompound)
                     playerData.put("RootVehicle", oldData.getCompound("RootVehicle"));
                 }
+
+                // Re-overwrite data that should not be changed
+                if (oldData != null) {
+                    if (oldData.contains("world")) {
+                        playerData.putString("world", oldData.getString("world"));
+                    }
+                    if (oldData.contains("WorldUUIDMost")) {
+                        playerData.putLong("WorldUUIDMost", oldData.getLong("WorldUUIDMost"));
+                    }
+                    if (oldData.contains("WorldUUIDLeast")) {
+                        playerData.putLong("WorldUUIDLeast", oldData.getLong("WorldUUIDLeast"));
+                    }
+
+                    if (oldData.contains("bukkit")) {
+                        CompoundTag oldBukkitdata = oldData.getCompound("bukkit");
+                        if (oldBukkitdata.contains("lastPlayed")) {
+                            CompoundTag bukkitdata = playerData.getCompound("bukkit");
+                            bukkitdata.putLong("lastPlayed", oldBukkitdata.getLong("lastPlayed"));
+                        }
+                    }
+
+                    if (oldData.contains("Paper")) {
+                        CompoundTag oldPaperData = oldData.getCompound("Paper");
+                        if (oldPaperData.contains("LastLogin")) {
+                            CompoundTag paperData = playerData.getCompound("Paper");
+                            paperData.putLong("LastLogin", oldPaperData.getLong("LastLogin"));
+                            paperData.putLong("LastSeen", oldPaperData.getLong("LastSeen"));
+                        }
+                    }
+                }
             }
 
             File file = File.createTempFile(player.getStringUUID() + "-", ".dat", worldNBTStorage.getPlayerDir());
