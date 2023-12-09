@@ -14,16 +14,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_20_R1;
+package com.lishid.openinv.internal.v1_20_R3;
 
 import com.google.common.collect.ImmutableList;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -47,12 +41,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftInventory;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerInventory {
 

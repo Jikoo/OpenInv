@@ -14,13 +14,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_20_R1;
+package com.lishid.openinv.internal.v1_20_R3;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.util.ReflectionHelper;
-import java.lang.reflect.Field;
-import java.util.logging.Logger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -49,10 +47,13 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.ShulkerBox;
-import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
+import java.util.logging.Logger;
 
 public class AnySilentContainer implements IAnySilentContainer {
 
