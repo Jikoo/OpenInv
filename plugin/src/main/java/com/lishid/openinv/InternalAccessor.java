@@ -22,10 +22,11 @@ import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.util.InventoryAccess;
-import java.lang.reflect.Constructor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.Constructor;
 
 class InternalAccessor {
 
@@ -66,6 +67,7 @@ class InternalAccessor {
             case "v1_17_R1", "v1_18_R1" -> "https://github.com/Jikoo/OpenInv/releases/tag/4.1.10";
             case "v1_19_R1" -> "https://github.com/Jikoo/OpenInv/releases/tag/4.2.2";
             case "v1_18_R2", "v1_19_R2" -> "https://github.com/Jikoo/OpenInv/releases/tag/4.3.0";
+            case "v1_20_R1" -> "https://github.com/Jikoo/OpenInv/releases/tag/4.4.1";
             default -> "https://github.com/Jikoo/OpenInv/releases";
         };
     }
