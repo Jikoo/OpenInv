@@ -31,13 +31,13 @@ jobs:
       # Upload artifacts
       - name: Upload Distributable Jar
         id: upload-final
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: ./target/OpenInv.jar
       - name: Upload API Jar
         id: upload-api
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: api
           path: ./api/target/openinvapi*.jar
