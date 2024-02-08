@@ -21,8 +21,6 @@ import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.OpenInventoryView;
 import com.mojang.authlib.GameProfile;
-import java.lang.reflect.Field;
-import java.util.logging.Logger;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
@@ -46,6 +44,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
+import java.util.logging.Logger;
 
 public class PlayerDataManager implements IPlayerDataManager {
 
@@ -123,6 +124,7 @@ public class PlayerDataManager implements IPlayerDataManager {
 
         // Also read "extra" data.
         entity.readAdditionalSaveData(loadedData);
+        entity.loadGameTypes(loadedData);
 
         if (entity.level == null) {
             // Paper: Move player to spawn

@@ -41,9 +41,11 @@ public class OpenPlayer extends CraftPlayer {
     @Override
     public void loadData() {
         // See CraftPlayer#loadData
-        CompoundTag loaded = this.server.getHandle().playerIo.load(this.getHandle());
+        ServerPlayer serverPlayer = getHandle();
+        CompoundTag loaded = this.server.getHandle().playerIo.load(serverPlayer);
         if (loaded != null) {
-            getHandle().readAdditionalSaveData(loaded);
+            serverPlayer.readAdditionalSaveData(loaded);
+            serverPlayer.loadGameTypes(loaded);
         }
     }
 

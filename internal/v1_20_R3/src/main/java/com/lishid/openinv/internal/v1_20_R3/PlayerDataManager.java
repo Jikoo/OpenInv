@@ -177,6 +177,8 @@ public class PlayerDataManager implements IPlayerDataManager {
         player.load(loadedData);
         // Also read "extra" data.
         player.readAdditionalSaveData(loadedData);
+        // Game type settings are also loaded separately.
+        player.loadGameTypes(loadedData);
 
         if (paper) {
             // Paper: world is not loaded by ServerPlayer#load(CompoundTag).
