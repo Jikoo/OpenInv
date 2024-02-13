@@ -92,6 +92,14 @@ public class OpenPlayer extends CraftPlayer {
             newData.put("RootVehicle", oldData.getCompound("RootVehicle"));
         }
 
+        // TODO: Better-support arbitrary non-vanilla data
+        //  Blacklist vanilla root tags, copy all others
+        //  Should do this BEFORE calling #setExtraData to not clobber additional info from server impl that we should load properly
+        CompoundTag myWorlds = getTag(oldData, "MyWorlds", CompoundTag.class);
+        if (myWorlds != null) {
+            newData.put("MyWorlds", myWorlds);
+        }
+
         // Revert automatic updates to play timestamps.
         copyValue(oldData, newData, "bukkit", "lastPlayed", NumericTag.class);
         copyValue(oldData, newData, "Paper", "LastSeen", NumericTag.class);
