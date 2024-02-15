@@ -20,20 +20,51 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 
 public class OpenPlayer extends CraftPlayer {
+
+    private static final Set<String> RESET_TAGS = Set.of(
+        // net.minecraft.world.Entity#saveWithoutId(CompoundTag)
+        "CustomName",
+        "CustomNameVisible",
+        "Silent",
+        "NoGravity",
+        "Glowing",
+        "TicksFrozen",
+        "HasVisualFire",
+        "Tags",
+        "Passengers",
+        // net.minecraft.server.level.ServerPlayer#addAdditionalSaveData(CompoundTag)
+        // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
+        // SpawnX, SpawnY, etc. in #RESET_TAG_PREFIXES via Spawn
+        "warden_spawn_tracker",
+        "enteredNetherPosition",
+        // net.minecraft.world.entity.player.Player#addAdditionalSaveData(CompoundTag)
+        // Intentional omissions to prevent pet loss: ShoulderEntityLeft, ShoulderEntityRight
+        "LastDeathLocation",
+        // net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(CompoundTag)
+        // SleepingX etc. in #RESET_TAG_PREFIXES
+        "active_effects",
+        "Brain"
+    );
+    private static final Set<String> RESET_TAG_PREFIXES = Set.of(
+        "Bukkit", // Flags for re-enabling Bukkit API features
+        "Spawn", // SpawnX etc. only set if respawnPosition not null
+        "Sleeping" // SleepingX etc. only set if sleeping pos is set
+    );
 
     public OpenPlayer(CraftServer server, ServerPlayer entity) {
         super(server, entity);
@@ -51,12 +82,13 @@ public class OpenPlayer extends CraftPlayer {
         try {
             PlayerDataStorage worldNBTStorage = player.server.getPlayerList().playerIo;
 
-            CompoundTag playerData = player.saveWithoutId(new CompoundTag());
+            CompoundTag oldData = isOnline() ? null : worldNBTStorage.load(player);
+            CompoundTag playerData = getWritableTag(oldData);
+            playerData = player.saveWithoutId(playerData);
             setExtraData(playerData);
 
-            if (!isOnline()) {
-                // Preserve certain data when offline.
-                CompoundTag oldData = worldNBTStorage.load(player);
+            if (oldData != null) {
+                // Revert certain special data values when offline.
                 revertSpecialValues(playerData, oldData);
             }
 
@@ -71,35 +103,24 @@ public class OpenPlayer extends CraftPlayer {
         }
     }
 
-    private void revertSpecialValues(@NotNull CompoundTag newData, @Nullable CompoundTag oldData) {
+    @Contract("null -> new")
+    private @NotNull CompoundTag getWritableTag(@Nullable CompoundTag oldData) {
         if (oldData == null) {
-            return;
+            return new CompoundTag();
         }
 
-        // Prevent vehicle deletion.
-        if (oldData.contains("RootVehicle", Tag.TAG_COMPOUND)) {
-            // See net.minecraft.server.players.PlayerList#save(ServerPlayer)
-            // See net.minecraft.server.level.ServerPlayer#addAdditionalSaveData(CompoundTag)
-            try {
-                Tag attach = oldData.get("Attach");
-                if (attach != null) {
-                    newData.putUUID("Attach", NbtUtils.loadUUID(attach));
-                }
-            } catch (IllegalArgumentException ignored) {
-                // Likely will not re-mount successfully, but at least the mount will not be deleted.
-            }
-            newData.put("Entity", oldData.getCompound("Entity"));
-            newData.put("RootVehicle", oldData.getCompound("RootVehicle"));
-        }
+        // Copy old data. This is a deep clone, so operating on it should be safe.
+        oldData = oldData.copy();
 
-        // TODO: Better-support arbitrary non-vanilla data
-        //  Blacklist vanilla root tags, copy all others
-        //  Should do this BEFORE calling #setExtraData to not clobber additional info from server impl that we should load properly
-        CompoundTag myWorlds = getTag(oldData, "MyWorlds", CompoundTag.class);
-        if (myWorlds != null) {
-            newData.put("MyWorlds", myWorlds);
-        }
+        // Remove vanilla/server data that is not written every time.
+        oldData.getAllKeys()
+            .removeIf(key -> RESET_TAGS.contains(key)
+                || RESET_TAG_PREFIXES.stream().anyMatch(key::startsWith));
 
+        return oldData;
+    }
+
+    private void revertSpecialValues(@NotNull CompoundTag newData, @NotNull CompoundTag oldData) {
         // Revert automatic updates to play timestamps.
         copyValue(oldData, newData, "bukkit", "lastPlayed", NumericTag.class);
         copyValue(oldData, newData, "Paper", "LastSeen", NumericTag.class);
