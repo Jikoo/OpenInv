@@ -136,8 +136,8 @@ public class OpenPlayer extends CraftPlayer {
         CompoundTag oldContainer = getTag(source, container, CompoundTag.class);
         CompoundTag newContainer = getTag(target, container, CompoundTag.class);
 
-        // Container being null means the server implementation doesn't store this data.
-        if (oldContainer == null || newContainer == null) {
+        // New container being null means the server implementation doesn't store this data.
+        if (newContainer == null) {
             return;
         }
 
@@ -146,9 +146,12 @@ public class OpenPlayer extends CraftPlayer {
     }
 
     private <T extends Tag> @Nullable T getTag(
-        @NotNull CompoundTag container,
+        @Nullable CompoundTag container,
         @NotNull String key,
         @NotNull Class<T> dataType) {
+        if (container == null) {
+            return null;
+        }
         Tag value = container.get(key);
         if (value == null || !dataType.isAssignableFrom(value.getClass())) {
             return null;
