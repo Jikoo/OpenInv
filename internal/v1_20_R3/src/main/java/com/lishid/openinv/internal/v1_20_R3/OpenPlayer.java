@@ -49,21 +49,23 @@ public class OpenPlayer extends CraftPlayer {
         "Passengers",
         // net.minecraft.server.level.ServerPlayer#addAdditionalSaveData(CompoundTag)
         // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
-        // SpawnX, SpawnY, etc. in #RESET_TAG_PREFIXES via Spawn
         "warden_spawn_tracker",
         "enteredNetherPosition",
+        "SpawnX",
+        "SpawnY",
+        "SpawnZ",
+        "SpawnForced",
+        "SpawnAngle",
+        "SpawnDimension",
         // net.minecraft.world.entity.player.Player#addAdditionalSaveData(CompoundTag)
         // Intentional omissions to prevent pet loss: ShoulderEntityLeft, ShoulderEntityRight
         "LastDeathLocation",
         // net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(CompoundTag)
-        // SleepingX etc. in #RESET_TAG_PREFIXES
         "active_effects",
+        "SleepingX",
+        "SleepingY",
+        "SleepingZ",
         "Brain"
-    );
-    private static final Set<String> RESET_TAG_PREFIXES = Set.of(
-        "Bukkit", // Flags for re-enabling Bukkit API features
-        "Spawn", // SpawnX etc. only set if respawnPosition not null
-        "Sleeping" // SleepingX etc. only set if sleeping pos is set
     );
 
     public OpenPlayer(CraftServer server, ServerPlayer entity) {
@@ -114,8 +116,7 @@ public class OpenPlayer extends CraftPlayer {
 
         // Remove vanilla/server data that is not written every time.
         oldData.getAllKeys()
-            .removeIf(key -> RESET_TAGS.contains(key)
-                || RESET_TAG_PREFIXES.stream().anyMatch(key::startsWith));
+            .removeIf(key -> RESET_TAGS.contains(key) || key.startsWith("Bukkit"));
 
         return oldData;
     }
