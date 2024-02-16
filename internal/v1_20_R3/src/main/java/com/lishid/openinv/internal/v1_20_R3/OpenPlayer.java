@@ -62,6 +62,7 @@ public class OpenPlayer extends CraftPlayer {
         "ShoulderEntityRight",
         "LastDeathLocation",
         // net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(CompoundTag)
+        "ActiveEffects", // Backwards compat: Renamed from 1.19
         "active_effects",
         "SleepingX",
         "SleepingY",
