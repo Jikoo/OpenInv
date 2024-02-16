@@ -58,7 +58,8 @@ public class OpenPlayer extends CraftPlayer {
         "SpawnAngle",
         "SpawnDimension",
         // net.minecraft.world.entity.player.Player#addAdditionalSaveData(CompoundTag)
-        // Intentional omissions to prevent pet loss: ShoulderEntityLeft, ShoulderEntityRight
+        "ShoulderEntityLeft",
+        "ShoulderEntityRight",
         "LastDeathLocation",
         // net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(CompoundTag)
         "active_effects",
