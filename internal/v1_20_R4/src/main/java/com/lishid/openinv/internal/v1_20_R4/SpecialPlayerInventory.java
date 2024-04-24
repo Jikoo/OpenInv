@@ -14,45 +14,43 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_20_R2;
+package com.lishid.openinv.internal.v1_20_R4;
 
 import com.google.common.collect.ImmutableList;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
+import net.minecraft.ReportedException;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftInventory;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import net.minecraft.CrashReport;
-import net.minecraft.CrashReportCategory;
-import net.minecraft.ReportedException;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.StackedContents;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_20_R2.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftInventory;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerInventory {
 
@@ -203,7 +201,8 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
         return i + 9;
     }
 
-    private boolean contains(Predicate<ItemStack> predicate) {
+    @Override
+    public boolean contains(Predicate<ItemStack> predicate) {
         return this.compartments.stream().flatMap(NonNullList::stream).anyMatch(predicate);
     }
 
@@ -263,7 +262,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
     }
 
     private boolean hasRemainingSpaceForItem(ItemStack itemstack, ItemStack itemstack1) {
-        return !itemstack.isEmpty() && ItemStack.isSameItemSameTags(itemstack, itemstack1) && itemstack.isStackable() && itemstack.getCount() < itemstack.getMaxStackSize() && itemstack.getCount() < this.getMaxStackSize();
+        return !itemstack.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, itemstack1) && itemstack.isStackable() && itemstack.getCount() < itemstack.getMaxStackSize() && itemstack.getCount() < this.getMaxStackSize();
     }
 
     @Override
@@ -336,7 +335,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
     @Override
     public int findSlotMatchingItem(ItemStack itemstack) {
         for(int i = 0; i < this.items.size(); ++i) {
-            if (!this.items.get(i).isEmpty() && ItemStack.isSameItemSameTags(itemstack, this.items.get(i))) {
+            if (!this.items.get(i).isEmpty() && ItemStack.isSameItemSameComponents(itemstack, this.items.get(i))) {
                 return i;
             }
         }
@@ -348,7 +347,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
     public int findSlotMatchingUnusedItem(ItemStack itemStack) {
         for(int i = 0; i < this.items.size(); ++i) {
             ItemStack localItem = this.items.get(i);
-            if (!this.items.get(i).isEmpty() && ItemStack.isSameItemSameTags(itemStack, this.items.get(i)) && !this.items.get(i).isDamaged() && !localItem.isEnchanted() && !localItem.hasCustomHoverName()) {
+            if (!this.items.get(i).isEmpty() && ItemStack.isSameItemSameComponents(itemStack, this.items.get(i)) && !this.items.get(i).isDamaged() && !localItem.isEnchanted() && !localItem.has(DataComponents.CUSTOM_NAME)) {
                 return i;
             }
         }
@@ -379,15 +378,9 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
 
     @Override
     public void swapPaint(double d0) {
-        if (d0 > 0.0D) {
-            d0 = 1.0D;
-        }
+        int i = (int) Math.signum(d0);
 
-        if (d0 < 0.0D) {
-            d0 = -1.0D;
-        }
-
-        this.selected = (int) (this.selected - d0);
+        this.selected -= i;
 
         while (this.selected < 0) {
             this.selected += 9;
@@ -423,25 +416,14 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
     }
 
     private int addResource(int i, ItemStack itemstack) {
-        Item item = itemstack.getItem();
         int j = itemstack.getCount();
         ItemStack localItemStack = this.getRawItem(i);
         if (localItemStack.isEmpty()) {
-            localItemStack = new ItemStack(item, 0);
-            if (itemstack.hasTag()) {
-                // hasTag ensures tag not null
-                //noinspection ConstantConditions
-                localItemStack.setTag(itemstack.getTag().copy());
-            }
-
+            localItemStack = itemstack.copyWithCount(0);
             this.setRawItem(i, localItemStack);
         }
 
-        int k = Math.min(j, localItemStack.getMaxStackSize() - localItemStack.getCount());
-
-        if (k > this.getMaxStackSize() - localItemStack.getCount()) {
-            k = this.getMaxStackSize() - localItemStack.getCount();
-        }
+        int k = Math.min(j, this.getMaxStackSize(localItemStack) - localItemStack.getCount());
 
         if (k != 0) {
             j -= k;
@@ -502,7 +484,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
                         this.items.get(i).setPopTime(5);
                         itemStack.setCount(0);
                         return true;
-                    } else if (this.player.getAbilities().instabuild) {
+                    } else if (this.player.hasInfiniteMaterials()) {
                         itemStack.setCount(0);
                         return true;
                     } else {
@@ -519,7 +501,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
                         }
                     } while(!itemStack.isEmpty() && itemStack.getCount() < j);
 
-                    if (itemStack.getCount() == j && this.player.getAbilities().instabuild) {
+                    if (itemStack.getCount() == j && this.player.hasInfiniteMaterials()) {
                         itemStack.setCount(0);
                         return true;
                     } else {
@@ -630,7 +612,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
             if (!this.items.get(i).isEmpty()) {
                 CompoundTag compoundTag = new CompoundTag();
                 compoundTag.putByte("Slot", (byte)i);
-                this.items.get(i).save(compoundTag);
+                this.items.get(i).save(this.player.registryAccess(), compoundTag);
                 listTag.add(compoundTag);
             }
         }
@@ -639,7 +621,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
             if (!this.armor.get(i).isEmpty()) {
                 CompoundTag compoundTag = new CompoundTag();
                 compoundTag.putByte("Slot", (byte)(i + 100));
-                this.armor.get(i).save(compoundTag);
+                this.armor.get(i).save(this.player.registryAccess(), compoundTag);
                 listTag.add(compoundTag);
             }
         }
@@ -648,7 +630,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
             if (!this.offhand.get(i).isEmpty()) {
                 CompoundTag compoundTag = new CompoundTag();
                 compoundTag.putByte("Slot", (byte)(i + 150));
-                this.offhand.get(i).save(compoundTag);
+                this.offhand.get(i).save(this.player.registryAccess(), compoundTag);
                 listTag.add(compoundTag);
             }
         }
@@ -665,15 +647,13 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
         for(int i = 0; i < listTag.size(); ++i) {
             CompoundTag compoundTag = listTag.getCompound(i);
             int j = compoundTag.getByte("Slot") & 255;
-            ItemStack itemstack = ItemStack.of(compoundTag);
-            if (!itemstack.isEmpty()) {
-                if (j < this.items.size()) {
-                    this.items.set(j, itemstack);
-                } else if (j >= 100 && j < this.armor.size() + 100) {
-                    this.armor.set(j - 100, itemstack);
-                } else if (j >= 150 && j < this.offhand.size() + 150) {
-                    this.offhand.set(j - 150, itemstack);
-                }
+            ItemStack itemstack = ItemStack.parse(this.player.registryAccess(), compoundTag).orElse(ItemStack.EMPTY);
+            if (j < this.items.size()) {
+                this.items.set(j, itemstack);
+            } else if (j >= 100 && j < this.armor.size() + 100) {
+                this.armor.set(j - 100, itemstack);
+            } else if (j >= 150 && j < this.offhand.size() + 150) {
+                this.offhand.set(j - 150, itemstack);
             }
         }
 
@@ -711,23 +691,6 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
     }
 
     @Override
-    public void hurtArmor(DamageSource damagesource, float damage, int[] armorIndices) {
-        if (damage > 0.0F) {
-            damage /= 4.0F;
-            if (damage < 1.0F) {
-                damage = 1.0F;
-            }
-
-            for (int index : armorIndices) {
-                ItemStack itemstack = this.armor.get(index);
-                if ((!damagesource.is(DamageTypeTags.IS_FIRE) || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
-                    itemstack.hurtAndBreak((int) damage, this.player, localPlayer -> localPlayer.broadcastBreakEvent(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index)));
-                }
-            }
-        }
-    }
-
-    @Override
     public void dropAll() {
         for (NonNullList<ItemStack> compartment : this.compartments) {
             for (int i = 0; i < compartment.size(); ++i) {
@@ -757,12 +720,11 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
 
     @Override
     public boolean contains(ItemStack itemstack) {
-        return contains(itemStack -> itemStack.isEmpty() && itemStack.is(itemstack.getItem()));
+        return contains(itemStack -> !itemStack.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, itemStack));
     }
 
     @Override
     public boolean contains(TagKey<Item> tagKey) {
-
         return contains(itemStack -> !itemStack.isEmpty() && itemStack.is(tagKey));
     }
 

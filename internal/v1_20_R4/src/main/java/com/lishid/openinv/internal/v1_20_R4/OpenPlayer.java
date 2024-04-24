@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_20_R2;
+package com.lishid.openinv.internal.v1_20_R4;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
@@ -24,13 +24,14 @@ import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.PlayerDataStorage;
-import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R4.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 
 public class OpenPlayer extends CraftPlayer {
@@ -56,10 +57,12 @@ public class OpenPlayer extends CraftPlayer {
         "SpawnForced",
         "SpawnAngle",
         "SpawnDimension",
+        "raid_omen_position",
         // net.minecraft.world.entity.player.Player#addAdditionalSaveData(CompoundTag)
         "ShoulderEntityLeft",
         "ShoulderEntityRight",
         "LastDeathLocation",
+        "current_explosion_impact_pos",
         // net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(CompoundTag)
         "ActiveEffects", // Backwards compat: Renamed from 1.19
         "active_effects",
@@ -85,7 +88,7 @@ public class OpenPlayer extends CraftPlayer {
         try {
             PlayerDataStorage worldNBTStorage = player.server.getPlayerList().playerIo;
 
-            CompoundTag oldData = isOnline() ? null : worldNBTStorage.load(player);
+            CompoundTag oldData = isOnline() ? null : worldNBTStorage.load(player).orElse(null);
             CompoundTag playerData = getWritableTag(oldData);
             playerData = player.saveWithoutId(playerData);
             setExtraData(playerData);
@@ -95,11 +98,12 @@ public class OpenPlayer extends CraftPlayer {
                 revertSpecialValues(playerData, oldData);
             }
 
-            File file = File.createTempFile(player.getStringUUID() + "-", ".dat", worldNBTStorage.getPlayerDir());
+            Path playerDataDir = worldNBTStorage.getPlayerDir().toPath();
+            Path file = Files.createTempFile(playerDataDir, player.getStringUUID() + "-", ".dat");
             NbtIo.writeCompressed(playerData, file);
-            File file1 = new File(worldNBTStorage.getPlayerDir(), player.getStringUUID() + ".dat");
-            File file2 = new File(worldNBTStorage.getPlayerDir(), player.getStringUUID() + ".dat_old");
-            Util.safeReplaceFile(file1, file, file2);
+            Path dataFile = playerDataDir.resolve(player.getStringUUID() + ".dat");
+            Path backupFile = playerDataDir.resolve(player.getStringUUID() + ".dat_old");
+            Util.safeReplaceFile(dataFile, file, backupFile);
         } catch (Exception e) {
             LogUtils.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
         }
@@ -115,7 +119,8 @@ public class OpenPlayer extends CraftPlayer {
         oldData = oldData.copy();
 
         // Remove vanilla/server data that is not written every time.
-        oldData.getAllKeys().removeIf(key -> RESET_TAGS.contains(key) || key.startsWith("Bukkit"));
+        oldData.getAllKeys()
+            .removeIf(key -> RESET_TAGS.contains(key) || key.startsWith("Bukkit"));
 
         return oldData;
     }

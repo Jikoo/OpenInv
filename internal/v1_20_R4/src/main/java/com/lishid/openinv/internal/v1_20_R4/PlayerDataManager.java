@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_20_R2;
+package com.lishid.openinv.internal.v1_20_R4;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IPlayerDataManager;
@@ -40,11 +40,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R2.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftContainer;
+import org.bukkit.craftbukkit.v1_20_R4.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R4.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -166,7 +166,7 @@ public class PlayerDataManager implements IPlayerDataManager {
 
     static boolean loadData(@NotNull ServerPlayer player) {
         // See CraftPlayer#loadData
-        CompoundTag loadedData = player.server.getPlayerList().playerIo.load(player);
+        CompoundTag loadedData = player.server.getPlayerList().playerIo.load(player).orElse(null);
 
         if (loadedData == null) {
             // Exceptions with loading are logged by Mojang.
@@ -193,10 +193,10 @@ public class PlayerDataManager implements IPlayerDataManager {
         World bukkitWorld;
         if (loadedData.contains("WorldUUIDMost") && loadedData.contains("WorldUUIDLeast")) {
             // Modern Bukkit world.
-            bukkitWorld = org.bukkit.Bukkit.getServer().getWorld(new UUID(loadedData.getLong("WorldUUIDMost"), loadedData.getLong("WorldUUIDLeast")));
+            bukkitWorld = Bukkit.getServer().getWorld(new UUID(loadedData.getLong("WorldUUIDMost"), loadedData.getLong("WorldUUIDLeast")));
         } else if (loadedData.contains("world", net.minecraft.nbt.Tag.TAG_STRING)) {
             // Legacy Bukkit world.
-            bukkitWorld = org.bukkit.Bukkit.getServer().getWorld(loadedData.getString("world"));
+            bukkitWorld = Bukkit.getServer().getWorld(loadedData.getString("world"));
         } else {
             // Vanilla player data.
             DimensionType.parseLegacy(new Dynamic<>(NbtOps.INSTANCE, loadedData.get("Dimension")))

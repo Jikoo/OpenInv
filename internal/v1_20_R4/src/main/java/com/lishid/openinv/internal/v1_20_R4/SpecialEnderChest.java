@@ -14,12 +14,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_20_R2;
+package com.lishid.openinv.internal.v1_20_R4;
 
 import com.lishid.openinv.internal.ISpecialEnderChest;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -33,12 +31,16 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_20_R2.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftInventory;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftInventory;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpecialEnderChest {
 
@@ -197,7 +199,7 @@ public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpe
     @Override
     public boolean canAddItem(ItemStack itemstack) {
         for (ItemStack itemstack1 : this.items) {
-            if (itemstack1.isEmpty() || ItemStack.isSameItemSameTags(itemstack1, itemstack) && itemstack1.getCount() < itemstack1.getMaxStackSize()) {
+            if (itemstack1.isEmpty() || ItemStack.isSameItemSameComponents(itemstack1, itemstack) && itemstack1.getCount() < itemstack1.getMaxStackSize()) {
                 return true;
             }
         }
@@ -219,7 +221,7 @@ public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpe
     private void moveItemToOccupiedSlotsWithSameType(ItemStack itemstack) {
         for(int i = 0; i < this.getContainerSize(); ++i) {
             ItemStack localItem = this.getItem(i);
-            if (ItemStack.isSameItemSameTags(localItem, itemstack)) {
+            if (ItemStack.isSameItemSameComponents(localItem, itemstack)) {
                 this.moveItemsBetweenStacks(itemstack, localItem);
                 if (itemstack.isEmpty()) {
                     return;
@@ -332,7 +334,7 @@ public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpe
     }
 
     @Override
-    public void fromTag(ListTag listTag) {
+    public void fromTag(ListTag listTag, HolderLookup.Provider holderLookup) {
         for (int i = 0; i < this.getContainerSize(); ++i) {
             this.setItem(i, ItemStack.EMPTY);
         }
@@ -341,7 +343,7 @@ public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpe
             CompoundTag compoundTag = listTag.getCompound(i);
             int j = compoundTag.getByte("Slot") & 255;
             if (j < this.getContainerSize()) {
-                this.setItem(j, ItemStack.of(compoundTag));
+                this.setItem(j, ItemStack.parseOptional(holderLookup, compoundTag));
             }
         }
 
