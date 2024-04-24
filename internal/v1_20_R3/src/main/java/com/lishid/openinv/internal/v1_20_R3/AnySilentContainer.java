@@ -237,7 +237,8 @@ public class AnySilentContainer implements IAnySilentContainer {
             this.serverPlayerGameModeGameType.setAccessible(true);
             this.serverPlayerGameModeGameType.set(player.gameMode, gameMode);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            Logger logger = OpenInv.getPlugin(OpenInv.class).getLogger();
+            logger.log(java.util.logging.Level.WARNING, "Error bypassing GameModeChangeEvent", e);
         }
     }
 
