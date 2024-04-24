@@ -757,7 +757,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
 
     @Override
     public boolean contains(ItemStack itemstack) {
-        return contains(itemStack -> itemStack.isEmpty() && itemStack.sameItem(itemstack));
+        return contains(itemStack -> !itemStack.isEmpty() && itemStack.sameItem(itemstack));
     }
 
     @Override
