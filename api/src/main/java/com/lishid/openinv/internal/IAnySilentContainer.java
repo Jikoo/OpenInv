@@ -29,7 +29,6 @@ import org.bukkit.entity.Cat;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.util.BoundingBox;
-import org.bukkit.util.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 public interface IAnySilentContainer {
@@ -142,10 +141,10 @@ public interface IAnySilentContainer {
     default boolean isShulkerBlocked(@NotNull Block shulkerBox) {
         Directional directional = (Directional) shulkerBox.getBlockData();
         BlockFace facing = directional.getFacing();
-        VoxelShape collisionShape = shulkerBox.getRelative(facing).getCollisionShape();
-        BoundingBox box = new BoundingBox(shulkerBox.getX(), shulkerBox.getY(), shulkerBox.getZ(), shulkerBox.getX() + 1, shulkerBox.getY() + 1, shulkerBox.getZ() + 1);
+        BoundingBox box = new BoundingBox(0, 0, 0, 1, 1, 1);
         box.expand(facing, 0.5);
-        return collisionShape.overlaps(box);
+        box.shift(facing.getOppositeFace().getDirection());
+        return shulkerBox.getRelative(facing).getCollisionShape().overlaps(box);
     }
 
     /**
