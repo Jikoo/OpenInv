@@ -64,6 +64,10 @@
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
     </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
   </repositories>
 
   <dependencyManagement>
@@ -97,6 +101,11 @@
             <artifactId>openinvapi</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <artifactId>planarwrappers</artifactId>
+        <groupId>com.github.jikoo</groupId>
+        <version>3.2.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

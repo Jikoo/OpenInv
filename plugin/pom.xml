@@ -40,6 +40,10 @@
       <artifactId>spigot-api</artifactId>
       <groupId>org.spigotmc</groupId>
     </dependency>
+    <dependency>
+      <artifactId>planarwrappers</artifactId>
+      <groupId>com.github.jikoo</groupId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -53,6 +57,31 @@
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <filters>
+            <filter>
+              <!-- Always shade entirety of required modules. -->
+              <artifact>com.lishid:openinv*</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+            <filter>
+              <artifact>*:*</artifact>
+              <!-- Don't warn about file conflicts that'll be clobbered anyway. -->
+              <excludes>
+                <exclude>META-INF/MANIFEST.MF</exclude>
+              </excludes>
+            </filter>
+          </filters>
+          <relocations>
+            <relocation>
+              <pattern>com.github.jikoo.planarwrappers</pattern>
+              <shadedPattern>com.github.jikoo.openinv.planarwrappers</shadedPattern>
+            </relocation>
+          </relocations>
+          <minimizeJar>true</minimizeJar>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
