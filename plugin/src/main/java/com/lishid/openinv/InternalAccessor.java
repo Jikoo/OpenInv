@@ -27,13 +27,14 @@ import com.lishid.openinv.util.InventoryAccess;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 
 class InternalAccessor {
 
     private final @NotNull Plugin plugin;
-    private final String versionPackage;
+    private final @Nullable String versionPackage;
     private boolean supported = false;
     private IPlayerDataManager playerDataManager;
     private IAnySilentContainer anySilentContainer;
@@ -42,18 +43,10 @@ class InternalAccessor {
         this.plugin = plugin;
         this.versionPackage = getVersionPackage();
         checkSupported();
-
-        /*
-         * TODO more loose versioning support:
-         *  - Prefer classes if available
-         *  - Use ASM to rewrite best class if not available? I.e. unversion packages on Paper
-         *    - should verify OBC/NMS calls' existence!
-         *    - could possibly be expanded to tentatively support unknown versions
-         */
     }
 
     private void checkSupported() {
-        if ("nope".equals(this.versionPackage)) { // TODO this is a terrible way to handle things
+        if (versionPackage == null) {
             return;
         }
         try {
@@ -65,18 +58,18 @@ class InternalAccessor {
         } catch (Exception ignored) {}
     }
 
-    private String getVersionPackage() {
+    private @Nullable String getVersionPackage() {
         if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 20, 3))) { // Min supported version: 1.20.3
-            return "nope";
+            return null;
         }
         if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 20, 4))) { // 1.20.3, 1.20.4
             return "v1_20_R3";
         }
         if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21))) {
-            return "nope";
+            return null;
         }
         if (BukkitVersions.MINECRAFT.greaterThan(Version.of(1, 20, 6))) {
-            return "nope"; // TODO: use at your own risk flag?
+            return null; // TODO: use at your own risk flag?
         }
         // 1.20.5, 1.20.6
         return "v1_20_R4";
