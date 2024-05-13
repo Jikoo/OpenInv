@@ -36,8 +36,16 @@ import java.util.Set;
 
 public class OpenPlayer extends CraftPlayer {
 
+    /**
+     * List of tags to always reset when saving.
+     *
+     * @see net.minecraft.world.entity.Entity#saveWithoutId(CompoundTag)
+     * @see net.minecraft.server.level.ServerPlayer#addAdditionalSaveData(CompoundTag)
+     * @see net.minecraft.world.entity.player.Player#addAdditionalSaveData(CompoundTag)
+     * @see net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(CompoundTag)
+     */
     private static final Set<String> RESET_TAGS = Set.of(
-        // net.minecraft.world.Entity#saveWithoutId(CompoundTag)
+        // Entity#saveWithoutId(CompoundTag)
         "CustomName",
         "CustomNameVisible",
         "Silent",
@@ -47,7 +55,7 @@ public class OpenPlayer extends CraftPlayer {
         "HasVisualFire",
         "Tags",
         "Passengers",
-        // net.minecraft.server.level.ServerPlayer#addAdditionalSaveData(CompoundTag)
+        // ServerPlayer#addAdditionalSaveData(CompoundTag)
         // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
         "warden_spawn_tracker",
         "enteredNetherPosition",
@@ -58,12 +66,12 @@ public class OpenPlayer extends CraftPlayer {
         "SpawnAngle",
         "SpawnDimension",
         "raid_omen_position",
-        // net.minecraft.world.entity.player.Player#addAdditionalSaveData(CompoundTag)
+        // Player#addAdditionalSaveData(CompoundTag)
         "ShoulderEntityLeft",
         "ShoulderEntityRight",
         "LastDeathLocation",
         "current_explosion_impact_pos",
-        // net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(CompoundTag)
+        // LivingEntity#addAdditionalSaveData(CompoundTag)
         "ActiveEffects", // Backwards compat: Renamed from 1.19
         "active_effects",
         "SleepingX",
@@ -88,7 +96,7 @@ public class OpenPlayer extends CraftPlayer {
         try {
             PlayerDataStorage worldNBTStorage = player.server.getPlayerList().playerIo;
 
-            CompoundTag oldData = isOnline() ? null : worldNBTStorage.load(player).orElse(null);
+            CompoundTag oldData = isOnline() ? null : worldNBTStorage.load(player.getName().getString(), player.getStringUUID()).orElse(null);
             CompoundTag playerData = getWritableTag(oldData);
             playerData = player.saveWithoutId(playerData);
             setExtraData(playerData);
@@ -99,11 +107,11 @@ public class OpenPlayer extends CraftPlayer {
             }
 
             Path playerDataDir = worldNBTStorage.getPlayerDir().toPath();
-            Path file = Files.createTempFile(playerDataDir, player.getStringUUID() + "-", ".dat");
-            NbtIo.writeCompressed(playerData, file);
+            Path tempFile = Files.createTempFile(playerDataDir, player.getStringUUID() + "-", ".dat");
+            NbtIo.writeCompressed(playerData, tempFile);
             Path dataFile = playerDataDir.resolve(player.getStringUUID() + ".dat");
             Path backupFile = playerDataDir.resolve(player.getStringUUID() + ".dat_old");
-            Util.safeReplaceFile(dataFile, file, backupFile);
+            Util.safeReplaceFile(dataFile, tempFile, backupFile);
         } catch (Exception e) {
             LogUtils.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
         }
