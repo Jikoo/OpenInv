@@ -18,13 +18,14 @@ package com.lishid.openinv.internal;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.lang.Replacement;
-import java.util.Objects;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class OpenInventoryView extends InventoryView {
 
@@ -68,17 +69,28 @@ public class OpenInventoryView extends InventoryView {
     @Override
     public @NotNull String getTitle() {
         if (title == null) {
-            HumanEntity owner = inventory.getPlayer();
-
-            String localTitle = OpenInv.getPlugin(OpenInv.class)
-                    .getLocalizedMessage(
-                            player,
-                            titleKey,
-                            new Replacement("%player%", owner.getName()));
-            title = Objects.requireNonNullElseGet(localTitle, () -> owner.getName() + titleDefaultSuffix);
+            title = getOriginalTitle();
         }
 
         return title;
+    }
+
+    @NotNull
+    @Override
+    public String getOriginalTitle() {
+        HumanEntity owner = inventory.getPlayer();
+
+        String localTitle = OpenInv.getPlugin(OpenInv.class)
+            .getLocalizedMessage(
+                player,
+                titleKey,
+                new Replacement("%player%", owner.getName()));
+        return Objects.requireNonNullElseGet(localTitle, () -> owner.getName() + titleDefaultSuffix);
+    }
+
+    @Override
+    public void setTitle(@NotNull String title) {
+        this.title = title;
     }
 
 }
