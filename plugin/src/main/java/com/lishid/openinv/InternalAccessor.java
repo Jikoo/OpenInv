@@ -59,20 +59,21 @@ class InternalAccessor {
     }
 
     private @Nullable String getVersionPackage() {
-        if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 20, 3))) { // Min supported version: 1.20.3
+        if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 20, 4)) // Min supported version: 1.20.4
+                || BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 5))) { // 1.20.5 not supported at all.
             return null;
         }
-        if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 20, 4))) { // 1.20.3, 1.20.4
+        if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 4))) { // 1.20.4
             return "v1_20_R3";
         }
-        if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21))) {
+        if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 6))) { // 1.20.6
+            return "v1_20_R4";
+        }
+        if (BukkitVersions.MINECRAFT.greaterThan(Version.of(1, 21))) {
             return null;
         }
-        if (BukkitVersions.MINECRAFT.greaterThan(Version.of(1, 20, 6))) {
-            return null; // TODO: use at your own risk flag?
-        }
-        // 1.20.5, 1.20.6
-        return "v1_20_R4";
+        // 1.21
+        return "v1_21_R1";
     }
 
     public String getReleasesLink() {
@@ -136,8 +137,11 @@ class InternalAccessor {
         if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 20, 1))) { // 1.20, 1.20.1
             return "https://github.com/Jikoo/OpenInv/releases/tag/4.4.1";
         }
-        if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 3))) { // 1.20.3
+        if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 20, 3))) { // 1.20.2, 1.20.3
             return "https://github.com/Jikoo/OpenInv/releases/tag/4.4.3";
+        }
+        if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 5))) { // 1.20.5 shouldn't be used.
+            return "https://github.com/Jikoo/OpenInv/releases";
         }
         return "https://github.com/Jikoo/OpenInv/releases";
     }

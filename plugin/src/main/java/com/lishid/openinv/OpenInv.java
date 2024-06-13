@@ -33,18 +33,6 @@ import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.StringMetric;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -62,6 +50,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.profile.PlayerProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.stream.Stream;
 
 /**
  * Open other player's inventory
@@ -136,7 +137,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             Class.forName("org.bukkit.entity.Player$Spigot");
             isSpigot = true;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             isSpigot = false;
         }
 
@@ -318,7 +318,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         try {
             player = future.get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            getLogger().log(Level.WARNING, e.getMessage(), e);
             return null;
         }
 
@@ -510,7 +510,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             return;
         }
 
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
     }
 
     /**

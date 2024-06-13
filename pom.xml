@@ -42,6 +42,7 @@
         <module>plugin</module>
         <module>internal/v1_20_R3</module>
         <module>internal/v1_20_R4</module>
+        <module>internal/v1_21_R1</module>
         <module>assembly</module>
       </modules>
     </profile>
@@ -82,7 +83,7 @@
         <artifactId>spigot-api</artifactId>
         <groupId>org.spigotmc</groupId>
         <scope>provided</scope>
-        <version>1.18.2-R0.1-SNAPSHOT</version>
+        <version>1.20.4-R0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <artifactId>openinvapi</artifactId>
@@ -105,7 +106,7 @@
       <dependency>
         <artifactId>planarwrappers</artifactId>
         <groupId>com.github.jikoo</groupId>
-        <version>3.2.2</version>
+        <version>3.2.3</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
