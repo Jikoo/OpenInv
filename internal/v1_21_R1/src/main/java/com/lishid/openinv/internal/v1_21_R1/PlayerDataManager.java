@@ -19,7 +19,7 @@ package com.lishid.openinv.internal.v1_21_R1;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.internal.OpenInventoryView;
+import com.lishid.openinv.util.lang.Replacement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
@@ -44,14 +44,19 @@ import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_21_R1.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftAbstractInventoryView;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftContainer;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -250,11 +255,13 @@ public class PlayerDataManager implements IPlayerDataManager {
             return null;
         }
 
-        InventoryView view = getView(player, inventory);
+        String originalTitle = getTitle(player, inventory);
 
-        if (view == null) {
+        if (originalTitle == null) {
             return player.openInventory(inventory.getBukkitInventory());
         }
+
+        InventoryView view = getView(player, inventory, originalTitle);
 
         AbstractContainerMenu container = new CraftContainer(view, nmsPlayer, nmsPlayer.nextContainerCounter()) {
             @Override
@@ -279,14 +286,66 @@ public class PlayerDataManager implements IPlayerDataManager {
 
     }
 
-    private @Nullable InventoryView getView(Player player, ISpecialInventory inventory) {
+    private @Nullable String getTitle(Player player, ISpecialInventory inventory) {
         if (inventory instanceof SpecialEnderChest) {
-            return new OpenInventoryView(player, inventory, "container.enderchest", "'s Ender Chest");
+            return getTitle(player, inventory, "container.enderchest", "'s Ender Chest");
         } else if (inventory instanceof SpecialPlayerInventory) {
-            return new OpenInventoryView(player, inventory, "container.player", "'s Inventory");
+            return getTitle(player, inventory, "container.player", "'s Inventory");
         } else {
             return null;
         }
+    }
+
+    private @NotNull String getTitle(Player player, ISpecialInventory inventory, String titleKey, String titleDefaultSuffix) {
+        String localTitle = OpenInv.getPlugin(OpenInv.class)
+            .getLocalizedMessage(
+                player,
+                titleKey,
+                new Replacement("%player%", inventory.getPlayer().getName()));
+        return Objects.requireNonNullElseGet(localTitle, () -> inventory.getPlayer().getName() + titleDefaultSuffix);
+    }
+
+    private @NotNull InventoryView getView(@NotNull Player player, @NotNull ISpecialInventory inventory,
+        String originalTitle) {
+      return new CraftAbstractInventoryView() {
+
+            private String title = null;
+
+            @Override
+            public @NotNull Inventory getTopInventory() {
+                return inventory.getBukkitInventory();
+            }
+
+            @Override
+            public @NotNull Inventory getBottomInventory() {
+                return player.getInventory();
+            }
+
+            @Override
+            public @NotNull HumanEntity getPlayer() {
+                return player;
+            }
+
+            @Override
+            public @NotNull InventoryType getType() {
+                return inventory.getBukkitInventory().getType();
+            }
+
+            @Override
+            public @NotNull String getTitle() {
+                return title == null ? originalTitle : title;
+            }
+
+            @Override
+            public @NotNull String getOriginalTitle() {
+                return originalTitle;
+            }
+
+            @Override
+            public void setTitle(@NotNull String title) {
+                this.title = title;
+            }
+        };
     }
 
     static @NotNull MenuType<?> getContainers(int inventorySize) {
