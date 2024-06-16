@@ -31,9 +31,9 @@ public class OpenInventoryView extends InventoryView {
     private String title;
 
     public OpenInventoryView(
-        @NotNull Player player,
-        @NotNull ISpecialInventory inventory,
-        @NotNull String originalTitle) {
+            @NotNull Player player,
+            @NotNull ISpecialInventory inventory,
+            @NotNull String originalTitle) {
         this.player = player;
         this.inventory = inventory;
         this.originalTitle = originalTitle;
