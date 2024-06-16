@@ -21,12 +21,10 @@ import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.util.ReflectionHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
@@ -39,15 +37,10 @@ import net.minecraft.world.level.block.TrappedChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
-import org.bukkit.block.ShulkerBox;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,37 +70,6 @@ public class AnySilentContainer implements IAnySilentContainer {
             logger.warning("Unable to directly write player game mode! SilentContainer will fail.");
             logger.log(java.util.logging.Level.WARNING, "Error obtaining GameType field", e);
         }
-    }
-
-    @Override
-    public boolean isShulkerBlocked(@NotNull ShulkerBox shulkerBox) {
-        org.bukkit.World bukkitWorld = shulkerBox.getWorld();
-        if (!(bukkitWorld instanceof CraftWorld)) {
-            bukkitWorld = Bukkit.getWorld(bukkitWorld.getUID());
-        }
-
-        if (!(bukkitWorld instanceof CraftWorld craftWorld)) {
-            Exception exception = new IllegalStateException("AnySilentContainer access attempted on an unknown world!");
-            OpenInv.getPlugin(OpenInv.class).getLogger().log(java.util.logging.Level.WARNING, exception.getMessage(), exception);
-            return false;
-        }
-
-        final ServerLevel world = craftWorld.getHandle();
-        final BlockPos blockPosition = new BlockPos(shulkerBox.getX(), shulkerBox.getY(), shulkerBox.getZ());
-        final BlockEntity tile = world.getBlockEntity(blockPosition);
-
-        if (!(tile instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity)
-                || shulkerBoxBlockEntity.getAnimationStatus() != ShulkerBoxBlockEntity.AnimationStatus.CLOSED) {
-            return false;
-        }
-
-        BlockState blockState = world.getBlockState(blockPosition);
-
-        // See net.minecraft.world.level.block.ShulkerBoxBlock#canOpen
-        AABB boundingBox = Shulker.getProgressDeltaAabb(blockState.getValue(ShulkerBoxBlock.FACING), 0.0F, 0.5F)
-                .move(blockPosition)
-                .deflate(1.0E-6D);
-        return !world.noCollision(boundingBox);
     }
 
     @Override

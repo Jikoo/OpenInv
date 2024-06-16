@@ -95,7 +95,7 @@ public interface IAnySilentContainer {
         }
 
         BlockData blockData = block.getBlockData();
-        if (!(blockData instanceof Chest chest) || ((Chest) blockData).getType() == Chest.Type.SINGLE) {
+        if (!(blockData instanceof Chest chest) || chest.getType() == Chest.Type.SINGLE) {
             return false;
         }
 
