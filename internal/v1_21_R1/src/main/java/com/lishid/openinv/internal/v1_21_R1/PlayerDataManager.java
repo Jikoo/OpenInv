@@ -19,7 +19,8 @@ package com.lishid.openinv.internal.v1_21_R1;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.util.lang.Replacement;
+import com.lishid.openinv.internal.InventoryViewTitle;
+import com.lishid.openinv.internal.OpenInventoryView;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
@@ -56,13 +57,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 public class PlayerDataManager implements IPlayerDataManager {
 
     private static boolean paper;
+    private static boolean recentBuild;
 
     static {
         try {
@@ -70,6 +71,12 @@ public class PlayerDataManager implements IPlayerDataManager {
             paper = true;
         } catch (ClassNotFoundException ignored) {
             paper = false;
+        }
+        try {
+            Class.forName(Bukkit.getServer().getClass().getPackageName() + ".inventory.CraftAbstractInventoryView");
+            recentBuild = true;
+        } catch (ClassNotFoundException ignored) {
+            recentBuild = false;
         }
     }
 
@@ -255,13 +262,18 @@ public class PlayerDataManager implements IPlayerDataManager {
             return null;
         }
 
-        String originalTitle = getTitle(player, inventory);
+        InventoryViewTitle title = InventoryViewTitle.of(inventory);
 
-        if (originalTitle == null) {
+        if (title == null) {
             return player.openInventory(inventory.getBukkitInventory());
         }
 
-        InventoryView view = getView(player, inventory, originalTitle);
+        InventoryView view;
+        if (recentBuild) {
+            view = getView(player, inventory, title);
+        } else {
+            view = new OpenInventoryView(player, inventory, title);
+        }
 
         AbstractContainerMenu container = new CraftContainer(view, nmsPlayer, nmsPlayer.nextContainerCounter()) {
             @Override
@@ -286,27 +298,10 @@ public class PlayerDataManager implements IPlayerDataManager {
 
     }
 
-    private @Nullable String getTitle(Player player, ISpecialInventory inventory) {
-        if (inventory instanceof SpecialEnderChest) {
-            return getTitle(player, inventory, "container.enderchest", "'s Ender Chest");
-        } else if (inventory instanceof SpecialPlayerInventory) {
-            return getTitle(player, inventory, "container.player", "'s Inventory");
-        } else {
-            return null;
-        }
-    }
-
-    private @NotNull String getTitle(Player player, ISpecialInventory inventory, String titleKey, String titleDefaultSuffix) {
-        String localTitle = OpenInv.getPlugin(OpenInv.class)
-            .getLocalizedMessage(
-                player,
-                titleKey,
-                new Replacement("%player%", inventory.getPlayer().getName()));
-        return Objects.requireNonNullElseGet(localTitle, () -> inventory.getPlayer().getName() + titleDefaultSuffix);
-    }
-
-    private @NotNull InventoryView getView(@NotNull Player player, @NotNull ISpecialInventory inventory,
-        String originalTitle) {
+    private @NotNull InventoryView getView(
+        @NotNull Player player,
+        @NotNull ISpecialInventory inventory,
+        @NotNull InventoryViewTitle originalTitle) {
       return new CraftAbstractInventoryView() {
 
             private String title = null;
@@ -333,12 +328,12 @@ public class PlayerDataManager implements IPlayerDataManager {
 
             @Override
             public @NotNull String getTitle() {
-                return title == null ? originalTitle : title;
+                return title == null ? originalTitle.getTitle(player, inventory) : title;
             }
 
             @Override
             public @NotNull String getOriginalTitle() {
-                return originalTitle;
+                return originalTitle.getTitle(player, inventory);
             }
 
             @Override

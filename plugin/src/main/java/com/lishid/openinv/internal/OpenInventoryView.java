@@ -16,8 +16,6 @@
 
 package com.lishid.openinv.internal;
 
-import com.lishid.openinv.OpenInv;
-import com.lishid.openinv.util.lang.Replacement;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -25,25 +23,20 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class OpenInventoryView extends InventoryView {
 
     private final @NotNull Player player;
     private final @NotNull ISpecialInventory inventory;
-    private final @NotNull String titleKey;
-    private final @NotNull String titleDefaultSuffix;
+    private final @NotNull InventoryViewTitle titleProvider;
     private String title;
 
     public OpenInventoryView(
             @NotNull Player player,
             @NotNull ISpecialInventory inventory,
-            @NotNull String titleKey,
-            @NotNull String titleDefaultSuffix) {
+            @NotNull InventoryViewTitle titleProvider) {
         this.player = player;
         this.inventory = inventory;
-        this.titleKey = titleKey;
-        this.titleDefaultSuffix = titleDefaultSuffix;
+        this.titleProvider = titleProvider;
     }
 
     @Override
@@ -78,14 +71,7 @@ public class OpenInventoryView extends InventoryView {
     @NotNull
     @Override
     public String getOriginalTitle() {
-        HumanEntity owner = inventory.getPlayer();
-
-        String localTitle = OpenInv.getPlugin(OpenInv.class)
-            .getLocalizedMessage(
-                player,
-                titleKey,
-                new Replacement("%player%", owner.getName()));
-        return Objects.requireNonNullElseGet(localTitle, () -> owner.getName() + titleDefaultSuffix);
+        return this.titleProvider.getTitle(this.player, this.inventory);
     }
 
     @Override

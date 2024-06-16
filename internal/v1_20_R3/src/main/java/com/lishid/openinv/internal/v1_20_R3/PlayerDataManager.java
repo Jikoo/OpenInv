@@ -19,6 +19,7 @@ package com.lishid.openinv.internal.v1_20_R3;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
+import com.lishid.openinv.internal.InventoryViewTitle;
 import com.lishid.openinv.internal.OpenInventoryView;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Dynamic;
@@ -250,12 +251,13 @@ public class PlayerDataManager implements IPlayerDataManager {
             return null;
         }
 
-        InventoryView view = getView(player, inventory);
+        InventoryViewTitle title = InventoryViewTitle.of(inventory);
 
-        if (view == null) {
+        if (title == null) {
             return player.openInventory(inventory.getBukkitInventory());
         }
 
+        InventoryView view = new OpenInventoryView(player, inventory, title);
         AbstractContainerMenu container = new CraftContainer(view, nmsPlayer, nmsPlayer.nextContainerCounter()) {
             @Override
             public MenuType<?> getType() {
@@ -277,16 +279,6 @@ public class PlayerDataManager implements IPlayerDataManager {
 
         return container.getBukkitView();
 
-    }
-
-    private @Nullable InventoryView getView(Player player, ISpecialInventory inventory) {
-        if (inventory instanceof SpecialEnderChest) {
-            return new OpenInventoryView(player, inventory, "container.enderchest", "'s Ender Chest");
-        } else if (inventory instanceof SpecialPlayerInventory) {
-            return new OpenInventoryView(player, inventory, "container.player", "'s Inventory");
-        } else {
-            return null;
-        }
     }
 
     static @NotNull MenuType<?> getContainers(int inventorySize) {
