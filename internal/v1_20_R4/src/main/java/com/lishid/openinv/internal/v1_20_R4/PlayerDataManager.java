@@ -257,7 +257,7 @@ public class PlayerDataManager implements IPlayerDataManager {
             return player.openInventory(inventory.getBukkitInventory());
         }
 
-        InventoryView view = new OpenInventoryView(player, inventory, title);
+        InventoryView view = new OpenInventoryView(player, inventory, title.getTitle(player, inventory));
         AbstractContainerMenu container = new CraftContainer(view, nmsPlayer, nmsPlayer.nextContainerCounter()) {
             @Override
             public MenuType<?> getType() {
@@ -265,7 +265,7 @@ public class PlayerDataManager implements IPlayerDataManager {
             }
         };
 
-        container.setTitle(Component.literal(view.getTitle()));
+        container.setTitle(Component.literal(view.getOriginalTitle()));
         container = CraftEventFactory.callInventoryOpenEvent(nmsPlayer, container);
 
         if (container == null) {

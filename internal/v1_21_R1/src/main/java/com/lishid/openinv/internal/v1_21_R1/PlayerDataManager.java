@@ -16,6 +16,7 @@
 
 package com.lishid.openinv.internal.v1_21_R1;
 
+import com.github.jikoo.planarwrappers.function.TriFunction;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
@@ -45,12 +46,8 @@ import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_21_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftAbstractInventoryView;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftContainer;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +60,7 @@ import java.util.logging.Logger;
 public class PlayerDataManager implements IPlayerDataManager {
 
     private static boolean paper;
-    private static boolean recentBuild;
+    private static TriFunction<Player, ISpecialInventory, String, InventoryView> viewProvider;
 
     static {
         try {
@@ -74,9 +71,9 @@ public class PlayerDataManager implements IPlayerDataManager {
         }
         try {
             Class.forName(Bukkit.getServer().getClass().getPackageName() + ".inventory.CraftAbstractInventoryView");
-            recentBuild = true;
+            viewProvider = OpenCraftView::new;
         } catch (ClassNotFoundException ignored) {
-            recentBuild = false;
+            viewProvider = OpenInventoryView::new;
         }
     }
 
@@ -262,35 +259,33 @@ public class PlayerDataManager implements IPlayerDataManager {
             return null;
         }
 
-        InventoryViewTitle title = InventoryViewTitle.of(inventory);
+        InventoryViewTitle viewTitle = InventoryViewTitle.of(inventory);
 
-        if (title == null) {
+        if (viewTitle == null) {
             return player.openInventory(inventory.getBukkitInventory());
         }
 
-        InventoryView view;
-        if (recentBuild) {
-            view = getView(player, inventory, title);
-        } else {
-            view = new OpenInventoryView(player, inventory, title);
-        }
-
+        String originalTitle = viewTitle.getTitle(player, inventory);
+        InventoryView view = viewProvider.apply(player, inventory, originalTitle);
+        Component title = Component.literal(originalTitle);
         AbstractContainerMenu container = new CraftContainer(view, nmsPlayer, nmsPlayer.nextContainerCounter()) {
             @Override
             public MenuType<?> getType() {
                 return getContainers(inventory.getBukkitInventory().getSize());
             }
         };
+        container.setTitle(title);
 
-        container.setTitle(Component.literal(view.getTitle()));
         container = CraftEventFactory.callInventoryOpenEvent(nmsPlayer, container);
 
         if (container == null) {
             return null;
         }
 
-        nmsPlayer.connection.send(new ClientboundOpenScreenPacket(container.containerId, container.getType(),
-                Component.literal(container.getBukkitView().getTitle())));
+        // Note: Reusing component prevents plugins from changing title during InventoryOpenEvent, but there's not much
+        // we can do about that - we can't call InventoryView#getTitle on older versions without causing an
+        // IncompatibleClassChangeError due to the fact that InventoryView is now an interface.
+        nmsPlayer.connection.send(new ClientboundOpenScreenPacket(container.containerId, container.getType(), title));
         nmsPlayer.containerMenu = container;
         nmsPlayer.initMenu(container);
 
@@ -298,58 +293,13 @@ public class PlayerDataManager implements IPlayerDataManager {
 
     }
 
-    private @NotNull InventoryView getView(
-        @NotNull Player player,
-        @NotNull ISpecialInventory inventory,
-        @NotNull InventoryViewTitle originalTitle) {
-      return new CraftAbstractInventoryView() {
-
-            private String title = null;
-
-            @Override
-            public @NotNull Inventory getTopInventory() {
-                return inventory.getBukkitInventory();
-            }
-
-            @Override
-            public @NotNull Inventory getBottomInventory() {
-                return player.getInventory();
-            }
-
-            @Override
-            public @NotNull HumanEntity getPlayer() {
-                return player;
-            }
-
-            @Override
-            public @NotNull InventoryType getType() {
-                return inventory.getBukkitInventory().getType();
-            }
-
-            @Override
-            public @NotNull String getTitle() {
-                return title == null ? originalTitle.getTitle(player, inventory) : title;
-            }
-
-            @Override
-            public @NotNull String getOriginalTitle() {
-                return originalTitle.getTitle(player, inventory);
-            }
-
-            @Override
-            public void setTitle(@NotNull String title) {
-                this.title = title;
-            }
-        };
-    }
-
     static @NotNull MenuType<?> getContainers(int inventorySize) {
 
         return switch (inventorySize) {
             case 9 -> MenuType.GENERIC_9x1;
             case 18 -> MenuType.GENERIC_9x2;
-            case 36 -> MenuType.GENERIC_9x4; // PLAYER
-            case 41, 45 -> MenuType.GENERIC_9x5;
+            case 36 -> MenuType.GENERIC_9x4;
+            case 41, 45 -> MenuType.GENERIC_9x5; // PLAYER
             case 54 -> MenuType.GENERIC_9x6;
             default -> MenuType.GENERIC_9x3; // Default 27-slot inventory
         };

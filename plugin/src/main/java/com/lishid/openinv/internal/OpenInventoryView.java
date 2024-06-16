@@ -27,16 +27,16 @@ public class OpenInventoryView extends InventoryView {
 
     private final @NotNull Player player;
     private final @NotNull ISpecialInventory inventory;
-    private final @NotNull InventoryViewTitle titleProvider;
+    private final @NotNull String originalTitle;
     private String title;
 
     public OpenInventoryView(
-            @NotNull Player player,
-            @NotNull ISpecialInventory inventory,
-            @NotNull InventoryViewTitle titleProvider) {
+        @NotNull Player player,
+        @NotNull ISpecialInventory inventory,
+        @NotNull String originalTitle) {
         this.player = player;
         this.inventory = inventory;
-        this.titleProvider = titleProvider;
+        this.originalTitle = originalTitle;
     }
 
     @Override
@@ -61,17 +61,12 @@ public class OpenInventoryView extends InventoryView {
 
     @Override
     public @NotNull String getTitle() {
-        if (title == null) {
-            title = getOriginalTitle();
-        }
-
-        return title;
+        return title == null ? originalTitle : title;
     }
 
-    @NotNull
     @Override
-    public String getOriginalTitle() {
-        return this.titleProvider.getTitle(this.player, this.inventory);
+    public @NotNull String getOriginalTitle() {
+        return originalTitle;
     }
 
     @Override
