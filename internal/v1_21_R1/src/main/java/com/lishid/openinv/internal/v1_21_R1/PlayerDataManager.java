@@ -20,6 +20,7 @@ import com.github.jikoo.planarwrappers.function.TriFunction;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
+import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.InventoryViewTitle;
 import com.lishid.openinv.internal.OpenInventoryView;
 import com.mojang.authlib.GameProfile;
@@ -252,6 +253,9 @@ public class PlayerDataManager implements IPlayerDataManager {
 
     @Override
     public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
+        if (inventory instanceof ISpecialPlayerInventory) {
+            return player.openInventory(inventory.getBukkitInventory());
+        }
 
         ServerPlayer nmsPlayer = getHandle(player);
 
@@ -293,13 +297,12 @@ public class PlayerDataManager implements IPlayerDataManager {
 
     }
 
-    static @NotNull MenuType<?> getContainers(int inventorySize) {
-
+    public static @NotNull MenuType<?> getContainers(int inventorySize) { // TODO move
         return switch (inventorySize) {
             case 9 -> MenuType.GENERIC_9x1;
             case 18 -> MenuType.GENERIC_9x2;
             case 36 -> MenuType.GENERIC_9x4;
-            case 41, 45 -> MenuType.GENERIC_9x5; // PLAYER
+            case 41, 45 -> MenuType.GENERIC_9x5;
             case 54 -> MenuType.GENERIC_9x6;
             default -> MenuType.GENERIC_9x3; // Default 27-slot inventory
         };

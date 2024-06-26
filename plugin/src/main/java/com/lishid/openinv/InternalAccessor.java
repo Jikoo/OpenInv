@@ -50,7 +50,11 @@ class InternalAccessor {
             return;
         }
         try {
-            Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialPlayerInventory");
+            try { // TODO backport changes
+                Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".inventory.OpenInventory");
+            } catch (ClassNotFoundException e) {
+                Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialPlayerInventory");
+            }
             Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialEnderChest");
             this.playerDataManager = this.createObject(IPlayerDataManager.class, "PlayerDataManager");
             this.anySilentContainer = this.createObject(IAnySilentContainer.class, "AnySilentContainer");
@@ -189,13 +193,12 @@ class InternalAccessor {
     private @NotNull <T extends ISpecialInventory> T createSpecialInventory(
             @NotNull Class<? extends T> assignableClass,
             @NotNull String className,
-            @NotNull Player player,
-            boolean online) throws InstantiationException {
+            @NotNull Object @NotNull ... params) throws InstantiationException {
         if (!this.supported) {
             throw new IllegalStateException(String.format("Unsupported server version %s!", BukkitVersions.MINECRAFT));
         }
         try {
-            return this.createObject(assignableClass, className, player, online);
+            return this.createObject(assignableClass, className, params);
         } catch (Exception original) {
             InstantiationException exception = new InstantiationException(String.format("Unable to create a new %s", className));
             exception.initCause(original.fillInStackTrace());
@@ -269,7 +272,12 @@ class InternalAccessor {
      * @throws InstantiationException if the ISpecialPlayerInventory could not be instantiated
      */
     public ISpecialPlayerInventory newSpecialPlayerInventory(final Player player, final boolean online) throws InstantiationException {
-        return this.createSpecialInventory(ISpecialPlayerInventory.class, "SpecialPlayerInventory", player, online);
+        // TODO backport changes
+        try {
+            return this.createSpecialInventory(ISpecialPlayerInventory.class, "inventory.OpenInventory", player);
+        }  catch (InstantiationException ignored) {
+            return this.createSpecialInventory(ISpecialPlayerInventory.class, "SpecialPlayerInventory", player, online);
+        }
     }
 
 }
