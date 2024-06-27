@@ -27,8 +27,7 @@ import java.util.List;
 
 public class OpenInventory implements Container, Nameable, MenuProvider, ISpecialPlayerInventory {
 
-  private final ContainerSlot dropSlot;
-  private final List<ContainerSlot> slots = new ArrayList<>();
+  private final List<ContainerSlot> slots;
   private final int size;
   private ServerPlayer owner;
   private int maxStackSize = 99;
@@ -37,100 +36,122 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
 
   public OpenInventory(@NotNull org.bukkit.entity.Player bukkitPlayer) {
     owner = PlayerDataManager.getHandle(bukkitPlayer);
-    dropSlot = new DropContainerSlot(this.owner);
 
     // Get total size, rounding up to nearest 9 for client compatibility.
     int rawSize = owner.getInventory().getContainerSize() + owner.inventoryMenu.getCraftSlots().getContainerSize() + 1;
     size = ((int) Math.ceil(rawSize / 9.0)) * 9;
 
-    slots.clear();
-
-    for (int index = 0; index < size; ++index) {
-      slots.add(createSlot(index));
-    }
+    slots = NonNullList.withSize(size, ContainerSlotEmpty.INSTANCE);
+    setupSlots();
   }
 
-  private @NotNull ContainerSlot createSlot(int index) {
-    Inventory ownerInv = owner.getInventory();
+  private void setupSlots() {
+    // Top of inventory: Regular contents.
+    int nextIndex = addMainInventory();
 
-    // Top of inventory: Regular contents
-    int listSize = ownerInv.items.size();
-    if (index < listSize) {
+    int rawSize = owner.getInventory().getContainerSize() + owner.inventoryMenu.getCraftSlots().getContainerSize() + 1;
+
+    // If inventory is expected size, we can arrange slots to be pretty.
+    if (rawSize == 46) {
+      // Armor slots: bottom left.
+      addArmor(45);
+      // Off-hand above chestplate.
+      addOffHand(37);
+      // Drop in the middle.
+      slots.set(40, new ContainerSlotDrop(owner));
+      // Cursor right below drop.
+      slots.set(49, new ContainerSlotCursor(owner));
+      // Crafting is displayed in a 2x2 in the bottom right corner.
+      addCrafting(43, true);
+      return;
+    }
+
+    // Otherwise we'll just add elements linearly.
+    nextIndex = addArmor(nextIndex);
+    nextIndex = addOffHand(nextIndex);
+    nextIndex = addCrafting(nextIndex, false);
+    slots.set(nextIndex, new ContainerSlotCursor(owner));
+    // Drop slot last.
+    slots.set(slots.size() - 1, new ContainerSlotDrop(owner));
+  }
+
+  private int addMainInventory() {
+    int listSize = owner.getInventory().items.size();
+    // Hotbar slots are 0-8. We want those to appear on the bottom of the inventory like a normal player inventory,
+    // so everything else needs to move up a row.
+    int hotbarDiff = listSize - 9;
+    for (int localIndex = 0; localIndex < listSize; ++localIndex) {
       InventoryType.SlotType type;
-      // Hotbar slots are 0-8. We want those to appear on the bottom of the inventory like a normal player inventory,
-      // so everything else needs to move up a row.
-      int hotbarDiff = listSize - 9;
-      if (index < hotbarDiff) {
-        index += 9;
+      int invIndex;
+      if (localIndex < hotbarDiff) {
+        invIndex = localIndex + 9;
         type = InventoryType.SlotType.CONTAINER;
       } else {
         type = InventoryType.SlotType.QUICKBAR;
-        index -= hotbarDiff;
+        invIndex = localIndex - hotbarDiff;
       }
-      return new ListContainerSlot(owner, index, type) {
+
+      slots.set(localIndex, new ContainerSlotList(owner, invIndex, type) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {
           this.items = owner.getInventory().items;
         }
-      };
+      });
     }
-    index -= listSize;
+    return listSize;
+  }
 
-    // Armor contents
-    listSize = ownerInv.armor.size();
-    if (index < listSize) {
-      // We display armor "top down," so helmet should be leftmost item.
-      index = switch (index) {
+  private int addArmor(int startIndex) {
+    int listSize = owner.getInventory().armor.size();
+
+    for (int i = 0; i < listSize; ++i) {
+      // Armor slots go bottom to top; boots are slot 0, helmet is slot 3.
+      // Since we have to display horizontally due to space restrictions,
+      // making the left side the "top" is more user-friendly.
+      int armorIndex = switch (i) {
         case 3 -> 0;
         case 2 -> 1;
         case 1 -> 2;
         case 0 -> 3;
         // In the event that new armor slots are added, they can be placed at the end.
-        default -> index;
+        default -> i;
       };
-      return new ListContainerSlot(owner, index, InventoryType.SlotType.ARMOR) {
+
+      slots.set(startIndex + i, new ContainerSlotList(owner, armorIndex, InventoryType.SlotType.ARMOR) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {
           this.items = owner.getInventory().armor;
         }
-      };
+      });
     }
-    index -= listSize;
 
-    // Off-hand contents
-    listSize = ownerInv.offhand.size();
-    if (index < listSize) {
-      return new ListContainerSlot(owner, index, InventoryType.SlotType.QUICKBAR) {
+    return startIndex + listSize;
+  }
+
+  private int addOffHand(int startIndex) {
+    int listSize = owner.getInventory().offhand.size();
+    for (int localIndex = 0; localIndex < listSize; ++localIndex) {
+      slots.set(startIndex + localIndex, new ContainerSlotList(owner, localIndex, InventoryType.SlotType.QUICKBAR) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {
           this.items = holder.getInventory().offhand;
         }
-      };
+      });
     }
-    index -= listSize;
+    return startIndex + listSize;
+  }
 
-    // Crafting contents
-    listSize = owner.inventoryMenu.getCraftSlots().getContents().size();
-    if (index < listSize) {
-      // TODO
-      //  - no offline edits
-      //  - extract to separate class
-      //  - manipulate indices to make square
-      return new ListContainerSlot(owner, index, InventoryType.SlotType.CRAFTING) {
-        @Override
-        public void setHolder(@NotNull ServerPlayer holder) {
-          this.items = owner.inventoryMenu.getCraftSlots().getContents();
-        }
-      };
+  private int addCrafting(int startIndex, boolean pretty) {
+    int listSize = owner.inventoryMenu.getCraftSlots().getContents().size();
+    for (int localIndex = 0; localIndex < listSize; ++localIndex) {
+      // Pretty display is a 2x2 rather than linear.
+      // If index is in top row, grid is not 2x2, or pretty is disabled, just use current index.
+      // Otherwise, subtract 2 and add 9 to start in the same position on the next row.
+      int modIndex = startIndex + (localIndex < 2 || listSize != 4 || !pretty ? localIndex : localIndex + 7);
+
+      slots.set(modIndex, new ContainerSlotCrafting(owner, localIndex));
     }
-    index -= listSize;
-
-    // Cursor contents
-    if (index == 0) {
-      return new CursorContainerSlot(this.owner);
-    }
-
-    return dropSlot;
+    return startIndex + listSize;
   }
 
   public Slot getMenuSlot(int index, int x, int y) {

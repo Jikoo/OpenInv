@@ -9,13 +9,16 @@ import org.bukkit.event.inventory.InventoryType;
 
 import java.util.List;
 
-abstract class ListContainerSlot implements ContainerSlot {
+/**
+ * A normal slot backed by an item list.
+ */
+abstract class ContainerSlotList implements ContainerSlot {
 
   private final int index;
   private final InventoryType.SlotType slotType;
   List<ItemStack> items;
 
-  ListContainerSlot(ServerPlayer holder, int index, InventoryType.SlotType slotType) {
+  ContainerSlotList(ServerPlayer holder, int index, InventoryType.SlotType slotType) {
     this.index = index;
     this.slotType = slotType;
     setHolder(holder);

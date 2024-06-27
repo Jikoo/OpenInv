@@ -11,11 +11,21 @@ import net.minecraft.world.item.Items;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
-class DropContainerSlot implements ContainerSlot {
+/**
+ * A fake slot used to drop items. Unavailable offline.
+ */
+class ContainerSlotDrop implements ContainerSlot {
 
+  private static ItemStack DROP;
   private ServerPlayer holder;
 
-  DropContainerSlot(@NotNull ServerPlayer holder) {
+  static {
+    DROP = new ItemStack(Items.DROPPER);
+    // Note: translatable component, not keybind component! We want the text identifying the keybind, not the key.
+    DROP.set(DataComponents.CUSTOM_NAME, Component.translatable("key.drop").withStyle(style -> style.withItalic(false)));
+  }
+
+  ContainerSlotDrop(@NotNull ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -26,18 +36,7 @@ class DropContainerSlot implements ContainerSlot {
 
   @Override
   public ItemStack get() {
-    ItemStack itemStack = new ItemStack(Items.BARRIER);
-    if (holder.connection == null || holder.connection.isDisconnected()) {
-      itemStack.set(DataComponents.CUSTOM_NAME,
-          Component.translatable("options.narrator.notavailable")
-              .withStyle(style -> style.withItalic(false))
-              .append(Component.literal(" - "))
-              .append(Component.translatable("gui.socialInteractions.status_offline")));
-    } else {
-      // Note: translatable component, not keybind component! We want the text identifying the keybind, not the key.
-      itemStack.set(DataComponents.CUSTOM_NAME, Component.translatable("key.drop").withStyle(style -> style.withItalic(false)));
-    }
-    return itemStack;
+    return ContainerSlot.onlineOnly(holder, () -> ItemStack.EMPTY);
   }
 
   @Override
@@ -58,6 +57,7 @@ class DropContainerSlot implements ContainerSlot {
   @Override
   public Slot asMenuSlot(Container container, int index, int x, int y) {
     return new Slot(container, index, x, y) {
+      // TODO need to rework a bit for placeholder to work, breaks dropping because of swap logic.
       @Override
       public boolean mayPickup(Player var0) {
         return false;

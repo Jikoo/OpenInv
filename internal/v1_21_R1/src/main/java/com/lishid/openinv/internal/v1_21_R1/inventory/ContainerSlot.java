@@ -1,25 +1,105 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
+/**
+ * An interface defining behaviors for entries in a {@link Container}. Used to reduce duplicate slot reordering.
+ */
 interface ContainerSlot {
 
+  /**
+   * Update internal holder.
+   *
+   * @param holder the new holder
+   */
   void setHolder(@NotNull ServerPlayer holder);
 
+  /**
+   * Get the current item. May be fake for display purposes!
+   *
+   * @return the current item
+   */
   ItemStack get();
 
+  /**
+   * Remove the current item. Item removed is real.
+   *
+   * @return the current item
+   */
   ItemStack remove();
 
+  /**
+   * Remove some of the current item. Item removed is real.
+   *
+   * @return the current item
+   */
   ItemStack removePartial(int amount);
 
+  /**
+   * Set the current item. If slot is currently not usable, will drop item instead.
+   *
+   * @param itemStack the item to set
+   */
   void set(ItemStack itemStack);
 
+  /**
+   * Get a {@link Slot} for use in a {@link net.minecraft.world.inventory.AbstractContainerMenu ContainerMenu}. Will
+   * impose any specific restrictions to insertion or removal.
+   *
+   * @param container the backing container
+   * @param index the slot of the backing container represented
+   * @param x clientside x dimension from top left of inventory, not used
+   * @param y clientside y dimension from top left of inventory, not used
+   * @return a menu slot
+   */
   Slot asMenuSlot(Container container, int index, int x, int y);
 
+  /**
+   * Get a loose Bukkit translation of what this slot stores. For example, any slot that drops items at the owner rather
+   * than insert them will report itself as being {@link org.bukkit.event.inventory.InventoryType.SlotType#OUTSIDE}.
+   *
+   * @return the closes Bukkit slot type
+   */
   org.bukkit.event.inventory.InventoryType.SlotType getSlotType();
+
+  static ItemStack onlineOnly(@NotNull ServerPlayer serverPlayer, Supplier<ItemStack> whenValid) {
+    if (serverPlayer.connection != null && !serverPlayer.connection.isDisconnected()) {
+      return whenValid.get();
+    }
+    ItemStack itemStack = new ItemStack(Items.BARRIER);
+    // "Not available - Offline"
+    itemStack.set(DataComponents.CUSTOM_NAME,
+        Component.translatable("options.narrator.notavailable")
+            .withStyle(style -> style.withItalic(false))
+            .append(Component.literal(" - "))
+            .append(Component.translatable("gui.socialInteractions.status_offline")));
+    return itemStack;
+  }
+
+  static ItemStack survivalOnly(@NotNull ServerPlayer serverPlayer, Supplier<ItemStack> whenValid) {
+    return onlineOnly(serverPlayer, () -> {
+      if (serverPlayer.gameMode.isSurvival()) {
+        return whenValid.get();
+      }
+      ItemStack itemStack = new ItemStack(Items.BARRIER);
+      // "Not available - Creative Mode" or "Not available - Spectator Mode"
+      itemStack.set(
+          DataComponents.CUSTOM_NAME,
+          Component.translatable("options.narrator.notavailable")
+              .withStyle(style -> style.withItalic(false))
+              .append(" - ")
+              .append(serverPlayer.gameMode.getGameModeForPlayer().getLongDisplayName()));
+      return itemStack;
+    });
+  }
 
 }
