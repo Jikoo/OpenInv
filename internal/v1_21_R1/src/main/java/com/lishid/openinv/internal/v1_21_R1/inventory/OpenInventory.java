@@ -117,6 +117,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
         default -> i;
       };
 
+      // TODO try to manually sync if set while owner has other inventory open (maybe only off hand because visible)
       slots.set(startIndex + i, new ContainerSlotList(owner, armorIndex, InventoryType.SlotType.ARMOR) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {

@@ -122,6 +122,21 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
           this.title = title;
         }
 
+        @Override
+        public org.bukkit.inventory.ItemStack getItem(int index) {
+          if (index < 0) {
+            return null;
+          }
+
+          Slot slot = slots.get(index);
+          return CraftItemStack.asCraftMirror(slot.hasItem() ? slot.getItem() : ItemStack.EMPTY);
+        }
+
+        @Override
+        public boolean isInTop(int rawSlot) {
+          return rawSlot < topSize;
+        }
+
         @NotNull
         @Override
         public InventoryType.SlotType getSlotType(int slot) {
@@ -140,7 +155,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
   @Override
   public ItemStack quickMoveStack(Player player, int index) {
-    // See net.minecraft.world.inventory.ChestMenu
+    // See net.minecraft.world.inventory.ChestMenu#quickMoveStack(Player, int)
     ItemStack itemstack = ItemStack.EMPTY;
     Slot slot = this.slots.get(index);
     if (slot.hasItem()) {
@@ -183,18 +198,24 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
   protected boolean moveItemStackTo(ItemStack itemStack, int rangeLow, int rangeHigh, boolean topDown) {
     boolean modified = false;
 
+    if (itemStack.isStackable()) {
+      for (int index = topDown ? rangeHigh - 1 : rangeLow;
+           !itemStack.isEmpty() && topDown ? index >= rangeLow : index < rangeHigh;
+           index += topDown ? -1 : 1
+      ) {
+        Slot slot = slots.get(index);
+        if (!slot.isFake() && slot.mayPlace(itemStack) && slot.hasItem()) {
+          modified = addToExistingStack(itemStack, slot);
+        }
+      }
+    }
+
     for (int index = topDown ? rangeHigh - 1 : rangeLow;
          !itemStack.isEmpty() && topDown ? index >= rangeLow : index < rangeHigh;
          index += topDown ? -1 : 1
     ) {
       Slot slot = slots.get(index);
-      if (slot.isFake() || !slot.mayPlace(itemStack)) {
-        continue;
-      }
-      
-      if (slot.hasItem()) {
-        modified = addToExistingStack(itemStack, slot);
-      } else  {
+      if (!slot.isFake() && slot.mayPlace(itemStack) && !slot.hasItem()) {
         // If there's no item here, add as many as we can of the item.
         slot.setByPlayer(itemStack.split(Math.min(itemStack.getCount(), slot.getMaxStackSize(itemStack))));
         slot.setChanged();
@@ -207,11 +228,6 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
   }
 
   private static boolean addToExistingStack(ItemStack itemStack, Slot slot) {
-    // If there's an item here, unstackable items can't be added.
-    if (!itemStack.isStackable()) {
-      return false;
-    }
-
     ItemStack existing = slot.getItem();
 
     // If the items aren't the same, we can't add our item.
