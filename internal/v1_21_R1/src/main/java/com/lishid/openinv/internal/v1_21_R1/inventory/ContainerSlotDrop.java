@@ -36,7 +36,7 @@ class ContainerSlotDrop implements ContainerSlot {
 
   @Override
   public ItemStack get() {
-    return ContainerSlot.onlineOnly(holder, () -> ItemStack.EMPTY);
+    return MenuSlotPlaceholder.onlineOnly(holder, () -> DROP);
   }
 
   @Override

@@ -26,7 +26,7 @@ class ContainerSlotCursor implements ContainerSlot {
 
   @Override
   public ItemStack get() {
-    return ContainerSlot.survivalOnly(holder, () -> holder.containerMenu.getCarried());
+    return MenuSlotPlaceholder.survivalOnly(holder, () -> holder.containerMenu.getCarried());
   }
 
   @Override

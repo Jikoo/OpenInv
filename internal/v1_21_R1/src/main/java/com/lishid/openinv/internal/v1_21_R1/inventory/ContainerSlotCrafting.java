@@ -41,7 +41,7 @@ class ContainerSlotCrafting implements ContainerSlot {
 
   @Override
   public ItemStack get() {
-    return ContainerSlot.survivalOnly(holder, () -> items.get(index));
+    return MenuSlotPlaceholder.survivalOnly(holder, () -> items.get(index));
   }
 
   @Override

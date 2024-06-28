@@ -1,15 +1,10 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 /**
  * An interface defining behaviors for entries in a {@link Container}. Used to reduce duplicate slot reordering.
@@ -70,36 +65,5 @@ interface ContainerSlot {
    * @return the closes Bukkit slot type
    */
   org.bukkit.event.inventory.InventoryType.SlotType getSlotType();
-
-  static ItemStack onlineOnly(@NotNull ServerPlayer serverPlayer, Supplier<ItemStack> whenValid) {
-    if (serverPlayer.connection != null && !serverPlayer.connection.isDisconnected()) {
-      return whenValid.get();
-    }
-    ItemStack itemStack = new ItemStack(Items.BARRIER);
-    // "Not available - Offline"
-    itemStack.set(DataComponents.CUSTOM_NAME,
-        Component.translatable("options.narrator.notavailable")
-            .withStyle(style -> style.withItalic(false))
-            .append(Component.literal(" - "))
-            .append(Component.translatable("gui.socialInteractions.status_offline")));
-    return itemStack;
-  }
-
-  static ItemStack survivalOnly(@NotNull ServerPlayer serverPlayer, Supplier<ItemStack> whenValid) {
-    return onlineOnly(serverPlayer, () -> {
-      if (serverPlayer.gameMode.isSurvival()) {
-        return whenValid.get();
-      }
-      ItemStack itemStack = new ItemStack(Items.BARRIER);
-      // "Not available - Creative Mode" or "Not available - Spectator Mode"
-      itemStack.set(
-          DataComponents.CUSTOM_NAME,
-          Component.translatable("options.narrator.notavailable")
-              .withStyle(style -> style.withItalic(false))
-              .append(" - ")
-              .append(serverPlayer.gameMode.getGameModeForPlayer().getLongDisplayName()));
-      return itemStack;
-    });
-  }
 
 }
