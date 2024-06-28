@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  */
 class ContainerSlotDrop implements ContainerSlot {
 
-  private static ItemStack DROP;
+  private static final ItemStack DROP;
   private ServerPlayer holder;
 
   static {
@@ -56,29 +56,42 @@ class ContainerSlotDrop implements ContainerSlot {
 
   @Override
   public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new Slot(container, index, x, y) {
-      // TODO need to rework a bit for placeholder to work, breaks dropping because of swap logic.
-      @Override
-      public boolean mayPickup(Player var0) {
-        return false;
-      }
-
-      @Override
-      public boolean mayPlace(ItemStack itemStack) {
-        return holder.connection != null && !holder.connection.isDisconnected();
-      }
-
-      @Override
-      public boolean hasItem() {
-        return false;
-      }
-    };
+    return new SlotDrop(container, index, x, y);
   }
 
   @Override
   public InventoryType.SlotType getSlotType() {
     // Behaves like dropping an item outside the screen, just by the target player.
     return InventoryType.SlotType.OUTSIDE;
+  }
+
+  class SlotDrop extends Slot {
+
+    private SlotDrop(Container container, int index, int x, int y) {
+      super(container, index, x, y);
+    }
+
+    // TODO need to rework a bit for placeholder to work, breaks dropping because of swap logic.
+    @Override
+    public boolean mayPickup(Player var0) {
+      return false;
+    }
+
+    @Override
+    public boolean mayPlace(ItemStack itemStack) {
+      return holder.connection != null && !holder.connection.isDisconnected();
+    }
+
+    @Override
+    public boolean hasItem() {
+      return false;
+    }
+
+    @Override
+    public boolean isFake() {
+      return true;
+    }
+
   }
 
 }

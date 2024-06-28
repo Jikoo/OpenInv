@@ -72,27 +72,40 @@ class ContainerSlotCrafting implements ContainerSlot {
 
   @Override
   public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new Slot(container, index, x, y) {
-      @Override
-      public boolean mayPickup(Player player) {
-        return isAvailable();
-      }
-
-      @Override
-      public boolean mayPlace(ItemStack itemStack) {
-        return isAvailable();
-      }
-
-      @Override
-      public boolean hasItem() {
-        return isAvailable() && super.hasItem();
-      }
-    };
+    return new SlotCrafting(container, index, x, y);
   }
 
   @Override
   public InventoryType.SlotType getSlotType() {
     return isAvailable() ? InventoryType.SlotType.CRAFTING : InventoryType.SlotType.OUTSIDE;
+  }
+
+  class SlotCrafting extends Slot {
+
+    private SlotCrafting(Container container, int index, int x, int y) {
+      super(container, index, x, y);
+    }
+
+    @Override
+    public boolean mayPickup(Player player) {
+      return isAvailable();
+    }
+
+    @Override
+    public boolean mayPlace(ItemStack itemStack) {
+      return isAvailable();
+    }
+
+    @Override
+    public boolean hasItem() {
+      return isAvailable() && super.hasItem();
+    }
+
+    @Override
+    public boolean isFake() {
+      return true;
+    }
+
   }
 
 }

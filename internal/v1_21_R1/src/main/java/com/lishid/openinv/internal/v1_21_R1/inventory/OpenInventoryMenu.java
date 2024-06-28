@@ -92,7 +92,8 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
       case 36 -> MenuType.GENERIC_9x4;
       case 45 -> MenuType.GENERIC_9x5;
       case 54 -> MenuType.GENERIC_9x6;
-      default -> MenuType.GENERIC_9x3; // Default 27-slot inventory
+      // Default to 27-slot inventory.
+      default -> MenuType.GENERIC_9x3;
     };
   }
 
@@ -151,9 +152,6 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
           return ItemStack.EMPTY;
         }
       } else if (!this.moveItemStackTo(itemstack1, 0, topSize, false)) {
-        // TODO review logic:
-        //  - exclude drop slot
-        //  - check if we need to do more work to ignore placeholders if added to normal slots
         return ItemStack.EMPTY;
       }
 
@@ -170,6 +168,78 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
   @Override
   public boolean stillValid(Player player) {
     return true;
+  }
+
+  /**
+   * Reimplementation of {@link AbstractContainerMenu#moveItemStackTo(ItemStack, int, int, boolean)} that ignores fake
+   * slots and respects {@link Slot#hasItem()}.
+   * 
+   * @param itemStack the stack to quick-move
+   * @param rangeLow the start of the range of slots that can be moved to, inclusive
+   * @param rangeHigh the end of the range of slots that can be moved to, exclusive
+   * @param topDown whether to start at the top of the range or bottom
+   * @return whether the stack was modified as a result of being quick-moved
+   */
+  protected boolean moveItemStackTo(ItemStack itemStack, int rangeLow, int rangeHigh, boolean topDown) {
+    boolean modified = false;
+
+    for (int index = topDown ? rangeHigh - 1 : rangeLow;
+         !itemStack.isEmpty() && topDown ? index >= rangeLow : index < rangeHigh;
+         index += topDown ? -1 : 1
+    ) {
+      Slot slot = slots.get(index);
+      if (slot.isFake() || !slot.mayPlace(itemStack)) {
+        continue;
+      }
+      
+      if (slot.hasItem()) {
+        modified = addToExistingStack(itemStack, slot);
+      } else  {
+        // If there's no item here, add as many as we can of the item.
+        slot.setByPlayer(itemStack.split(Math.min(itemStack.getCount(), slot.getMaxStackSize(itemStack))));
+        slot.setChanged();
+        modified = true;
+        break;
+      }
+    }
+
+    return modified;
+  }
+
+  private static boolean addToExistingStack(ItemStack itemStack, Slot slot) {
+    // If there's an item here, unstackable items can't be added.
+    if (!itemStack.isStackable()) {
+      return false;
+    }
+
+    ItemStack existing = slot.getItem();
+
+    // If the items aren't the same, we can't add our item.
+    if (!ItemStack.isSameItemSameComponents(itemStack, existing)) {
+      return false;
+    }
+
+    int total = existing.getCount() + itemStack.getCount();
+    int max = slot.getMaxStackSize(existing);
+
+    // If the existing item can accept the entirety of our item, we're done!
+    if (total <= max) {
+      itemStack.setCount(0);
+      existing.setCount(total);
+      slot.setChanged();
+      return true;
+    }
+
+    // Otherwise, add as many as we can.
+    itemStack.shrink(max - existing.getCount());
+    existing.setCount(max);
+    slot.setChanged();
+    return true;
+  }
+
+  @Override
+  public boolean canDragTo(Slot slot) {
+    return !(slot instanceof ContainerSlotDrop.SlotDrop || slot instanceof ContainerSlotEmpty.SlotEmpty);
   }
 
 }

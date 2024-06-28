@@ -77,6 +77,7 @@ class ContainerSlotCursor implements ContainerSlot {
   }
 
   class SlotCursor extends Slot {
+
     private SlotCursor(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
@@ -94,6 +95,11 @@ class ContainerSlotCursor implements ContainerSlot {
     @Override
     public boolean hasItem() {
       return isAvailable() && super.hasItem();
+    }
+
+    @Override
+    public boolean isFake() {
+      return true;
     }
 
   }
