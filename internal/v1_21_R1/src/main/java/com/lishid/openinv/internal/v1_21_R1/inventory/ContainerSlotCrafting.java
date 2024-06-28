@@ -50,7 +50,11 @@ class ContainerSlotCrafting implements ContainerSlot {
       return ItemStack.EMPTY;
     }
     ItemStack removed = items.remove(index);
-    return removed == null || removed.isEmpty() ? ItemStack.EMPTY : removed;
+    if (removed.isEmpty()) {
+      return ItemStack.EMPTY;
+    }
+    holder.inventoryMenu.slotsChanged(holder.inventoryMenu.getCraftSlots());
+    return removed;
   }
 
   @Override
@@ -58,13 +62,19 @@ class ContainerSlotCrafting implements ContainerSlot {
     if (!this.isAvailable()) {
       return ItemStack.EMPTY;
     }
-    return ContainerHelper.removeItem(items, index, amount);
+    ItemStack removed = ContainerHelper.removeItem(items, index, amount);
+    if (removed.isEmpty()) {
+      return ItemStack.EMPTY;
+    }
+    holder.inventoryMenu.slotsChanged(holder.inventoryMenu.getCraftSlots());
+    return removed;
   }
 
   @Override
   public void set(ItemStack itemStack) {
     if (isAvailable()) {
       items.set(index, itemStack);
+      holder.inventoryMenu.slotsChanged(holder.inventoryMenu.getCraftSlots());
     } else {
       holder.drop(itemStack, false);
     }
