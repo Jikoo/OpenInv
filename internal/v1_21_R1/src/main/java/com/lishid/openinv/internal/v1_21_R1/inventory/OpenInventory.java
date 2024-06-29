@@ -94,7 +94,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
       slots.set(localIndex, new ContainerSlotList(owner, invIndex, type) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {
-          this.items = owner.getInventory().items;
+          items = holder.getInventory().items;
         }
       });
     }
@@ -121,7 +121,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
       slots.set(startIndex + i, new ContainerSlotList(owner, armorIndex, InventoryType.SlotType.ARMOR) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {
-          this.items = owner.getInventory().armor;
+          this.items = holder.getInventory().armor;
         }
       });
     }
@@ -180,9 +180,9 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
     ServerPlayer newOwner = PlayerDataManager.getHandle(player);
     // Only transfer regular inventory - crafting and cursor slots are transient.
     newOwner.getInventory().replaceWith(owner.getInventory());
+    owner = newOwner;
     // Update slots to point to new inventory.
     slots.forEach(slot -> slot.setHolder(newOwner));
-    owner = newOwner;
   }
 
   @Override
