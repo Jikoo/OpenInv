@@ -1,9 +1,16 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
+import com.google.common.base.Suppliers;
 import com.lishid.openinv.internal.InventoryViewTitle;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.inventory.ContainerSynchronizer;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -11,6 +18,11 @@ import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class OpenInventoryMenu extends AbstractContainerMenu {
 
@@ -154,6 +166,178 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     return bukkitEntity;
   }
 
+  //<editor-fold desc="Syncher overrides" defaultstate="collapsed">
+  // Back at it again, overriding a bunch of methods because we need access to 2 fields.
+  private @Nullable ContainerSynchronizer synchronizer;
+  private final List<DataSlot> dataSlots = new ArrayList<>();
+  private final IntList remoteDataSlots = new IntArrayList();
+  private final List<ContainerListener> containerListeners = new ArrayList<>();
+  private ItemStack remoteCarried = ItemStack.EMPTY;
+  private boolean suppressRemoteUpdates;
+
+  protected Slot addSlot(Slot slot) {
+    slot.index = this.slots.size();
+    this.slots.add(slot);
+    this.lastSlots.add(ItemStack.EMPTY);
+    this.remoteSlots.add(ItemStack.EMPTY);
+    return slot;
+  }
+
+  protected DataSlot addDataSlot(DataSlot dataSlot) {
+    this.dataSlots.add(dataSlot);
+    this.remoteDataSlots.add(0);
+    return dataSlot;
+  }
+
+  protected void addDataSlots(ContainerData containerData) {
+    for (int i = 0; i < containerData.getCount(); i++) {
+      this.addDataSlot(DataSlot.forContainer(containerData, i));
+    }
+  }
+
+  public void addSlotListener(ContainerListener containerListener) {
+    if (!this.containerListeners.contains(containerListener)) {
+      this.containerListeners.add(containerListener);
+      this.broadcastChanges();
+    }
+  }
+
+  public void setSynchronizer(ContainerSynchronizer containerSynchronizer) {
+    this.synchronizer = containerSynchronizer;
+    this.sendAllDataToRemote();
+  }
+
+  public void sendAllDataToRemote() {
+    for (int index = 0; index < slots.size(); ++index) {
+      Slot slot = slots.get(index);
+      this.remoteSlots.set(index, (slot instanceof MenuSlotPlaceholder placeholder ? placeholder.getOrDefault() : slot.getItem()).copy());
+    }
+
+    remoteCarried = getCarried().copy();
+
+    for (int index = 0; index < this.dataSlots.size(); ++index) {
+      this.remoteDataSlots.set(index, this.dataSlots.get(index).get());
+    }
+
+    if (this.synchronizer != null) {
+      this.synchronizer.sendInitialData(this, this.remoteSlots, this.remoteCarried, this.remoteDataSlots.toIntArray());
+    }
+  }
+
+  public void broadcastCarriedItem() {
+    this.remoteCarried = this.getCarried().copy();
+    if (this.synchronizer != null) {
+      this.synchronizer.sendCarriedChange(this, this.remoteCarried);
+    }
+  }
+
+  public void removeSlotListener(ContainerListener containerListener) {
+    this.containerListeners.remove(containerListener);
+  }
+
+  public void broadcastChanges() {
+    for (int index = 0; index < this.slots.size(); ++index) {
+      Slot slot = this.slots.get(index);
+      ItemStack itemstack = slot instanceof MenuSlotPlaceholder placeholder ? placeholder.getOrDefault() : slot.getItem();
+      Supplier<ItemStack> supplier = Suppliers.memoize(itemstack::copy);
+      this.triggerSlotListeners(index, itemstack, supplier);
+      this.synchronizeSlotToRemote(index, itemstack, supplier);
+    }
+
+    this.synchronizeCarriedToRemote();
+
+    for (int index = 0; index < this.dataSlots.size(); ++index) {
+      DataSlot dataSlot = this.dataSlots.get(index);
+      int j = dataSlot.get();
+      if (dataSlot.checkAndClearUpdateFlag()) {
+        this.updateDataSlotListeners(index, j);
+      }
+
+      this.synchronizeDataSlotToRemote(index, j);
+    }
+  }
+
+  public void broadcastFullState() {
+    for (int index = 0; index < this.slots.size(); ++index) {
+      ItemStack itemstack = this.slots.get(index).getItem();
+      this.triggerSlotListeners(index, itemstack, itemstack::copy);
+    }
+
+    for (int index = 0; index < this.dataSlots.size(); ++index) {
+      DataSlot containerproperty = this.dataSlots.get(index);
+      if (containerproperty.checkAndClearUpdateFlag()) {
+        this.updateDataSlotListeners(index, containerproperty.get());
+      }
+    }
+
+    this.sendAllDataToRemote();
+  }
+
+  private void updateDataSlotListeners(int i, int j) {
+    for (ContainerListener containerListener : this.containerListeners) {
+      containerListener.dataChanged(this, i, j);
+    }
+  }
+
+  private void triggerSlotListeners(int index, ItemStack itemStack, Supplier<ItemStack> supplier) {
+    ItemStack itemStack1 = this.lastSlots.get(index);
+    if (!ItemStack.matches(itemStack1, itemStack)) {
+      ItemStack itemStack2 = supplier.get();
+      this.lastSlots.set(index, itemStack2);
+
+      for (ContainerListener containerListener : this.containerListeners) {
+        containerListener.slotChanged(this, index, itemStack2);
+      }
+    }
+  }
+
+  private void synchronizeSlotToRemote(int i, ItemStack itemStack, Supplier<ItemStack> supplier) {
+    if (!this.suppressRemoteUpdates) {
+      ItemStack itemStack1 = this.remoteSlots.get(i);
+      if (!ItemStack.matches(itemStack1, itemStack)) {
+        ItemStack itemstack2 = supplier.get();
+        this.remoteSlots.set(i, itemstack2);
+        if (this.synchronizer != null) {
+          this.synchronizer.sendSlotChange(this, i, itemstack2);
+        }
+      }
+    }
+  }
+
+  private void synchronizeDataSlotToRemote(int index, int value) {
+    if (!this.suppressRemoteUpdates) {
+      int existing = this.remoteDataSlots.getInt(index);
+      if (existing != value) {
+        this.remoteDataSlots.set(index, value);
+        if (this.synchronizer != null) {
+          this.synchronizer.sendDataChange(this, index, value);
+        }
+      }
+    }
+  }
+
+  private void synchronizeCarriedToRemote() {
+    if (!this.suppressRemoteUpdates && !ItemStack.matches(this.getCarried(), this.remoteCarried)) {
+      this.remoteCarried = this.getCarried().copy();
+      if (this.synchronizer != null) {
+        this.synchronizer.sendCarriedChange(this, this.remoteCarried);
+      }
+    }
+  }
+
+  public void setRemoteCarried(ItemStack itemstack) {
+    this.remoteCarried = itemstack.copy();
+  }
+
+  public void suppressRemoteUpdates() {
+    this.suppressRemoteUpdates = true;
+  }
+
+  public void resumeRemoteUpdates() {
+    this.suppressRemoteUpdates = false;
+  }
+  //</editor-fold>
+
   @Override
   public ItemStack quickMoveStack(Player player, int index) {
     // See net.minecraft.world.inventory.ChestMenu#quickMoveStack(Player, int)
@@ -162,7 +346,6 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     if (slot.hasItem()) {
       ItemStack itemstack1 = slot.getItem();
       itemstack = itemstack1.copy();
-      int topSize = slots.size() - 36;
       if (index < topSize) {
         if (!this.moveItemStackTo(itemstack1, topSize, this.slots.size(), true)) {
           return ItemStack.EMPTY;

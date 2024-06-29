@@ -4,7 +4,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -36,7 +35,7 @@ class ContainerSlotDrop implements ContainerSlot {
 
   @Override
   public ItemStack get() {
-    return MenuSlotPlaceholder.onlineOnly(holder, () -> DROP);
+    return ItemStack.EMPTY;
   }
 
   @Override
@@ -65,16 +64,15 @@ class ContainerSlotDrop implements ContainerSlot {
     return InventoryType.SlotType.OUTSIDE;
   }
 
-  class SlotDrop extends Slot {
+  class SlotDrop extends MenuSlotPlaceholder {
 
     private SlotDrop(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
 
-    // TODO need to rework a bit for placeholder to work, breaks dropping because of swap logic.
     @Override
-    public boolean mayPickup(Player var0) {
-      return false;
+    ItemStack getOrDefault() {
+      return holder.connection != null && !holder.connection.isDisconnected() ? DROP : OFFLINE;
     }
 
     @Override

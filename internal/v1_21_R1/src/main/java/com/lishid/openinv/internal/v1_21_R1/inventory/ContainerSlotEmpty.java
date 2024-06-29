@@ -32,7 +32,7 @@ enum ContainerSlotEmpty implements ContainerSlot {
 
   @Override
   public ItemStack get() {
-    return PLACEHOLDER;
+    return ItemStack.EMPTY;
   }
 
   @Override
@@ -60,10 +60,15 @@ enum ContainerSlotEmpty implements ContainerSlot {
     return InventoryType.SlotType.OUTSIDE;
   }
 
-  static class SlotEmpty extends Slot {
+  static class SlotEmpty extends MenuSlotPlaceholder {
 
     SlotEmpty(Container container, int index, int x, int y) {
       super(container, index, x, y);
+    }
+
+    @Override
+    ItemStack getOrDefault() {
+      return PLACEHOLDER;
     }
 
     public void onQuickCraft(ItemStack var0, ItemStack var1) {}
@@ -76,7 +81,7 @@ enum ContainerSlotEmpty implements ContainerSlot {
     }
 
     public ItemStack getItem() {
-      return PLACEHOLDER;
+      return ItemStack.EMPTY;
     }
 
     @Override

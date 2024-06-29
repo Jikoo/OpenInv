@@ -26,7 +26,7 @@ class ContainerSlotCursor implements ContainerSlot {
 
   @Override
   public ItemStack get() {
-    return MenuSlotPlaceholder.survivalOnly(holder, () -> holder.containerMenu.getCarried());
+    return isAvailable() ? holder.containerMenu.getCarried() : ItemStack.EMPTY;
   }
 
   @Override
@@ -76,10 +76,15 @@ class ContainerSlotCursor implements ContainerSlot {
     return InventoryType.SlotType.OUTSIDE;
   }
 
-  class SlotCursor extends Slot {
+  class SlotCursor extends MenuSlotPlaceholder {
 
     private SlotCursor(Container container, int index, int x, int y) {
       super(container, index, x, y);
+    }
+
+    @Override
+    ItemStack getOrDefault() {
+      return isAvailable() ? holder.containerMenu.getCarried() : survivalOnly(holder);
     }
 
     @Override

@@ -41,7 +41,7 @@ class ContainerSlotCrafting implements ContainerSlot {
 
   @Override
   public ItemStack get() {
-    return MenuSlotPlaceholder.survivalOnly(holder, () -> items.get(index));
+    return isAvailable() ? items.get(index) : ItemStack.EMPTY;
   }
 
   @Override
@@ -90,10 +90,15 @@ class ContainerSlotCrafting implements ContainerSlot {
     return isAvailable() ? InventoryType.SlotType.CRAFTING : InventoryType.SlotType.OUTSIDE;
   }
 
-  class SlotCrafting extends Slot {
+  class SlotCrafting extends MenuSlotPlaceholder {
 
     private SlotCrafting(Container container, int index, int x, int y) {
       super(container, index, x, y);
+    }
+
+    @Override
+    ItemStack getOrDefault() {
+      return isAvailable() ? items.get(ContainerSlotCrafting.this.index) : survivalOnly(holder);
     }
 
     @Override
