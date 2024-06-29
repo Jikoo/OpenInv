@@ -293,32 +293,4 @@ public class PlayerDataManager implements IPlayerDataManager {
         };
     }
 
-    @Override
-    public int convertToPlayerSlot(InventoryView view, int rawSlot) {
-        int topSize = view.getTopInventory().getSize();
-        if (topSize <= rawSlot) {
-            // Slot is not inside special inventory, use Bukkit logic.
-            return view.convertSlot(rawSlot);
-        }
-
-        // Main inventory, slots 0-26 -> 9-35
-        if (rawSlot < 27) {
-            return rawSlot + 9;
-        }
-        // Hotbar, slots 27-35 -> 0-8
-        if (rawSlot < 36) {
-            return rawSlot - 27;
-        }
-        // Armor, slots 36-39 -> 39-36
-        if (rawSlot < 40) {
-            return 36 + (39 - rawSlot);
-        }
-        // Off hand
-        if (rawSlot == 40) {
-            return 40;
-        }
-        // Drop slots, "out of inventory"
-        return -1;
-    }
-
 }

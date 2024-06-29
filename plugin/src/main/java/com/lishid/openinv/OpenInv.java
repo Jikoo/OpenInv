@@ -272,7 +272,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             return this.inventories.get(key);
         }
 
-        ISpecialPlayerInventory inv = this.accessor.newSpecialPlayerInventory(player, online);
+        ISpecialPlayerInventory inv = this.accessor.newSpecialPlayerInventory(player);
         this.inventories.put(key, inv);
         return inv;
     }
@@ -444,20 +444,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
                                 && !Objects.equals(viewer.getWorld(), player.getWorld()));
     }
 
-    /**
-     * Convert a raw slot number into a player inventory slot number.
-     *
-     * <p>Note that this method is specifically for converting an ISpecialPlayerInventory slot number into a regular
-     * player inventory slot number.
-     *
-     * @param view    the open inventory view
-     * @param rawSlot the raw slot in the view
-     * @return the converted slot number
-     */
-    int convertToPlayerSlot(InventoryView view, int rawSlot) {
-        return this.accessor.getPlayerDataManager().convertToPlayerSlot(view, rawSlot);
-    }
-
     public @Nullable String getLocalizedMessage(@NotNull CommandSender sender, @NotNull String key) {
         return this.languageManager.getValue(key, getLocale(sender));
     }
@@ -600,8 +586,8 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
      * @throws IllegalStateException if the server version is unsupported
      */
     void setPlayerOnline(@NotNull Player player) {
-        setPlayerOnline(inventories, player, player::updateInventory);
-        setPlayerOnline(enderChests, player, null);
+        setPlayerOnline(inventories, player);
+        setPlayerOnline(enderChests, player);
 
         if (player.hasPlayedBefore()) {
             return;
@@ -645,8 +631,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
     private void setPlayerOnline(
             @NotNull Map<UUID, ? extends ISpecialInventory> map,
-            @NotNull Player player,
-            @Nullable Runnable task) {
+            @NotNull Player player) {
         ISpecialInventory inventory = map.get(player.getUniqueId());
 
         if (inventory == null) {
@@ -663,10 +648,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
                         !Permissions.OPENONLINE.hasPermission(viewer)
                                 || !Permissions.CROSSWORLD.hasPermission(viewer)
                                 && !Objects.equals(viewer.getWorld(), inventory.getPlayer().getWorld()));
-
-        if (task != null) {
-            getServer().getScheduler().runTask(this, task);
-        }
     }
 
     static void ejectViewers(@NotNull ISpecialInventory inventory, @NotNull Predicate<@NotNull HumanEntity> predicate) {
