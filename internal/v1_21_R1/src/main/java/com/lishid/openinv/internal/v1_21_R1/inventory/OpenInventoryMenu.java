@@ -384,7 +384,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
     if (itemStack.isStackable()) {
       for (int index = topDown ? rangeHigh - 1 : rangeLow;
-           !itemStack.isEmpty() && topDown ? index >= rangeLow : index < rangeHigh;
+           !itemStack.isEmpty() && (topDown ? index >= rangeLow : index < rangeHigh);
            index += topDown ? -1 : 1
       ) {
         Slot slot = slots.get(index);
@@ -395,7 +395,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     }
 
     for (int index = topDown ? rangeHigh - 1 : rangeLow;
-         !itemStack.isEmpty() && topDown ? index >= rangeLow : index < rangeHigh;
+         !itemStack.isEmpty() && (topDown ? index >= rangeLow : index < rangeHigh);
          index += topDown ? -1 : 1
     ) {
       Slot slot = slots.get(index);
