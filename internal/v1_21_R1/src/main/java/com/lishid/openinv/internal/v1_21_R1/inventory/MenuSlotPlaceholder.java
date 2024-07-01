@@ -10,9 +10,14 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * An implementation of a slot as used by a menu that may have fake placeholder items.
+ *
+ * <p>Used to prevent plugins (particularly sorting plugins) from adding placeholders to inventories.</p>
+ */
 abstract class MenuSlotPlaceholder extends Slot {
 
-  public static final ItemStack OFFLINE;
+  static final ItemStack OFFLINE;
   private static final ItemStack CREATIVE;
   private static final ItemStack SPECTATOR;
 

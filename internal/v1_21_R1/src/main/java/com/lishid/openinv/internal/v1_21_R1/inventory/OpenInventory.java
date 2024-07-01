@@ -1,9 +1,9 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import com.lishid.openinv.internal.InventoryViewTitle;
 import com.lishid.openinv.internal.v1_21_R1.PlayerDataManager;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -14,11 +14,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventory;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +43,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
     int rawSize = owner.getInventory().getContainerSize() + owner.inventoryMenu.getCraftSlots().getContainerSize() + 1;
     size = ((int) Math.ceil(rawSize / 9.0)) * 9;
 
-    slots = NonNullList.withSize(size, ContainerSlotEmpty.INSTANCE);
+    slots = NonNullList.withSize(size, new ContainerSlotEmpty(owner));
     setupSlots();
   }
 
@@ -49,20 +51,24 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
     // Top of inventory: Regular contents.
     int nextIndex = addMainInventory();
 
-    int rawSize = owner.getInventory().getContainerSize() + owner.inventoryMenu.getCraftSlots().getContainerSize() + 1;
-
     // If inventory is expected size, we can arrange slots to be pretty.
-    if (rawSize == 46) {
-      // Armor slots: bottom left.
-      addArmor(45);
-      // Off-hand above chestplate.
-      addOffHand(37);
-      // Drop in the middle.
-      slots.set(40, new ContainerSlotDrop(owner));
-      // Cursor right below drop.
-      slots.set(49, new ContainerSlotCursor(owner));
-      // Crafting is displayed in a 2x2 in the bottom right corner.
-      addCrafting(43, true);
+    Inventory ownerInv = owner.getInventory();
+    if (ownerInv.items.size() == 36
+        && ownerInv.armor.size() == 4
+        && ownerInv.offhand.size() == 1
+        && owner.inventoryMenu.getCraftSlots().getContainerSize() == 4) {
+      // Armor slots: Bottom left.
+      addArmor(36);
+      // Off-hand: Below chestplate.
+      addOffHand(46);
+      // Drop slot: Bottom right.
+      slots.set(53, new ContainerSlotDrop(owner));
+      // Cursor slot: Above drop.
+      slots.set(44, new ContainerSlotCursor(owner));
+
+      // Crafting is displayed in the bottom right corner.
+      // As we're using the pretty view, this is a 3x2.
+      addCrafting(41, true);
       return;
     }
 
@@ -108,22 +114,33 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
       // Armor slots go bottom to top; boots are slot 0, helmet is slot 3.
       // Since we have to display horizontally due to space restrictions,
       // making the left side the "top" is more user-friendly.
-      int armorIndex = switch (i) {
-        case 3 -> 0;
-        case 2 -> 1;
-        case 1 -> 2;
-        case 0 -> 3;
-        // In the event that new armor slots are added, they can be placed at the end.
-        default -> i;
-      };
-
-      // TODO try to manually sync if set while owner has other inventory open (maybe only off hand because visible)
-      slots.set(startIndex + i, new ContainerSlotList(owner, armorIndex, InventoryType.SlotType.ARMOR) {
-        @Override
-        public void setHolder(@NotNull ServerPlayer holder) {
-          this.items = holder.getInventory().armor;
+      int armorIndex;
+      EquipmentSlot slot;
+      switch (i) {
+        case 3 -> {
+          armorIndex = 0;
+          slot = EquipmentSlot.FEET;
         }
-      });
+        case 2 -> {
+          armorIndex = 1;
+          slot = EquipmentSlot.LEGS;
+        }
+        case 1 -> {
+          armorIndex = 2;
+          slot = EquipmentSlot.CHEST;
+        }
+        case 0 -> {
+          armorIndex = 3;
+          slot = EquipmentSlot.HEAD;
+        }
+        default -> {
+          // In the event that new armor slots are added, they can be placed at the end.
+          armorIndex = i;
+          slot = EquipmentSlot.OFF_HAND;
+        }
+      }
+
+      slots.set(startIndex + i, new ContainerSlotEquipment(owner, armorIndex, slot));
     }
 
     return startIndex + listSize;
@@ -132,10 +149,15 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
   private int addOffHand(int startIndex) {
     int listSize = owner.getInventory().offhand.size();
     for (int localIndex = 0; localIndex < listSize; ++localIndex) {
-      slots.set(startIndex + localIndex, new ContainerSlotList(owner, localIndex, InventoryType.SlotType.QUICKBAR) {
+      slots.set(startIndex + localIndex, new ContainerSlotEquipment(owner, localIndex, EquipmentSlot.OFF_HAND) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {
           this.items = holder.getInventory().offhand;
+        }
+
+        @Override
+        public InventoryType.SlotType getSlotType() {
+          return InventoryType.SlotType.QUICKBAR;
         }
       });
     }
@@ -144,14 +166,37 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
 
   private int addCrafting(int startIndex, boolean pretty) {
     int listSize = owner.inventoryMenu.getCraftSlots().getContents().size();
+    pretty &= listSize == 4;
+
     for (int localIndex = 0; localIndex < listSize; ++localIndex) {
       // Pretty display is a 2x2 rather than linear.
       // If index is in top row, grid is not 2x2, or pretty is disabled, just use current index.
       // Otherwise, subtract 2 and add 9 to start in the same position on the next row.
-      int modIndex = startIndex + (localIndex < 2 || listSize != 4 || !pretty ? localIndex : localIndex + 7);
+      int modIndex = startIndex + (localIndex < 2 || !pretty ? localIndex : localIndex + 7);
 
       slots.set(modIndex, new ContainerSlotCrafting(owner, localIndex));
     }
+
+    if (pretty) {
+      slots.set(startIndex + 2, new ContainerSlotEmpty(owner) {
+        private static final ItemStack PLACEHOLDER = new ItemStack(Items.CRAFTING_TABLE);
+        static {
+          PLACEHOLDER.set(DataComponents.CUSTOM_NAME, Component.translatable("container.crafting").withStyle(style -> style.withItalic(false)));
+        }
+
+        @Override
+        public Slot asMenuSlot(Container container, int index, int x, int y) {
+          return new ContainerSlotEmpty.SlotEmpty(container, index, x, y) {
+            @Override
+            ItemStack getOrDefault() {
+              return PLACEHOLDER;
+            }
+          };
+        }
+      });
+      slots.set(startIndex + 11, new ContainerSlotCraftingResult(owner));
+    }
+
     return startIndex + listSize;
   }
 
@@ -284,8 +329,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
 
   @Override
   public Component getName() {
-    // This isn't quite accurate (uses language of opened player), but we override it in our InventoryView.
-    return Component.literal(InventoryViewTitle.PLAYER_INVENTORY.getTitle(owner.getBukkitEntity(), this));
+    return Component.translatable("key.categories.inventory").append(" - ").append(owner.getName());
   }
 
   @Override

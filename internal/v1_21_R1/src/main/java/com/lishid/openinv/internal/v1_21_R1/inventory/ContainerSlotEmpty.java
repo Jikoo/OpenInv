@@ -16,9 +16,7 @@ import java.util.Optional;
 /**
  * A fake slot used to fill unused spaces in the inventory.
  */
-enum ContainerSlotEmpty implements ContainerSlot {
-
-  INSTANCE;
+class ContainerSlotEmpty implements ContainerSlot {
 
   private static final ItemStack PLACEHOLDER;
 
@@ -27,8 +25,16 @@ enum ContainerSlotEmpty implements ContainerSlot {
     PLACEHOLDER.set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE);
   }
 
+  @NotNull ServerPlayer holder;
+
+  ContainerSlotEmpty(@NotNull ServerPlayer holder) {
+    this.holder = holder;
+  }
+
   @Override
-  public void setHolder(@NotNull ServerPlayer holder) {}
+  public void setHolder(@NotNull ServerPlayer holder) {
+    this.holder = holder;
+  }
 
   @Override
   public ItemStack get() {
@@ -47,7 +53,7 @@ enum ContainerSlotEmpty implements ContainerSlot {
 
   @Override
   public void set(ItemStack itemStack) {
-    // TODO should this drop items instead? Prevent deletion by sorting plugins that don't check inventory type/slots.
+    this.holder.drop(itemStack, false);
   }
 
   @Override
