@@ -360,31 +360,43 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
    */
   protected boolean moveItemStackTo(ItemStack itemStack, int rangeLow, int rangeHigh, boolean topDown) {
     boolean modified = false;
-
-    if (itemStack.isStackable()) {
-      for (int index = topDown ? rangeHigh - 1 : rangeLow;
-           !itemStack.isEmpty() && (topDown ? index >= rangeLow : index < rangeHigh);
-           index += topDown ? -1 : 1
-      ) {
-        Slot slot = slots.get(index);
-        if (!slot.isFake() && slot.mayPlace(itemStack) && slot.hasItem()) {
-          modified = addToExistingStack(itemStack, slot);
-        }
-      }
-    }
+    boolean stackable = itemStack.isStackable();
+    Slot firstEmpty = null;
 
     for (int index = topDown ? rangeHigh - 1 : rangeLow;
          !itemStack.isEmpty() && (topDown ? index >= rangeLow : index < rangeHigh);
          index += topDown ? -1 : 1
     ) {
       Slot slot = slots.get(index);
-      if (!slot.isFake() && slot.mayPlace(itemStack) && !slot.hasItem()) {
-        // If there's no item here, add as many as we can of the item.
-        slot.setByPlayer(itemStack.split(Math.min(itemStack.getCount(), slot.getMaxStackSize(itemStack))));
-        slot.setChanged();
-        modified = true;
-        break;
+      // If the slot cannot be added to, check the next slot.
+      if (slot.isFake() || !slot.mayPlace(itemStack)) {
+        continue;
       }
+
+      if (slot.hasItem()) {
+        // If the item isn't stackable, check the next slot.
+        if (!stackable) {
+          continue;
+        }
+        // Otherwise, add as many as we can from our stack to the slot.
+        modified = addToExistingStack(itemStack, slot);
+      } else {
+        // If this is the first empty slot, keep track of it for later use.
+        if (firstEmpty == null) {
+          firstEmpty = slot;
+        }
+        // If the item isn't stackable, we've located the slot we're adding it to, so we're done.
+        if (!stackable) {
+          break;
+        }
+      }
+    }
+
+    // If the item hasn't been fully added yet, add as many as we can to the first open slot.
+    if (!itemStack.isEmpty() && firstEmpty != null) {
+      firstEmpty.setByPlayer(itemStack.split(Math.min(itemStack.getCount(), firstEmpty.getMaxStackSize(itemStack))));
+      firstEmpty.setChanged();
+      modified = true;
     }
 
     return modified;
