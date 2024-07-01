@@ -324,6 +324,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
   public void clearContent() {
     owner.getInventory().clearContent();
     owner.inventoryMenu.getCraftSlots().clearContent();
+    owner.inventoryMenu.slotsChanged(owner.inventoryMenu.getCraftSlots());
     owner.containerMenu.setCarried(ItemStack.EMPTY);
   }
 
