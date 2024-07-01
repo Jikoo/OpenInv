@@ -50,7 +50,7 @@ class InternalAccessor {
             return;
         }
         try {
-            Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialPlayerInventory");
+            Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".inventory.OpenInventory");
             Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialEnderChest");
             this.playerDataManager = this.createObject(IPlayerDataManager.class, "PlayerDataManager");
             this.anySilentContainer = this.createObject(IAnySilentContainer.class, "AnySilentContainer");
@@ -63,11 +63,14 @@ class InternalAccessor {
                 || BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 5))) { // 1.20.5 not supported at all.
             return null;
         }
+        // TODO backport
         if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 4))) { // 1.20.4
-            return "v1_20_R3";
+            //return "v1_20_R3";
+            return null;
         }
         if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 6))) { // 1.20.6
-            return "v1_20_R4";
+            //return "v1_20_R4";
+            return null;
         }
         if (BukkitVersions.MINECRAFT.greaterThan(Version.of(1, 21))) {
             return null;
@@ -189,13 +192,12 @@ class InternalAccessor {
     private @NotNull <T extends ISpecialInventory> T createSpecialInventory(
             @NotNull Class<? extends T> assignableClass,
             @NotNull String className,
-            @NotNull Player player,
-            boolean online) throws InstantiationException {
+            @NotNull Object @NotNull ... params) throws InstantiationException {
         if (!this.supported) {
             throw new IllegalStateException(String.format("Unsupported server version %s!", BukkitVersions.MINECRAFT));
         }
         try {
-            return this.createObject(assignableClass, className, player, online);
+            return this.createObject(assignableClass, className, params);
         } catch (Exception original) {
             InstantiationException exception = new InstantiationException(String.format("Unable to create a new %s", className));
             exception.initCause(original.fillInStackTrace());
@@ -264,12 +266,11 @@ class InternalAccessor {
      * Creates an instance of the ISpecialPlayerInventory implementation for the given Player..
      *
      * @param player the Player
-     * @param online true if the Player is online
      * @return the ISpecialPlayerInventory created
      * @throws InstantiationException if the ISpecialPlayerInventory could not be instantiated
      */
-    public ISpecialPlayerInventory newSpecialPlayerInventory(final Player player, final boolean online) throws InstantiationException {
-        return this.createSpecialInventory(ISpecialPlayerInventory.class, "SpecialPlayerInventory", player, online);
+    public ISpecialPlayerInventory newSpecialPlayerInventory(final Player player) throws InstantiationException {
+        return this.createSpecialInventory(ISpecialPlayerInventory.class, "inventory.OpenInventory", player);
     }
 
 }

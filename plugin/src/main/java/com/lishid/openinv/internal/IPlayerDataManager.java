@@ -51,16 +51,4 @@ public interface IPlayerDataManager {
      */
     @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory);
 
-    /**
-     * Convert a raw slot number into a player inventory slot number.
-     *
-     * <p>Note that this method is specifically for converting an ISpecialPlayerInventory slot number into a regular
-     * player inventory slot number.
-     *
-     * @param view the open inventory view
-     * @param rawSlot the raw slot in the view
-     * @return the converted slot number
-     */
-    int convertToPlayerSlot(InventoryView view, int rawSlot);
-
 }
