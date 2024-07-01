@@ -23,7 +23,6 @@ public enum InventoryViewTitle {
   }
 
   public @NotNull String getTitle(@NotNull Player viewer, @NotNull ISpecialInventory inventory) {
-    // TODO make this a parameter instead?
     HumanEntity owner = inventory.getPlayer();
 
     String localTitle = OpenInv.getPlugin(OpenInv.class)

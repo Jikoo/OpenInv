@@ -1,7 +1,6 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
 import com.google.common.base.Suppliers;
-import com.lishid.openinv.internal.InventoryViewTitle;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
@@ -114,27 +113,6 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
   public CraftInventoryView getBukkitView() {
     if (bukkitEntity == null) {
       bukkitEntity = new CraftInventoryView(viewer.getBukkitEntity(), new OpenPlayerInventory(inventory), this) {
-        private String title;
-
-        @Override
-        public @NotNull String getOriginalTitle() {
-          return InventoryViewTitle.PLAYER_INVENTORY.getTitle(viewer.getBukkitEntity(), inventory);
-        }
-
-        @Override
-        public @NotNull String getTitle() {
-          if (title == null) {
-            title = getOriginalTitle();
-          }
-          return title;
-        }
-
-        @Override
-        public void setTitle(String title) {
-          CraftInventoryView.sendInventoryTitleChange(this, title);
-          this.title = title;
-        }
-
         @Override
         public org.bukkit.inventory.ItemStack getItem(int index) {
           if (index < 0) {
@@ -341,6 +319,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
   @Override
   public ItemStack quickMoveStack(Player player, int index) {
     // See net.minecraft.world.inventory.ChestMenu#quickMoveStack(Player, int)
+    // TODO quick-equip armor
     ItemStack itemstack = ItemStack.EMPTY;
     Slot slot = this.slots.get(index);
     if (slot.hasItem()) {
