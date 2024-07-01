@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -20,7 +21,6 @@ import org.bukkit.craftbukkit.v1_21_R1.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventory;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -136,7 +136,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
         default -> {
           // In the event that new armor slots are added, they can be placed at the end.
           armorIndex = i;
-          slot = EquipmentSlot.OFF_HAND;
+          slot = EquipmentSlot.MAINHAND;
         }
       }
 
@@ -149,7 +149,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
   private int addOffHand(int startIndex) {
     int listSize = owner.getInventory().offhand.size();
     for (int localIndex = 0; localIndex < listSize; ++localIndex) {
-      slots.set(startIndex + localIndex, new ContainerSlotEquipment(owner, localIndex, EquipmentSlot.OFF_HAND) {
+      slots.set(startIndex + localIndex, new ContainerSlotEquipment(owner, localIndex, EquipmentSlot.OFFHAND) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {
           this.items = holder.getInventory().offhand;

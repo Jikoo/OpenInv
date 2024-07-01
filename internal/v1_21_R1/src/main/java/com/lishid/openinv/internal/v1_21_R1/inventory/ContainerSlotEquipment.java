@@ -7,6 +7,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Unit;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +18,6 @@ import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.world.level.block.entity.BannerPatterns;
 import org.bukkit.craftbukkit.v1_21_R1.CraftRegistry;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -72,7 +72,7 @@ class ContainerSlotEquipment extends ContainerSlotList {
   }
 
   private final ItemStack placeholder;
-  private ServerPlayer holder;
+  private final EquipmentSlot equipmentSlot;
 
   ContainerSlotEquipment(ServerPlayer holder, int index, EquipmentSlot equipmentSlot) {
     super(holder, index, InventoryType.SlotType.ARMOR);
@@ -83,24 +83,24 @@ class ContainerSlotEquipment extends ContainerSlotList {
       case FEET -> BOOTS;
       default -> SHIELD;
     };
+    this.equipmentSlot = equipmentSlot;
   }
 
   // TODO try to manually sync if set while owner has other inventory open
 
   @Override
   public void setHolder(@NotNull ServerPlayer holder) {
-    this.holder = holder;
     this.items = holder.getInventory().armor;
   }
 
   @Override
   public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new MenuSlotArmor(container, index, x, y);
+    return new SlotEquipment(container, index, x, y);
   }
 
-  private class MenuSlotArmor extends MenuSlotPlaceholder {
+  class SlotEquipment extends MenuSlotPlaceholder {
 
-    private MenuSlotArmor(Container container, int index, int x, int y) {
+    private SlotEquipment(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
 
@@ -111,6 +111,10 @@ class ContainerSlotEquipment extends ContainerSlotList {
         return itemStack;
       }
       return placeholder;
+    }
+
+    EquipmentSlot getEquipmentSlot() {
+      return equipmentSlot;
     }
 
   }

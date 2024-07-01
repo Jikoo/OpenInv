@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
@@ -64,8 +65,8 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
         Slot slot = inventory.getMenuSlot(index, x, y);
 
-        // Disallow access to cursor slot for own inventory - opens the door to a lot of ways to delete items.
-        if (ownInv && slot instanceof ContainerSlotCursor.SlotCursor) {
+        // Only allow access to own gear slots and drop slot (though really, just click outside the inventory).
+        if (ownInv && !(slot instanceof ContainerSlotEquipment.SlotEquipment || slot instanceof ContainerSlotDrop.SlotDrop)) {
           slot = new ContainerSlotEmpty.SlotEmpty(inventory, index, x, y);
         }
         addSlot(slot);
@@ -318,29 +319,63 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
   @Override
   public ItemStack quickMoveStack(Player player, int index) {
-    // See net.minecraft.world.inventory.ChestMenu#quickMoveStack(Player, int)
-    // TODO quick-equip armor
-    ItemStack itemstack = ItemStack.EMPTY;
+    // See ChestMenu and InventoryMenu
     Slot slot = this.slots.get(index);
-    if (slot.hasItem()) {
-      ItemStack itemstack1 = slot.getItem();
-      itemstack = itemstack1.copy();
-      if (index < topSize) {
-        if (!this.moveItemStackTo(itemstack1, topSize, this.slots.size(), true)) {
-          return ItemStack.EMPTY;
-        }
-      } else if (!this.moveItemStackTo(itemstack1, 0, topSize, false)) {
+
+    if (!slot.hasItem() || slot.isFake()) {
+      return ItemStack.EMPTY;
+    }
+
+    ItemStack itemStack = slot.getItem();
+    ItemStack originalStack = itemStack.copy();
+
+    if (index < topSize) {
+      // If we're moving top to bottom, do a normal transfer.
+      if (!this.moveItemStackTo(itemStack, topSize, this.slots.size(), true)) {
         return ItemStack.EMPTY;
       }
+    } else {
+      EquipmentSlot equipmentSlot = player.getEquipmentSlotForItem(itemStack);
+      boolean movedGear = switch (equipmentSlot) {
+        // If this is gear, try to move it to the correct slot first.
+        case OFFHAND, FEET, LEGS, CHEST, HEAD -> {
+          // Locate the correct slot in the contents following the main inventory.
+          for (int extra = inventory.getOwnerHandle().getInventory().items.size() - offset; extra < topSize; ++extra) {
+            Slot extraSlot = getSlot(extra);
+            if (extraSlot instanceof ContainerSlotEquipment.SlotEquipment equipSlot
+                && equipSlot.getEquipmentSlot() == equipmentSlot) {
+              // If we've found a matching slot, try to move to it.
+              // If this succeeds, even partially, we will not attempt to move to other slots.
+              // Otherwise, armor is already occupied, so we'll fall through to main inventory.
+              yield this.moveItemStackTo(itemStack, extra, extra + 1, false);
+            }
+          }
+          yield false;
+        }
+        // Non-gear gets no special treatment.
+        default -> false;
+      };
 
-      if (itemstack1.isEmpty()) {
-        slot.setByPlayer(ItemStack.EMPTY);
+      // If main inventory is not available, there's nowhere else to move.
+      if (offset != 0) {
+        if (!movedGear) {
+          return ItemStack.EMPTY;
+        }
       } else {
-        slot.setChanged();
+        // If we didn't move to a gear slot, try to move to a main inventory slot.
+        if (!movedGear && !this.moveItemStackTo(itemStack, 0, inventory.getOwnerHandle().getInventory().items.size(), true)) {
+          return ItemStack.EMPTY;
+        }
       }
     }
 
-    return itemstack;
+    if (itemStack.isEmpty()) {
+      slot.setByPlayer(ItemStack.EMPTY);
+    } else {
+      slot.setChanged();
+    }
+
+    return originalStack;
   }
 
   @Override
