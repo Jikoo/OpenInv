@@ -149,17 +149,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
   private int addOffHand(int startIndex) {
     int listSize = owner.getInventory().offhand.size();
     for (int localIndex = 0; localIndex < listSize; ++localIndex) {
-      slots.set(startIndex + localIndex, new ContainerSlotEquipment(owner, localIndex, EquipmentSlot.OFFHAND) {
-        @Override
-        public void setHolder(@NotNull ServerPlayer holder) {
-          this.items = holder.getInventory().offhand;
-        }
-
-        @Override
-        public InventoryType.SlotType getSlotType() {
-          return InventoryType.SlotType.QUICKBAR;
-        }
-      });
+      slots.set(startIndex + localIndex, new ContainerSlotOffHand(owner, localIndex));
     }
     return startIndex + listSize;
   }

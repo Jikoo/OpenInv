@@ -86,8 +86,6 @@ class ContainerSlotEquipment extends ContainerSlotList {
     this.equipmentSlot = equipmentSlot;
   }
 
-  // TODO try to manually sync if set while owner has other inventory open
-
   @Override
   public void setHolder(@NotNull ServerPlayer holder) {
     this.items = holder.getInventory().armor;
@@ -100,7 +98,7 @@ class ContainerSlotEquipment extends ContainerSlotList {
 
   class SlotEquipment extends MenuSlotPlaceholder {
 
-    private SlotEquipment(Container container, int index, int x, int y) {
+    SlotEquipment(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
 
