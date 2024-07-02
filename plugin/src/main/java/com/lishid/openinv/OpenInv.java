@@ -16,6 +16,8 @@
 
 package com.lishid.openinv;
 
+import com.github.jikoo.planarwrappers.util.version.BukkitVersions;
+import com.github.jikoo.planarwrappers.util.version.Version;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.lishid.openinv.commands.ContainerSettingCommand;
@@ -146,7 +148,11 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             new ConfigUpdater(this).checkForUpdates();
 
             // Register listeners
-            pm.registerEvents(new PlayerListener(this), this);
+            if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21))) {
+                pm.registerEvents(new LegacyInventoryListener(this), this);
+            } else {
+                pm.registerEvents(new PlayerListener(this), this);
+            }
             pm.registerEvents(new InventoryListener(this), this);
 
             // Register commands to their executors

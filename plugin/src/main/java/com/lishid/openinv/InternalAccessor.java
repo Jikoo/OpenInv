@@ -50,6 +50,11 @@ class InternalAccessor {
             return;
         }
         try {
+            try {
+                Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".inventory.OpenInventory");
+            } catch (ClassNotFoundException e) {
+                Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialPlayerInventory");
+            }
             Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".inventory.OpenInventory");
             Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialEnderChest");
             this.playerDataManager = this.createObject(IPlayerDataManager.class, "PlayerDataManager");
@@ -63,14 +68,11 @@ class InternalAccessor {
                 || BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 5))) { // 1.20.5 not supported at all.
             return null;
         }
-        // TODO backport
         if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 4))) { // 1.20.4
-            //return "v1_20_R3";
-            return null;
+            return "v1_20_R3";
         }
         if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 6))) { // 1.20.6
-            //return "v1_20_R4";
-            return null;
+            return "v1_20_R4";
         }
         if (BukkitVersions.MINECRAFT.greaterThan(Version.of(1, 21))) {
             return null;
@@ -270,7 +272,11 @@ class InternalAccessor {
      * @throws InstantiationException if the ISpecialPlayerInventory could not be instantiated
      */
     public ISpecialPlayerInventory newSpecialPlayerInventory(final Player player) throws InstantiationException {
-        return this.createSpecialInventory(ISpecialPlayerInventory.class, "inventory.OpenInventory", player);
+        try {
+            return this.createSpecialInventory(ISpecialPlayerInventory.class, "inventory.OpenInventory", player);
+        }  catch (InstantiationException ignored) {
+            return this.createSpecialInventory(ISpecialPlayerInventory.class, "SpecialPlayerInventory", player, player.isOnline());
+        }
     }
 
 }
