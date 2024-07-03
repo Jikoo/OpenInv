@@ -122,7 +122,7 @@ class ContainerSlotCrafting implements ContainerSlot {
 
     @Override
     public boolean isFake() {
-      return true;
+      return !isAvailable();
     }
 
   }
