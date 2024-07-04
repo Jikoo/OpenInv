@@ -41,3 +41,10 @@ jobs:
         with:
           name: api
           path: ./api/target/openinvapi*.jar
+      - name: Build resource pack
+        id: upload-resource-pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: openinv-legibility-pack
+          path: ./resource-pack/
+          compression-level: 9
