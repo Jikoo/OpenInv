@@ -77,8 +77,6 @@ public class PlaceholderManager implements PlaceholderParser {
     String itemText = section.getString(path);
 
     if (itemText == null) {
-      itemText = defaultStack.save(CraftRegistry.getMinecraftRegistry()).toString();
-      section.set(path, itemText);
       return defaultStack;
     }
 
