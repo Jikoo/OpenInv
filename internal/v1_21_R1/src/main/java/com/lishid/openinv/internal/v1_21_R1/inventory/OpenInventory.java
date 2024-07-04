@@ -2,8 +2,11 @@ package com.lishid.openinv.internal.v1_21_R1.inventory;
 
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.v1_21_R1.PlayerDataManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -195,6 +198,28 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
     return owner;
   }
 
+  public @NotNull Component getTitle(@Nullable ServerPlayer viewer) {
+    MutableComponent component = Component.empty();
+    // Prefix for use with custom bitmap image fonts.
+    if (viewer == owner) {
+      component.append(
+          Component.translatableWithFallback("openinv.container.inventory.self", "")
+              .withStyle(style -> style
+                  .withFont(ResourceLocation.parse("openinv:font/inventory"))
+                  .withColor(ChatFormatting.WHITE)));
+    } else {
+      component.append(
+          Component.translatableWithFallback("openinv.container.inventory.other", "")
+              .withStyle(style -> style
+                  .withFont(ResourceLocation.parse("openinv:font/inventory"))
+                  .withColor(ChatFormatting.WHITE)));
+    }
+    // Normal title: "Inventory - OwnerName"
+    component.append(Component.translatable("container.inventory"))
+        .append(Component.translatableWithFallback("openinv.container.inventory.suffix", " - %s", owner.getName()));
+    return component;
+  }
+
   @Override
   public @NotNull org.bukkit.inventory.Inventory getBukkitInventory() {
     if (bukkitEntity == null) {
@@ -313,7 +338,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
 
   @Override
   public Component getName() {
-    return Component.translatable("key.categories.inventory").append(" - ").append(owner.getName());
+    return getTitle(null);
   }
 
   @Override
