@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:block/crafting_table",
+  "overrides": [
+    {
+      "model": "openinv:item/crafting_output",
+      "predicate": {
+        "custom_model_data": 9999
+      }
+    }
+  ]
+}

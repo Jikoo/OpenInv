@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:block/dropper",
+  "overrides": [
+    {
+      "model": "openinv:item/drop",
+      "predicate": {
+        "custom_model_data": 9999
+      }
+    }
+  ]
+}
