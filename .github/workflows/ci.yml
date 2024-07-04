@@ -3,7 +3,7 @@ name: OpenInv CI
 on:
   push:
     branches:
-      - '**'
+      - 'master'
     tags-ignore:
       - '**'
   # Enable running CI via other Actions, i.e. for drafting releases and handling PRs.
