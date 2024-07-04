@@ -1,12 +1,9 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,14 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 class ContainerSlotDrop implements ContainerSlot {
 
-  private static final ItemStack DROP;
   private ServerPlayer holder;
-
-  static {
-    DROP = new ItemStack(Items.DROPPER);
-    // Note: translatable component, not keybind component! We want the text identifying the keybind, not the key.
-    DROP.set(DataComponents.CUSTOM_NAME, Component.translatable("key.drop").withStyle(style -> style.withItalic(false)));
-  }
 
   ContainerSlotDrop(@NotNull ServerPlayer holder) {
     this.holder = holder;
@@ -72,7 +62,9 @@ class ContainerSlotDrop implements ContainerSlot {
 
     @Override
     ItemStack getOrDefault() {
-      return holder.connection != null && !holder.connection.isDisconnected() ? DROP : OFFLINE;
+      return holder.connection != null && !holder.connection.isDisconnected()
+          ? PlaceholderManager.drop
+          : PlaceholderManager.blockedOffline;
     }
 
     @Override

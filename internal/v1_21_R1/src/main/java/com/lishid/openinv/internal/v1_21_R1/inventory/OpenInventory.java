@@ -3,7 +3,6 @@ package com.lishid.openinv.internal.v1_21_R1.inventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.v1_21_R1.PlayerDataManager;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -15,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventory;
@@ -43,7 +41,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
     int rawSize = owner.getInventory().getContainerSize() + owner.inventoryMenu.getCraftSlots().getContainerSize() + 1;
     size = ((int) Math.ceil(rawSize / 9.0)) * 9;
 
-    slots = NonNullList.withSize(size, new ContainerSlotEmpty(owner));
+    slots = NonNullList.withSize(size, new ContainerSlotUninteractable(owner));
     setupSlots();
   }
 
@@ -168,18 +166,13 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
     }
 
     if (pretty) {
-      slots.set(startIndex + 2, new ContainerSlotEmpty(owner) {
-        private static final ItemStack PLACEHOLDER = new ItemStack(Items.CRAFTING_TABLE);
-        static {
-          PLACEHOLDER.set(DataComponents.CUSTOM_NAME, Component.translatable("container.crafting").withStyle(style -> style.withItalic(false)));
-        }
-
+      slots.set(startIndex + 2, new ContainerSlotUninteractable(owner) {
         @Override
         public Slot asMenuSlot(Container container, int index, int x, int y) {
-          return new ContainerSlotEmpty.SlotEmpty(container, index, x, y) {
+          return new ContainerSlotUninteractable.SlotEmpty(container, index, x, y) {
             @Override
             ItemStack getOrDefault() {
-              return PLACEHOLDER;
+              return PlaceholderManager.craftingOutput;
             }
           };
         }

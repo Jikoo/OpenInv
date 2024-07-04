@@ -86,6 +86,9 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
     public void reloadConfig() {
         super.reloadConfig();
         this.offlineHandler = disableOfflineAccess() ? OfflineHandler.REMOVE_AND_CLOSE : OfflineHandler.REQUIRE_PERMISSIONS;
+        if (this.accessor != null && this.accessor.isSupported()) {
+            this.accessor.reload();
+        }
     }
 
     @Override
@@ -133,7 +136,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         this.accessor = new InternalAccessor(this);
 
         this.languageManager = new LanguageManager(this, "en_us");
-        this.offlineHandler = disableOfflineAccess() ? OfflineHandler.REMOVE_AND_CLOSE : OfflineHandler.REQUIRE_PERMISSIONS;
 
         try {
             Class.forName("org.bukkit.entity.Player$Spigot");
@@ -144,6 +146,8 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
         // Version check
         if (isSpigot && this.accessor.isSupported()) {
+            reloadConfig();
+
             // Update existing configuration. May require internal access.
             new ConfigUpdater(this).checkForUpdates();
 

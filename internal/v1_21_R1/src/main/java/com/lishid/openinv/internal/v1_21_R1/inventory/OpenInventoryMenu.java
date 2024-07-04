@@ -59,7 +59,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
         // Guard against weird inventory sizes.
         if (index >= inventory.getContainerSize()) {
-          addSlot(new ContainerSlotEmpty.SlotEmpty(inventory, index, x, y));
+          addSlot(new ContainerSlotUninteractable.SlotEmpty(inventory, index, x, y));
           continue;
         }
 
@@ -67,7 +67,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
         // Only allow access to own gear slots and drop slot (though really, just click outside the inventory).
         if (ownInv && !(slot instanceof ContainerSlotEquipment.SlotEquipment || slot instanceof ContainerSlotDrop.SlotDrop)) {
-          slot = new ContainerSlotEmpty.SlotEmpty(inventory, index, x, y);
+          slot = new ContainerSlotUninteractable.SlotEmpty(inventory, index, x, y);
         }
         addSlot(slot);
       }
@@ -465,7 +465,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
   @Override
   public boolean canDragTo(Slot slot) {
-    return !(slot instanceof ContainerSlotDrop.SlotDrop || slot instanceof ContainerSlotEmpty.SlotEmpty);
+    return !(slot instanceof ContainerSlotDrop.SlotDrop || slot instanceof ContainerSlotUninteractable.SlotEmpty);
   }
 
 }

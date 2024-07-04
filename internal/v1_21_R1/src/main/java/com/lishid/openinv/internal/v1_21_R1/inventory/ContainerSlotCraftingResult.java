@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * <p>Unmodifiable because I said so. Use your own crafting grid.</p>
  */
-class ContainerSlotCraftingResult extends ContainerSlotEmpty {
+class ContainerSlotCraftingResult extends ContainerSlotUninteractable {
 
   ContainerSlotCraftingResult(@NotNull ServerPlayer holder) {
     super(holder);
@@ -27,11 +27,11 @@ class ContainerSlotCraftingResult extends ContainerSlotEmpty {
 
   @Override
   public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new ContainerSlotEmpty.SlotEmpty(container, index, x, y) {
+    return new ContainerSlotUninteractable.SlotEmpty(container, index, x, y) {
       @Override
       ItemStack getOrDefault() {
         if (!ContainerSlotCrafting.isAvailable(holder)) {
-          return survivalOnly(holder);
+          return PlaceholderManager.survivalOnly(holder);
         }
         InventoryMenu inventoryMenu = holder.inventoryMenu;
         return inventoryMenu.getSlot(inventoryMenu.getResultSlotIndex()).getItem();

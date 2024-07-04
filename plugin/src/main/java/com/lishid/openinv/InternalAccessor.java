@@ -23,13 +23,16 @@ import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
+import com.lishid.openinv.internal.PlaceholderParser;
 import com.lishid.openinv.util.InventoryAccess;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
+import java.util.logging.Level;
 
 class InternalAccessor {
 
@@ -38,6 +41,7 @@ class InternalAccessor {
     private boolean supported = false;
     private IPlayerDataManager playerDataManager;
     private IAnySilentContainer anySilentContainer;
+    private @Nullable PlaceholderParser placeholderParser;
 
     InternalAccessor(@NotNull Plugin plugin) {
         this.plugin = plugin;
@@ -52,6 +56,7 @@ class InternalAccessor {
         try {
             try {
                 Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".inventory.OpenInventory");
+                this.placeholderParser = createObject(PlaceholderParser.class, "inventory.PlaceholderManager");
             } catch (ClassNotFoundException e) {
                 Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialPlayerInventory");
             }
@@ -231,6 +236,24 @@ class InternalAccessor {
             throw new IllegalStateException(String.format("Unsupported server version %s!", BukkitVersions.MINECRAFT));
         }
         return this.playerDataManager;
+    }
+
+    /**
+     * Reload internal features.
+     */
+    void reload() {
+        if (placeholderParser == null) {
+            return;
+        }
+
+        ConfigurationSection placeholders = plugin.getConfig().getConfigurationSection("placeholders");
+        if (placeholders != null) {
+          try {
+            placeholderParser.load(placeholders);
+          } catch (Exception e) {
+            plugin.getLogger().log(Level.WARNING, "Caught exception loading placeholder overrides!", e);
+          }
+        }
     }
 
     /**

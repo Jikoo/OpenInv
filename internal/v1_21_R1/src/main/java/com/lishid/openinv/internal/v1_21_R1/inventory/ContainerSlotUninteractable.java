@@ -1,33 +1,23 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Unit;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 /**
- * A fake slot used to fill unused spaces in the inventory.
+ * A fake slot used to fill spaces in the inventory that can't be interacted with.
  */
-class ContainerSlotEmpty implements ContainerSlot {
-
-  private static final ItemStack PLACEHOLDER;
-
-  static {
-    PLACEHOLDER = new ItemStack(Items.WHITE_STAINED_GLASS_PANE);
-    PLACEHOLDER.set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE);
-  }
+class ContainerSlotUninteractable implements ContainerSlot {
 
   @NotNull ServerPlayer holder;
 
-  ContainerSlotEmpty(@NotNull ServerPlayer holder) {
+  ContainerSlotUninteractable(@NotNull ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -74,7 +64,7 @@ class ContainerSlotEmpty implements ContainerSlot {
 
     @Override
     ItemStack getOrDefault() {
-      return PLACEHOLDER;
+      return PlaceholderManager.notSlot;
     }
 
     public void onQuickCraft(ItemStack var0, ItemStack var1) {}
