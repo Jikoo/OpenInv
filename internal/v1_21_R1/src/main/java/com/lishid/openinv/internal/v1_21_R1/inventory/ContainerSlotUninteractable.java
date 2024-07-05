@@ -48,7 +48,7 @@ class ContainerSlotUninteractable implements ContainerSlot {
 
   @Override
   public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new SlotEmpty(container, index, x, y);
+    return new SlotUninteractable(container, index, x, y);
   }
 
   @Override
@@ -56,9 +56,9 @@ class ContainerSlotUninteractable implements ContainerSlot {
     return InventoryType.SlotType.OUTSIDE;
   }
 
-  static class SlotEmpty extends MenuSlotPlaceholder {
+  static class SlotUninteractable extends MenuSlotPlaceholder {
 
-    SlotEmpty(Container container, int index, int x, int y) {
+    SlotUninteractable(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
 

@@ -40,7 +40,6 @@ class ContainerSlotOffHand extends ContainerSlotEquipment {
           holder.resendItemInHands();
         }
       }
-
     };
   }
 

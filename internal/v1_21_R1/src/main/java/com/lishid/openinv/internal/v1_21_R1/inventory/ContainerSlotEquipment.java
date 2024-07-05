@@ -40,6 +40,8 @@ class ContainerSlotEquipment extends ContainerSlotList {
 
   class SlotEquipment extends MenuSlotPlaceholder {
 
+    private ServerPlayer viewer;
+
     SlotEquipment(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
@@ -55,6 +57,19 @@ class ContainerSlotEquipment extends ContainerSlotList {
 
     EquipmentSlot getEquipmentSlot() {
       return equipmentSlot;
+    }
+
+    void setOnlyEquipment(ServerPlayer viewer) {
+      this.viewer = viewer;
+    }
+
+    @Override
+    public boolean mayPlace(ItemStack var0) {
+      if (viewer == null) {
+        return true;
+      }
+
+      return equipmentSlot == EquipmentSlot.OFFHAND || viewer.getEquipmentSlotForItem(var0) == equipmentSlot;
     }
 
   }

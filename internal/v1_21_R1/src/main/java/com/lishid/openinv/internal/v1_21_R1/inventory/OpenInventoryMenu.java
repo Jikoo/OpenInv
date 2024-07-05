@@ -60,20 +60,11 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
         // Guard against weird inventory sizes.
         if (index >= inventory.getContainerSize()) {
-          addSlot(new ContainerSlotUninteractable.SlotEmpty(inventory, index, x, y));
+          addSlot(new ContainerSlotUninteractable.SlotUninteractable(inventory, index, x, y));
           continue;
         }
 
-        Slot slot = inventory.getMenuSlot(index, x, y);
-
-        if (slot instanceof ContainerSlotDrop.SlotDrop
-            && !Permissions.INVENTORY_SLOT_DROP.hasPermission(viewer.getBukkitEntity())) {
-          // Permission-based drop slot removal.
-          slot = new ContainerSlotUninteractable.SlotEmpty(inventory, index, x, y);
-        } else if (ownInv && !(slot instanceof ContainerSlotEquipment.SlotEquipment || slot instanceof ContainerSlotDrop.SlotDrop)) {
-          // Only allow access to own gear slots and drop slot (though really, just click outside the inventory).
-          slot = new ContainerSlotUninteractable.SlotEmpty(inventory, index, x, y);
-        }
+        Slot slot = getUpperSlot(index, x, y, ownInv);
 
         addSlot(slot);
       }
@@ -96,6 +87,43 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     }
 
     this.topSize = slots.size() - 36;
+  }
+
+  private Slot getUpperSlot(int index, int x, int y, boolean ownInv) {
+    Slot slot = inventory.getMenuSlot(index, x, y);
+
+    // If the slot is cannot be interacted with there's nothing to configure.
+    if (slot instanceof ContainerSlotUninteractable.SlotUninteractable) {
+      return slot;
+    }
+
+    // Remove drop slot if viewer is not allowed to use it.
+    if (slot instanceof ContainerSlotDrop.SlotDrop
+        && !Permissions.INVENTORY_SLOT_DROP.hasPermission(viewer.getBukkitEntity())) {
+      return new ContainerSlotUninteractable.SlotUninteractable(inventory, index, x, y);
+    }
+
+    if (slot instanceof ContainerSlotEquipment.SlotEquipment equipment) {
+      Permissions perm = switch (equipment.getEquipmentSlot()) {
+        case HEAD -> Permissions.INVENTORY_SLOT_HEAD_ANY;
+        case CHEST -> Permissions.INVENTORY_SLOT_CHEST_ANY;
+        case LEGS -> Permissions.INVENTORY_SLOT_LEGS_ANY;
+        case FEET -> Permissions.INVENTORY_SLOT_FEET_ANY;
+        default -> null;
+      };
+      if (perm != null && !perm.hasPermission(viewer.getBukkitEntity())) {
+        equipment.setOnlyEquipment(viewer);
+      }
+      // Equipment slots are a core part of the inventory, so they will always be shown.
+      return slot;
+    }
+
+    // When viewing own inventory, only allow access to equipment and drop slots.
+    if (ownInv && !(slot instanceof ContainerSlotDrop.SlotDrop)) {
+      return new ContainerSlotUninteractable.SlotUninteractable(inventory, index, x, y);
+    }
+
+    return slot;
   }
 
   static MenuType<?> getMenuType(OpenInventory inventory, ServerPlayer viewer) {
@@ -471,7 +499,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
   @Override
   public boolean canDragTo(Slot slot) {
-    return !(slot instanceof ContainerSlotDrop.SlotDrop || slot instanceof ContainerSlotUninteractable.SlotEmpty);
+    return !(slot instanceof ContainerSlotDrop.SlotDrop || slot instanceof ContainerSlotUninteractable.SlotUninteractable);
   }
 
 }

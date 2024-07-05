@@ -27,7 +27,7 @@ class ContainerSlotCraftingResult extends ContainerSlotUninteractable {
 
   @Override
   public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new ContainerSlotUninteractable.SlotEmpty(container, index, x, y) {
+    return new SlotUninteractable(container, index, x, y) {
       @Override
       ItemStack getOrDefault() {
         if (!ContainerSlotCrafting.isAvailable(holder)) {

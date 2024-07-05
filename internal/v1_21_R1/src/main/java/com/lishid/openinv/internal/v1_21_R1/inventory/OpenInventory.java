@@ -172,7 +172,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
       slots.set(startIndex + 2, new ContainerSlotUninteractable(owner) {
         @Override
         public Slot asMenuSlot(Container container, int index, int x, int y) {
-          return new ContainerSlotUninteractable.SlotEmpty(container, index, x, y) {
+          return new SlotUninteractable(container, index, x, y) {
             @Override
             ItemStack getOrDefault() {
               return PlaceholderManager.craftingOutput;

@@ -30,6 +30,10 @@ permissions:
           openinv.inventory.slot:
             default: true
             children:
+              openinv.inventory.slot.head.any: true
+              openinv.inventory.slot.chest.any: true
+              openinv.inventory.slot.legs.any: true
+              openinv.inventory.slot.feet.any: true
               openinv.inventory.slot.drop: true
       # Ender chest nodes (/openender)
       openinv.enderchest:
