@@ -1,6 +1,7 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
 import com.google.common.base.Suppliers;
+import com.lishid.openinv.util.Permissions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
@@ -65,10 +66,15 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
 
         Slot slot = inventory.getMenuSlot(index, x, y);
 
-        // Only allow access to own gear slots and drop slot (though really, just click outside the inventory).
-        if (ownInv && !(slot instanceof ContainerSlotEquipment.SlotEquipment || slot instanceof ContainerSlotDrop.SlotDrop)) {
+        if (slot instanceof ContainerSlotDrop.SlotDrop
+            && !Permissions.INVENTORY_SLOT_DROP.hasPermission(viewer.getBukkitEntity())) {
+          // Permission-based drop slot removal.
+          slot = new ContainerSlotUninteractable.SlotEmpty(inventory, index, x, y);
+        } else if (ownInv && !(slot instanceof ContainerSlotEquipment.SlotEquipment || slot instanceof ContainerSlotDrop.SlotDrop)) {
+          // Only allow access to own gear slots and drop slot (though really, just click outside the inventory).
           slot = new ContainerSlotUninteractable.SlotEmpty(inventory, index, x, y);
         }
+
         addSlot(slot);
       }
     }

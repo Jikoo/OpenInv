@@ -25,6 +25,7 @@ public enum Permissions {
     INVENTORY_OPEN_OTHER("inventory.open.self"),
     INVENTORY_EDIT_SELF("inventory.edit.self"),
     INVENTORY_EDIT_OTHER("inventory.edit.other"),
+    INVENTORY_SLOT_DROP("inventory.slot.drop"),
 
     ENDERCHEST_OPEN_SELF("enderchest.open.self"),
     ENDERCHEST_OPEN_OTHER("enderchest.open.self"),
