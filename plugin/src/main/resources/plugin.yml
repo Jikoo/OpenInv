@@ -9,7 +9,6 @@ api-version: "1.16"
 permissions:
 
   openinv:
-    default: op
     children:
       # Inventory nodes (/openinv)
       openinv.inventory:
@@ -27,6 +26,7 @@ permissions:
             children:
               openinv.inventory.open.self: true
               openinv.inventory.open.other: true
+          # Specific slot behaviors inside opened player inventories
           openinv.inventory.slot:
             default: true
             children:
@@ -52,7 +52,6 @@ permissions:
               openinv.enderchest.open.other: true
       # Player access
       openinv.access:
-        default: op
         children:
           openinv.access.offline: true
           openinv.access.online: true
@@ -62,18 +61,15 @@ permissions:
           openinv.access.ignore_exempt: false
       # Spectate features
       openinv.spectate:
-        default: op
         children:
           openinv.spectate.click: true
       # Container features
       openinv.container:
-        default: op
         children:
           openinv.container.any: true
           openinv.container.silent: true
       # Search functionality
       openinv.search:
-        default: op
         children:
           openinv.search.enderchest: true
           openinv.search.container: true
