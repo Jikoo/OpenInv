@@ -3,87 +3,118 @@ main: com.lishid.openinv.OpenInv
 version: ${project.version}
 author: lishid
 authors: [Jikoo, ShadowRanger]
-description: >
-             This plugin allows you to open a player's inventory as a chest and interact with it in real time.
+description: Open a player's inventory as a chest and interact with it in real time.
 api-version: "1.16"
 
 permissions:
-  OpenInv.any.default:
-    description: Permission for AnyContainer to default on prior to toggling.
-    default: false
-  OpenInv.silent.default:
-    description: Permission for SilentContainer to default on prior to toggling.
-    default: false
-  OpenInv.*:
-    description: Permission for all OpenInv features.
+
+  openinv:
     default: op
     children:
-      OpenInv.openinv: true
-      OpenInv.openender: true
-      OpenInv.search: true
-      OpenInv.silent: true
-      OpenInv.anychest: true
-      OpenInv.searchenchant: true
-      OpenInv.searchcontainer: true
-      OpenInv.openonline: true
-      OpenInv.openoffline: true
-      OpenInv.spectate: true
-  OpenInv.openinv:
-    default: op
-    children:
-      OpenInv.openonline: true
-      OpenInv.openoffline: true
-  OpenInv.openender:
-    default: op
-    children:
-      OpenInv.openonline: true
-      OpenInv.openoffline: true
+      # Inventory nodes (/openinv)
+      openinv.inventory:
+        children:
+          openinv.inventory.edit:
+            children:
+              openinv.inventory.open: true
+              openinv.inventory.edit.self:
+                children:
+                  openinv.inventory.open.self: true
+              openinv.inventory.edit.other:
+                children:
+                  openinv.inventory.open.other: true
+          openinv.inventory.open:
+            children:
+              openinv.inventory.open.self: true
+              openinv.inventory.open.other: true
+      # Ender chest nodes (/openender)
+      openinv.enderchest:
+        children:
+          openinv.enderchest.edit:
+            children:
+              openinv.enderchest.edit.self:
+                children:
+                  openinv.enderchest.open.self: true
+              openinv.enderchest.edit.other:
+                children:
+                  openinv.enderchest.open.other: true
+          openinv.enderchest.open:
+            children:
+              openinv.enderchest.open.self: true
+              openinv.enderchest.open.other: true
+      # Player access
+      openinv.access:
+        default: op
+        children:
+          openinv.access.offline: true
+          openinv.access.online: true
+          openinv.access.crossworld: true
+          # TODO exempt/override wording, replace with access levels?
+          openinv.access.is_exempt: true
+          openinv.access.ignore_exempt: false
+      # Spectate features
+      openinv.spectate:
+        default: op
+        children:
+          openinv.spectate.click: true
+      # Container features
+      openinv.container:
+        default: op
+        children:
+          openinv.container.any: true
+          openinv.container.silent: true
+      # Search functionality
+      openinv.search:
+        default: op
+        children:
+          openinv.search.enderchest: true
+          openinv.search.container: true
 
 commands:
   openinv:
     aliases: [oi, inv, open]
     description: Open a player's inventory
-    permission: OpenInv.openinv
+    permission: openinv.inventory.open.self;openinv.inventory.open.other
     usage: |-
            /<command> [Player] - Open a player's inventory
   openender:
     aliases: [oe]
     description: Opens the enderchest of a player
-    permission: OpenInv.openender
+    permission: openinv.enderchest.open.self;openinv.enderchest.open.other
     usage: |-
            /<command> [Player] - Open a player's enderchest
   searchinv:
     aliases: [si]
     description: Search and list players having a specific item
-    permission: OpenInv.search
+    permission: openinv.search.inventory
     usage: |-
            /<command> <Material> [MinAmount] - MinAmount is optional, the minimum amount required
   searchender:
     aliases: [se]
-    permission: OpenInv.search
+    permission: openinv.search.inventory
     description: Searches and lists players having a specific item in their ender chest
     usage: |-
            /<command> <Material> [MinAmount] - MinAmount is optional, the minimum amount required
   silentcontainer:
     aliases: [sc, silent, silentchest]
     description: SilentContainer stops sounds and animations when using containers.
-    permission: OpenInv.silent
+    permission: openinv.silentcontainer
     usage: |-
            /<command> [check|on|off] - Check, toggle, or set SilentContainer
   anycontainer:
     aliases: [ac, anychest]
     description: AnyContainer allows using blocked containers.
-    permission: OpenInv.anychest
+    permission: openinv.anycontainer
     usage: |-
            /<command> [check|on|off] - Check, toggle, or set AnyContainer
   searchenchant:
     aliases: [searchenchants]
     description: Search and list players with a specific enchantment.
-    permission: OpenInv.searchenchant
+    permission: openinv.search.inventory
     usage: |-
            /<command> <[Enchantment] [MinLevel]> - Enchantment is the enchantment type, MinLevel is the minimum level. One is optional
   searchcontainer:
     aliases: [searchchest]
     description: Search and list containers with a specific material.
-    permission: OpenInv.searchcontainer
+    permission: openinv.search.container
     usage: /<command> <Material> [ChunkRadius] - ChunkRadius is optional, the length that will be searched for matching items. Default 5

@@ -21,59 +21,37 @@ import org.jetbrains.annotations.NotNull;
 
 public enum Permissions {
 
-    OPENINV("openinv"),
-    OVERRIDE("override"),
-    EXEMPT("exempt"),
-    CROSSWORLD("crossworld"),
-    SILENT("silent"),
-    SILENT_DEFAULT("silent.default", true),
-    ANYCHEST("anychest"),
-    ANY_DEFAULT("any.default", true),
-    ENDERCHEST("openender"),
-    ENDERCHEST_ALL("openenderall"),
-    SEARCH("search"),
-    EDITINV("editinv"),
-    EDITENDER("editender"),
-    OPENSELF("openself"),
-    OPENONLINE("openonline"),
-    OPENOFFLINE("openoffline"),
-    SPECTATE("spectate");
+    INVENTORY_OPEN_SELF("inventory.open.self"),
+    INVENTORY_OPEN_OTHER("inventory.open.self"),
+    INVENTORY_EDIT_SELF("inventory.edit.self"),
+    INVENTORY_EDIT_OTHER("inventory.edit.other"),
+
+    ENDERCHEST_OPEN_SELF("enderchest.open.self"),
+    ENDERCHEST_OPEN_OTHER("enderchest.open.self"),
+    ENDERCHEST_EDIT_SELF("enderchest.edit.self"),
+    ENDERCHEST_EDIT_OTHER("enderchest.edit.other"),
+
+    ACCESS_CROSSWORLD("access.crossworld"),
+    ACCESS_OFFLINE("access.offline"),
+    ACCESS_ONLINE("access.online"),
+    ACCESS_IS_EXEMPT("access.is_exempt"),
+    ACCESS_IGNORE_EXEMPT("access.ignore_exempt"),
+
+    SPECTATE_CLICK("spectate.click"),
+
+    CONTAINER_ANY("container.any"),
+    CONTAINER_SILENT("container.silent"),
+    SEARCH_INVENTORY("search.inventory"),
+    SEARCH_CONTAINER("search.container");
 
     private final String permission;
-    private final boolean uninheritable;
 
     Permissions(String permission) {
-        this(permission, false);
-    }
-
-    Permissions(String permission, boolean uninheritable) {
-        this.permission = "OpenInv." + permission;
-        this.uninheritable = uninheritable;
+        this.permission = "openinv." + permission;
     }
 
     public boolean hasPermission(@NotNull Permissible permissible) {
-
-        boolean hasPermission = permissible.hasPermission(permission);
-        if (uninheritable || hasPermission || permissible.isPermissionSet(permission)) {
-            return hasPermission;
-        }
-
-        StringBuilder permissionDestroyer = new StringBuilder(permission);
-        for (int lastPeriod = permissionDestroyer.lastIndexOf("."); lastPeriod > 0;
-                lastPeriod = permissionDestroyer.lastIndexOf(".")) {
-            permissionDestroyer.delete(lastPeriod + 1, permissionDestroyer.length()).append('*');
-
-            hasPermission = permissible.hasPermission(permissionDestroyer.toString());
-            if (hasPermission || permissible.isPermissionSet(permissionDestroyer.toString())) {
-                return hasPermission;
-            }
-
-            permissionDestroyer.delete(lastPeriod, permissionDestroyer.length());
-
-        }
-
-        return permissible.hasPermission("*");
-
+        return permissible.hasPermission(permission);
     }
 
 }

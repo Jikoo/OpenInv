@@ -18,11 +18,12 @@ package com.lishid.openinv;
 
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.util.Permissions;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import org.jetbrains.annotations.NotNull;
 
 record OfflineHandler(
         @NotNull BiFunction<Map<UUID, ? extends ISpecialInventory>, UUID, ISpecialInventory> fetch,
@@ -35,7 +36,7 @@ record OfflineHandler(
 
     static final OfflineHandler REQUIRE_PERMISSIONS = new OfflineHandler(
             Map::get,
-            inventory -> OpenInv.ejectViewers(inventory, viewer -> !Permissions.OPENOFFLINE.hasPermission(viewer))
+            inventory -> OpenInv.ejectViewers(inventory, viewer -> !Permissions.ACCESS_OFFLINE.hasPermission(viewer))
     );
 
 }

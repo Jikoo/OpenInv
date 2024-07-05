@@ -16,6 +16,7 @@
 
 package com.lishid.openinv;
 
+import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.util.InventoryAccess;
@@ -32,7 +33,10 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 /**
  * Listener for inventory-related events to prevent modification of inventories where not allowed.
@@ -84,7 +88,7 @@ record InventoryListener(OpenInv plugin) implements Listener {
         HumanEntity entity = event.getWhoClicked();
 
         // Un-cancel spectator interactions.
-        if (Permissions.SPECTATE.hasPermission(entity) && entity.getGameMode() == GameMode.SPECTATOR) {
+        if (Permissions.SPECTATE_CLICK.hasPermission(entity) && entity.getGameMode() == GameMode.SPECTATOR) {
             event.setCancelled(false);
         }
 
@@ -93,26 +97,46 @@ record InventoryListener(OpenInv plugin) implements Listener {
         }
 
         Inventory inventory = event.getView().getTopInventory();
+        ISpecialInventory backing = InventoryAccess.getInventory(inventory);
 
-        // Is the inventory a special ender chest?
-        if (InventoryAccess.isEnderChest(inventory)) {
-            // Disallow ender chest interaction for users without edit permission.
-            if (!Permissions.EDITENDER.hasPermission(entity)) {
+        // Not a special inventory.
+        if (backing == null) {
+            return;
+        }
+
+        Permissions editSelf;
+        Permissions editOther;
+        if (backing instanceof ISpecialEnderChest) {
+            editSelf = Permissions.ENDERCHEST_EDIT_SELF;
+            editOther = Permissions.ENDERCHEST_EDIT_OTHER;
+        } else if (backing instanceof ISpecialPlayerInventory) {
+            editSelf = Permissions.INVENTORY_EDIT_SELF;
+            editOther = Permissions.INVENTORY_EDIT_OTHER;
+        } else {
+            // Unknown implementation.
+            return;
+        }
+
+        if (Objects.equals(entity, backing.getPlayer())) {
+            if (!editSelf.hasPermission(entity)) {
                 event.setCancelled(true);
             }
-            return;
+        } else {
+            if (!editOther.hasPermission(entity)) {
+                event.setCancelled(true);
+            }
         }
+    }
 
-        ISpecialPlayerInventory playerInventory = InventoryAccess.getPlayerInventory(inventory);
-
-        // Ignore inventories other than special player inventories.
-        if (playerInventory == null) {
-            return;
-        }
-
-        // Disallow player inventory interaction for users without edit permission.
-        if (!Permissions.EDITINV.hasPermission(entity)) {
-            event.setCancelled(true);
+    private boolean canNotEdit(
+        @NotNull Permissible clicker,
+        @NotNull ISpecialInventory inventory,
+        @NotNull Permissions self,
+        @NotNull Permissions other) {
+        if (Objects.equals(clicker, inventory.getPlayer())) {
+            return !self.hasPermission(clicker);
+        } else {
+            return !other.hasPermission(clicker);
         }
     }
 

@@ -21,10 +21,6 @@ import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.lang.Replacement;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.StringJoiner;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -33,6 +29,12 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.logging.Level;
 
 public class OpenInvCommand implements TabExecutor {
 
@@ -138,7 +140,7 @@ public class OpenInvCommand implements TabExecutor {
         boolean online = target.isOnline();
 
         if (!online) {
-            if (!plugin.disableOfflineAccess() && Permissions.OPENOFFLINE.hasPermission(player)) {
+            if (!plugin.disableOfflineAccess() && Permissions.ACCESS_OFFLINE.hasPermission(player)) {
                 // Try loading the player's data
                 onlineTarget = this.plugin.loadPlayer(target);
             } else {
@@ -146,7 +148,7 @@ public class OpenInvCommand implements TabExecutor {
                 return;
             }
         } else {
-            if (Permissions.OPENONLINE.hasPermission(player)) {
+            if (Permissions.ACCESS_ONLINE.hasPermission(player)) {
                 onlineTarget = target.getPlayer();
             } else {
                 plugin.sendMessage(player, "messages.error.permissionPlayerOnline");
@@ -161,21 +163,22 @@ public class OpenInvCommand implements TabExecutor {
 
         // Permissions checks
         if (onlineTarget.equals(player)) {
-            // Inventory: Additional permission required to open own inventory
-            if (openinv && !Permissions.OPENSELF.hasPermission(player)) {
+            // Permission for opening own inventory.
+            if (!(openinv ? Permissions.INVENTORY_OPEN_SELF : Permissions.ENDERCHEST_OPEN_SELF).hasPermission(player)) {
                 plugin.sendMessage(player, "messages.error.permissionOpenSelf");
                 return;
+
             }
         } else {
-            // Enderchest: Additional permission required to open others' ender chests
-            if (!openinv && !Permissions.ENDERCHEST_ALL.hasPermission(player)) {
+            // Permission for opening others' inventories.
+            if (!(openinv ? Permissions.INVENTORY_OPEN_OTHER : Permissions.ENDERCHEST_OPEN_OTHER).hasPermission(player)) {
                 plugin.sendMessage(player, "messages.error.permissionEnderAll");
                 return;
             }
 
             // Protected check
-            if (!Permissions.OVERRIDE.hasPermission(player)
-                    && Permissions.EXEMPT.hasPermission(onlineTarget)) {
+            if (!Permissions.ACCESS_IGNORE_EXEMPT.hasPermission(player)
+                    && Permissions.ACCESS_IS_EXEMPT.hasPermission(onlineTarget)) {
                 plugin.sendMessage(
                         player,
                         "messages.error.permissionExempt",
@@ -184,7 +187,7 @@ public class OpenInvCommand implements TabExecutor {
             }
 
             // Crossworld check
-            if (!Permissions.CROSSWORLD.hasPermission(player)
+            if (!Permissions.ACCESS_CROSSWORLD.hasPermission(player)
                     && !onlineTarget.getWorld().equals(player.getWorld())) {
                 plugin.sendMessage(
                         player,
@@ -205,7 +208,7 @@ public class OpenInvCommand implements TabExecutor {
             inv = openinv ? this.plugin.getSpecialInventory(onlineTarget, online) : this.plugin.getSpecialEnderChest(onlineTarget, online);
         } catch (Exception e) {
             plugin.sendMessage(player, "messages.error.commandException");
-            e.printStackTrace();
+            plugin.getLogger().log(Level.WARNING, "Unable to create ISpecialInventory", e);
             return;
         }
 

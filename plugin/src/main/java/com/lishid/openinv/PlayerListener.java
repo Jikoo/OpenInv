@@ -61,14 +61,14 @@ record PlayerListener(OpenInv plugin) implements Listener {
         }
 
         Player player = event.getPlayer();
-        boolean any = Permissions.ANYCHEST.hasPermission(player) && plugin.getAnyContainerStatus(player);
+        boolean any = Permissions.CONTAINER_ANY.hasPermission(player) && plugin.getAnyContainerStatus(player);
         boolean needsAny = plugin.getAnySilentContainer().isAnyContainerNeeded(event.getClickedBlock());
 
         if (!any && needsAny) {
             return;
         }
 
-        boolean silent = Permissions.SILENT.hasPermission(player) && plugin.getSilentContainerStatus(player);
+        boolean silent = Permissions.CONTAINER_SILENT.hasPermission(player) && plugin.getSilentContainerStatus(player);
 
         // If anycontainer or silentcontainer is active
         if (any || silent) {

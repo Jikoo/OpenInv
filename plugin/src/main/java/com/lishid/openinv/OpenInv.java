@@ -221,16 +221,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
     @Override
     public boolean getAnyContainerStatus(@NotNull final OfflinePlayer offline) {
-        boolean defaultState = false;
-
-        if (offline.isOnline()) {
-            Player onlinePlayer = offline.getPlayer();
-            if (onlinePlayer != null) {
-                defaultState = Permissions.ANY_DEFAULT.hasPermission(onlinePlayer);
-            }
-        }
-
-        return this.getConfig().getBoolean("toggles.any-chest." + offline.getUniqueId(), defaultState);
+        return this.getConfig().getBoolean("toggles.any-chest." + offline.getUniqueId(), false);
     }
 
     @Override
@@ -241,16 +232,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
     @Override
     public boolean getSilentContainerStatus(@NotNull final OfflinePlayer offline) {
-        boolean defaultState = false;
-
-        if (offline.isOnline()) {
-            Player onlinePlayer = offline.getPlayer();
-            if (onlinePlayer != null) {
-                defaultState = Permissions.SILENT_DEFAULT.hasPermission(onlinePlayer);
-            }
-        }
-
-        return this.getConfig().getBoolean("toggles.silent-chest." + offline.getUniqueId(), defaultState);
+        return this.getConfig().getBoolean("toggles.silent-chest." + offline.getUniqueId(), false);
     }
 
     @Override
@@ -450,7 +432,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         ejectViewers(
                 inventory,
                 viewer ->
-                        !Permissions.CROSSWORLD.hasPermission(viewer)
+                        !Permissions.ACCESS_CROSSWORLD.hasPermission(viewer)
                                 && !Objects.equals(viewer.getWorld(), player.getWorld()));
     }
 
@@ -655,8 +637,8 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         ejectViewers(
                 inventory,
                 viewer ->
-                        !Permissions.OPENONLINE.hasPermission(viewer)
-                                || !Permissions.CROSSWORLD.hasPermission(viewer)
+                        !Permissions.ACCESS_ONLINE.hasPermission(viewer)
+                                || !Permissions.ACCESS_CROSSWORLD.hasPermission(viewer)
                                 && !Objects.equals(viewer.getWorld(), inventory.getPlayer().getWorld()));
     }
 

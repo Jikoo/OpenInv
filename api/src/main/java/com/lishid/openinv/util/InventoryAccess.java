@@ -20,11 +20,12 @@ import com.lishid.openinv.internal.IInventoryAccess;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import java.lang.reflect.Method;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Method;
 
 public final class InventoryAccess implements IInventoryAccess {
 
@@ -91,6 +92,17 @@ public final class InventoryAccess implements IInventoryAccess {
      */
     public static @Nullable ISpecialEnderChest getEnderChest(@NotNull Inventory inventory) {
         return getSpecialInventory(ISpecialEnderChest.class, inventory);
+    }
+
+    /**
+     * Get a {@link ISpecialInventory} backing an {@link Inventory}. Returns {@code null} if the inventory is not backed
+     * by the correct class.
+     *
+     * @param inventory the Bukkit inventory
+     * @return the backing implementation if available
+     */
+    public static @Nullable ISpecialInventory getInventory(@NotNull Inventory inventory) {
+        return getSpecialInventory(ISpecialInventory.class, inventory);
     }
 
     private static <T extends ISpecialInventory> @Nullable T getSpecialInventory(@NotNull Class<T> expected, @NotNull Inventory inventory) {
