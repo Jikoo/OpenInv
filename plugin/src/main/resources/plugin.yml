@@ -13,6 +13,10 @@ permissions:
       # Inventory nodes (/openinv)
       openinv.inventory:
         children:
+          openinv.inventory.open:
+            children:
+              openinv.inventory.open.self: true
+              openinv.inventory.open.other: true
           openinv.inventory.edit:
             children:
               openinv.inventory.open: true
@@ -22,10 +26,6 @@ permissions:
               openinv.inventory.edit.other:
                 children:
                   openinv.inventory.open.other: true
-          openinv.inventory.open:
-            children:
-              openinv.inventory.open.self: true
-              openinv.inventory.open.other: true
           # Specific slot behaviors inside opened player inventories
           openinv.inventory.slot:
             default: true
@@ -38,6 +38,10 @@ permissions:
       # Ender chest nodes (/openender)
       openinv.enderchest:
         children:
+          openinv.enderchest.open:
+            children:
+              openinv.enderchest.open.self: true
+              openinv.enderchest.open.other: true
           openinv.enderchest.edit:
             children:
               openinv.enderchest.edit.self:
@@ -46,10 +50,6 @@ permissions:
               openinv.enderchest.edit.other:
                 children:
                   openinv.enderchest.open.other: true
-          openinv.enderchest.open:
-            children:
-              openinv.enderchest.open.self: true
-              openinv.enderchest.open.other: true
       # Player access
       openinv.access:
         children:
