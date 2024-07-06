@@ -177,13 +177,15 @@ public class OpenInvCommand implements TabExecutor {
             }
 
             // Protected check
-            if (!Permissions.ACCESS_IGNORE_EXEMPT.hasPermission(player)
-                    && Permissions.ACCESS_IS_EXEMPT.hasPermission(onlineTarget)) {
-                plugin.sendMessage(
+            for (int level = 4; level > 0; --level) {
+                String permission = "openinv.access.level." + level;
+                if (onlineTarget.hasPermission(permission)
+                        && !player.hasPermission(permission)) {
+                    plugin.sendMessage(
                         player,
                         "messages.error.permissionExempt",
                         new Replacement("%target%", onlineTarget.getDisplayName()));
-                return;
+                }
             }
 
             // Crossworld check

@@ -56,9 +56,10 @@ permissions:
           openinv.access.offline: true
           openinv.access.online: true
           openinv.access.crossworld: true
-          # TODO exempt/override wording, replace with access levels?
-          openinv.access.is_exempt: true
-          openinv.access.ignore_exempt: false
+          openinv.access.level.1: true
+          openinv.access.level.2: false
+          openinv.access.level.3: false
+          openinv.access.level.4: false
       # Spectate features
       openinv.spectate:
         children:

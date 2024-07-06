@@ -39,8 +39,6 @@ public enum Permissions {
     ACCESS_CROSSWORLD("access.crossworld"),
     ACCESS_OFFLINE("access.offline"),
     ACCESS_ONLINE("access.online"),
-    ACCESS_IS_EXEMPT("access.is_exempt"),
-    ACCESS_IGNORE_EXEMPT("access.ignore_exempt"),
 
     SPECTATE_CLICK("spectate.click"),
 
