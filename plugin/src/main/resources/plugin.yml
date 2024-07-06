@@ -72,7 +72,7 @@ permissions:
       # Search functionality
       openinv.search:
         children:
-          openinv.search.enderchest: true
+          openinv.search.inventory: true
           openinv.search.container: true
 
 commands:
@@ -103,13 +103,13 @@ commands:
   silentcontainer:
     aliases: [sc, silent, silentchest]
     description: SilentContainer stops sounds and animations when using containers.
-    permission: openinv.silentcontainer
+    permission: openinv.container.silent
     usage: |-
            /<command> [check|on|off] - Check, toggle, or set SilentContainer
   anycontainer:
     aliases: [ac, anychest]
     description: AnyContainer allows using blocked containers.
-    permission: openinv.anycontainer
+    permission: openinv.container.any
     usage: |-
            /<command> [check|on|off] - Check, toggle, or set AnyContainer
   searchenchant:
