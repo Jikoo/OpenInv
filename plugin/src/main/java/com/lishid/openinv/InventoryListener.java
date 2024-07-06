@@ -33,7 +33,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -125,18 +124,6 @@ record InventoryListener(OpenInv plugin) implements Listener {
             if (!editOther.hasPermission(entity)) {
                 event.setCancelled(true);
             }
-        }
-    }
-
-    private boolean canNotEdit(
-        @NotNull Permissible clicker,
-        @NotNull ISpecialInventory inventory,
-        @NotNull Permissions self,
-        @NotNull Permissions other) {
-        if (Objects.equals(clicker, inventory.getPlayer())) {
-            return !self.hasPermission(clicker);
-        } else {
-            return !other.hasPermission(clicker);
         }
     }
 
