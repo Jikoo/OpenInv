@@ -185,6 +185,7 @@ public class OpenInvCommand implements TabExecutor {
                         player,
                         "messages.error.permissionExempt",
                         new Replacement("%target%", onlineTarget.getDisplayName()));
+                    return;
                 }
             }
 
