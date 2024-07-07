@@ -93,7 +93,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     Slot slot = inventory.getMenuSlot(index, x, y);
 
     // If the slot is cannot be interacted with there's nothing to configure.
-    if (slot instanceof ContainerSlotUninteractable.SlotUninteractable) {
+    if (slot.getClass().equals(ContainerSlotUninteractable.SlotUninteractable.class)) {
       return slot;
     }
 
@@ -109,16 +109,18 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
         case CHEST -> Permissions.INVENTORY_SLOT_CHEST_ANY;
         case LEGS -> Permissions.INVENTORY_SLOT_LEGS_ANY;
         case FEET -> Permissions.INVENTORY_SLOT_FEET_ANY;
+        // Off-hand can hold anything, not just equipment.
         default -> null;
       };
+      // If the viewer doesn't have permission, only allow equipment the viewee can equip in the slot.
       if (perm != null && !perm.hasPermission(viewer.getBukkitEntity())) {
-        equipment.setOnlyEquipment(viewer);
+        equipment.onlyEquipmentFor(inventory.getOwnerHandle());
       }
       // Equipment slots are a core part of the inventory, so they will always be shown.
       return slot;
     }
 
-    // When viewing own inventory, only allow access to equipment and drop slots.
+    // When viewing own inventory, only allow access to equipment and drop slots (equipment allowed above).
     if (ownInv && !(slot instanceof ContainerSlotDrop.SlotDrop)) {
       return new ContainerSlotUninteractable.SlotUninteractable(inventory, index, x, y);
     }

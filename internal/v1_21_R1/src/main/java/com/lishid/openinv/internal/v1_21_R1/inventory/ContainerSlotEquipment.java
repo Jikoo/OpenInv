@@ -59,7 +59,7 @@ class ContainerSlotEquipment extends ContainerSlotList {
       return equipmentSlot;
     }
 
-    void setOnlyEquipment(ServerPlayer viewer) {
+    void onlyEquipmentFor(ServerPlayer viewer) {
       this.viewer = viewer;
     }
 
