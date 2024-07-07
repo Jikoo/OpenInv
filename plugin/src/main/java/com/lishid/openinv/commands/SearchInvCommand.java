@@ -19,15 +19,17 @@ package com.lishid.openinv.commands;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.lang.Replacement;
-import java.util.Collections;
-import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 public class SearchInvCommand implements TabExecutor {
 
@@ -72,13 +74,20 @@ public class SearchInvCommand implements TabExecutor {
         boolean searchInv = command.getName().equals("searchinv");
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Inventory inventory = searchInv ? player.getInventory() : player.getEnderChest();
-            if (inventory.contains(material, count)) {
-                players.append(player.getName()).append(", ");
+            int total = 0;
+            for (ItemStack itemStack : inventory.getContents()) {
+                if (itemStack != null && itemStack.getType() == material) {
+                    total += itemStack.getAmount();
+                    if (total >= count) {
+                        players.append(player.getName()).append(", ");
+                        break;
+                    }
+                }
             }
         }
 
         // Matches found, delete trailing comma and space
-        if (players.length() > 0) {
+        if (!players.isEmpty()) {
             players.delete(players.length() - 2, players.length());
         } else {
             plugin.sendMessage(
