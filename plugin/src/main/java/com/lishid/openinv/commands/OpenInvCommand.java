@@ -172,7 +172,7 @@ public class OpenInvCommand implements TabExecutor {
         } else {
             // Permission for opening others' inventories.
             if (!(openinv ? Permissions.INVENTORY_OPEN_OTHER : Permissions.ENDERCHEST_OPEN_OTHER).hasPermission(player)) {
-                plugin.sendMessage(player, "messages.error.permissionEnderAll");
+                plugin.sendMessage(player, "messages.error.permissionOpenOther");
                 return;
             }
 
