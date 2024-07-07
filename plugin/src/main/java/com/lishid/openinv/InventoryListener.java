@@ -87,7 +87,7 @@ record InventoryListener(OpenInv plugin) implements Listener {
         HumanEntity entity = event.getWhoClicked();
 
         // Un-cancel spectator interactions.
-        if (Permissions.SPECTATE_CLICK.hasPermission(entity) && entity.getGameMode() == GameMode.SPECTATOR) {
+        if (entity.getGameMode() == GameMode.SPECTATOR && Permissions.SPECTATE_CLICK.hasPermission(entity)) {
             event.setCancelled(false);
         }
 
