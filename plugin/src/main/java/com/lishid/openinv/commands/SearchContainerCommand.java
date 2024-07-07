@@ -105,7 +105,7 @@ public class SearchContainerCommand implements TabExecutor {
         }
 
         // Matches found, delete trailing comma and space
-        if (locations.length() > 0) {
+        if (!locations.isEmpty()) {
             locations.delete(locations.length() - 2, locations.length());
         } else {
             plugin.sendMessage(

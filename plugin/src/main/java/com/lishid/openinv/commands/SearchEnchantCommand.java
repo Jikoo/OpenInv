@@ -19,10 +19,9 @@ package com.lishid.openinv.commands;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.lang.Replacement;
-import java.util.Collections;
-import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -33,6 +32,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Command adding the ability to search online players' inventories for enchantments of a specific
@@ -64,19 +66,12 @@ public class SearchEnchantCommand implements TabExecutor {
             } catch (NumberFormatException ignored) {}
 
             argument = argument.toLowerCase();
-            int colon = argument.indexOf(':');
-            NamespacedKey key;
-            try {
-                if (colon > -1 && colon < argument.length() - 1) {
-                    key = new NamespacedKey(argument.substring(0, colon), argument.substring(colon + 1));
-                } else {
-                    key = NamespacedKey.minecraft(argument);
-                }
-            } catch (IllegalArgumentException ignored) {
+            NamespacedKey key = NamespacedKey.fromString(argument);
+            if (key == null) {
                 continue;
             }
 
-            Enchantment localEnchant = Enchantment.getByKey(key);
+            Enchantment localEnchant = Registry.ENCHANTMENT.get(key);
             if (localEnchant != null) {
                 enchant = localEnchant;
             }
@@ -111,7 +106,7 @@ public class SearchEnchantCommand implements TabExecutor {
             players.append("), ");
         }
 
-        if (players.length() > 0) {
+        if (!players.isEmpty()) {
             // Matches found, delete trailing comma and space
             players.delete(players.length() - 2, players.length());
         } else {
@@ -164,7 +159,7 @@ public class SearchEnchantCommand implements TabExecutor {
         }
 
         if (args.length == 1) {
-            return TabCompleter.completeObject(args[0], enchantment -> enchantment.getKey().toString(), Enchantment.values());
+            return TabCompleter.completeObject(args[0], enchantment -> enchantment.getKey().toString(), Registry.ENCHANTMENT.stream().toArray(Enchantment[]::new));
         } else {
             return TabCompleter.completeInteger(args[1]);
         }
