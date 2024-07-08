@@ -577,8 +577,8 @@ public class OpenInv extends JavaPlugin implements IOpenInv, ManagerProvider {
                 inventory,
                 viewer ->
                         !Permissions.ACCESS_ONLINE.hasPermission(viewer)
-                                || !Permissions.ACCESS_CROSSWORLD.hasPermission(viewer)
-                                && !Objects.equals(viewer.getWorld(), inventory.getPlayer().getWorld()));
+                                || (!Permissions.ACCESS_CROSSWORLD.hasPermission(viewer)
+                                        && !Objects.equals(viewer.getWorld(), inventory.getPlayer().getWorld())));
     }
 
     static void ejectViewers(@NotNull ISpecialInventory inventory, @NotNull Predicate<@NotNull HumanEntity> predicate) {

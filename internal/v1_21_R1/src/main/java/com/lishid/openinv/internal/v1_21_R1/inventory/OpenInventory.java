@@ -201,7 +201,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
   public @NotNull Component getTitle(@Nullable ServerPlayer viewer) {
     MutableComponent component = Component.empty();
     // Prefix for use with custom bitmap image fonts.
-    if (viewer == owner) {
+    if (owner.equals(viewer)) {
       component.append(
           Component.translatableWithFallback("openinv.container.inventory.self", "")
               .withStyle(style -> style

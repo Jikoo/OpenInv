@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -51,7 +52,7 @@ public class ContainerSettingCommand implements TabExecutor {
         BiConsumer<OfflinePlayer, Boolean> setSetting = any ? plugin::setAnyContainerStatus : plugin::setSilentContainerStatus;
 
         if (args.length > 0) {
-            args[0] = args[0].toLowerCase();
+            args[0] = args[0].toLowerCase(Locale.ENGLISH);
 
             if (args[0].equals("on")) {
                 setSetting.accept(player, true);

@@ -46,7 +46,7 @@ public class SearchInvCommand implements TabExecutor {
         Material material = null;
 
         if (args.length >= 1) {
-            material = Material.getMaterial(args[0].toUpperCase());
+            material = Material.matchMaterial(args[0]);
         }
 
         if (material == null) {

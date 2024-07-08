@@ -198,7 +198,7 @@ public class SpecialEnderChest extends PlayerEnderChestContainer implements ISpe
     @Override
     public boolean canAddItem(ItemStack itemstack) {
         for (ItemStack itemstack1 : this.items) {
-            if (itemstack1.isEmpty() || ItemStack.isSameItemSameTags(itemstack1, itemstack) && itemstack1.getCount() < itemstack1.getMaxStackSize()) {
+            if (itemstack1.isEmpty() || (ItemStack.isSameItemSameTags(itemstack1, itemstack) && itemstack1.getCount() < itemstack1.getMaxStackSize())) {
                 return true;
             }
         }

@@ -190,6 +190,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
   private ItemStack remoteCarried = ItemStack.EMPTY;
   private boolean suppressRemoteUpdates;
 
+  @Override
   protected Slot addSlot(Slot slot) {
     slot.index = this.slots.size();
     this.slots.add(slot);
@@ -198,18 +199,21 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     return slot;
   }
 
+  @Override
   protected DataSlot addDataSlot(DataSlot dataSlot) {
     this.dataSlots.add(dataSlot);
     this.remoteDataSlots.add(0);
     return dataSlot;
   }
 
+  @Override
   protected void addDataSlots(ContainerData containerData) {
     for (int i = 0; i < containerData.getCount(); i++) {
       this.addDataSlot(DataSlot.forContainer(containerData, i));
     }
   }
 
+  @Override
   public void addSlotListener(ContainerListener containerListener) {
     if (!this.containerListeners.contains(containerListener)) {
       this.containerListeners.add(containerListener);
@@ -217,11 +221,13 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     }
   }
 
+  @Override
   public void setSynchronizer(ContainerSynchronizer containerSynchronizer) {
     this.synchronizer = containerSynchronizer;
     this.sendAllDataToRemote();
   }
 
+  @Override
   public void sendAllDataToRemote() {
     for (int index = 0; index < slots.size(); ++index) {
       Slot slot = slots.get(index);
@@ -239,6 +245,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     }
   }
 
+  @Override
   public void broadcastCarriedItem() {
     this.remoteCarried = this.getCarried().copy();
     if (this.synchronizer != null) {
@@ -246,10 +253,12 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     }
   }
 
+  @Override
   public void removeSlotListener(ContainerListener containerListener) {
     this.containerListeners.remove(containerListener);
   }
 
+  @Override
   public void broadcastChanges() {
     for (int index = 0; index < this.slots.size(); ++index) {
       Slot slot = this.slots.get(index);
@@ -272,6 +281,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     }
   }
 
+  @Override
   public void broadcastFullState() {
     for (int index = 0; index < this.slots.size(); ++index) {
       ItemStack itemstack = this.slots.get(index).getItem();
@@ -340,14 +350,17 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
     }
   }
 
+  @Override
   public void setRemoteCarried(ItemStack itemstack) {
     this.remoteCarried = itemstack.copy();
   }
 
+  @Override
   public void suppressRemoteUpdates() {
     this.suppressRemoteUpdates = true;
   }
 
+  @Override
   public void resumeRemoteUpdates() {
     this.suppressRemoteUpdates = false;
   }
@@ -429,6 +442,7 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
    * @param topDown whether to start at the top of the range or bottom
    * @return whether the stack was modified as a result of being quick-moved
    */
+  @Override
   protected boolean moveItemStackTo(ItemStack itemStack, int rangeLow, int rangeHigh, boolean topDown) {
     boolean modified = false;
     boolean stackable = itemStack.isStackable();

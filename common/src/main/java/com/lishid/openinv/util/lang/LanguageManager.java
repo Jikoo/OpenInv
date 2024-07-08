@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -196,7 +197,7 @@ public class LanguageManager {
     }
 
     public @Nullable String getValue(@NotNull String key, @Nullable String locale) {
-        String value = getOrLoadLocale(locale == null ? defaultLocale : locale.toLowerCase()).getString(key);
+        String value = getOrLoadLocale(locale == null ? defaultLocale : locale.toLowerCase(Locale.ROOT)).getString(key);
         if (value == null || value.isEmpty()) {
             return null;
         }

@@ -68,7 +68,7 @@ public final class TabCompleter {
         List<String> completions = new ArrayList<>();
 
         for (Enum<?> enumConstant : enumClazz.getEnumConstants()) {
-            String name = enumConstant.name().toLowerCase();
+            String name = enumConstant.name().toLowerCase(Locale.ENGLISH);
             if (name.startsWith(argument)) {
                 completions.add(name);
             }
@@ -134,7 +134,7 @@ public final class TabCompleter {
         List<String> completions = new ArrayList<>();
 
         for (T option : options) {
-            String optionString = converter.apply(option).toLowerCase();
+            String optionString = converter.apply(option).toLowerCase(Locale.ENGLISH);
             if (optionString.startsWith(argument)) {
                 completions.add(optionString);
             }

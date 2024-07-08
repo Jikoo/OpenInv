@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Command adding the ability to search online players' inventories for enchantments of a specific
@@ -64,9 +65,11 @@ public class SearchEnchantCommand implements TabExecutor {
             try {
                 level = Integer.parseInt(argument);
                 continue;
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+                // Not a level being specified.
+            }
 
-            argument = argument.toLowerCase();
+            argument = argument.toLowerCase(Locale.ENGLISH);
             NamespacedKey key = NamespacedKey.fromString(argument);
             if (key == null) {
                 continue;

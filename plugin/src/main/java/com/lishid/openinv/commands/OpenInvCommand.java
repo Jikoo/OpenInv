@@ -86,7 +86,7 @@ public class OpenInvCommand implements TabExecutor {
             public void run() {
                 final OfflinePlayer offlinePlayer = OpenInvCommand.this.plugin.matchPlayer(name);
 
-                if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
+                if (offlinePlayer == null || (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline())) {
                     plugin.getLanguageManager().sendMessage(player, "messages.error.invalidPlayer");
                     return;
                 }

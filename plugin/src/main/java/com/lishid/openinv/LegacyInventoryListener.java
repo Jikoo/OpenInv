@@ -1,5 +1,6 @@
 package com.lishid.openinv;
 
+import com.google.errorprone.annotations.Keep;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 record LegacyInventoryListener(OpenInv plugin) implements Listener {
 
+  @Keep
   @EventHandler
   private void onInventoryClose(@NotNull final InventoryCloseEvent event) {
     if (!(event.getPlayer() instanceof Player player)) {
@@ -54,6 +56,7 @@ record LegacyInventoryListener(OpenInv plugin) implements Listener {
     }
   }
 
+  @Keep
   @EventHandler(priority = EventPriority.LOWEST)
   private void onInventoryClick(@NotNull final InventoryClickEvent event) {
     if (handleInventoryInteract(event)) {
@@ -79,11 +82,10 @@ record LegacyInventoryListener(OpenInv plugin) implements Listener {
     event.setCurrentItem(null);
 
     // Complete add action in same tick after event completion.
-    this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
-      player.getInventory().addItem(clone);
-    });
+    this.plugin.getServer().getScheduler().runTask(this.plugin, () -> player.getInventory().addItem(clone));
   }
 
+  @Keep
   @EventHandler(priority = EventPriority.LOWEST)
   private void onInventoryDrag(@NotNull final InventoryDragEvent event) {
     if (handleInventoryInteract(event)) {

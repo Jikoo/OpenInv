@@ -105,7 +105,7 @@ public class AnySilentContainer implements IAnySilentContainer {
                 MenuType<?> containers = PlayerDataManager.getContainers(enderChest.getContainerSize());
                 int rows = enderChest.getContainerSize() / 9;
                 return new ChestMenu(containers, containerCounter, playerInventory, enderChest, rows);
-            }, Component.translatable(("container.enderchest"))));
+            }, Component.translatable("container.enderchest")));
             bukkitPlayer.incrementStatistic(Statistic.ENDERCHEST_OPENED);
             return true;
         }

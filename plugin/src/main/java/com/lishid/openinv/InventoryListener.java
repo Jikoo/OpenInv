@@ -16,6 +16,7 @@
 
 package com.lishid.openinv;
 
+import com.google.errorprone.annotations.Keep;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
@@ -44,6 +45,7 @@ import java.util.Objects;
  */
 record InventoryListener(OpenInv plugin) implements Listener {
 
+    @Keep
     @EventHandler
     private void onInventoryClose(@NotNull final InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) {
@@ -68,11 +70,13 @@ record InventoryListener(OpenInv plugin) implements Listener {
         }
     }
 
+    @Keep
     @EventHandler(priority = EventPriority.LOWEST)
     private void onInventoryClick(@NotNull final InventoryClickEvent event) {
         handleInventoryInteract(event);
     }
 
+    @Keep
     @EventHandler(priority = EventPriority.LOWEST)
     private void onInventoryDrag(@NotNull final InventoryDragEvent event) {
         handleInventoryInteract(event);

@@ -153,7 +153,7 @@ public interface IAnySilentContainer {
      * @return true if the type is a supported container
      */
     default boolean isAnySilentContainer(@NotNull BlockState blockState) {
-        return blockState instanceof InventoryHolder holder && isAnySilentContainer(holder)
+        return (blockState instanceof InventoryHolder holder && isAnySilentContainer(holder))
                 || blockState instanceof EnderChest;
     }
 

@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Command for searching containers in a radius of chunks.
@@ -56,7 +57,7 @@ public class SearchContainerCommand implements TabExecutor {
             return false;
         }
 
-        Material material = Material.getMaterial(args[0].toUpperCase());
+        Material material = Material.matchMaterial(args[0]);
 
         if (material == null) {
             plugin.getLanguageManager().sendMessage(
@@ -98,7 +99,7 @@ public class SearchContainerCommand implements TabExecutor {
                     if (!holder.getInventory().contains(material)) {
                         continue;
                     }
-                    locations.append(holder.getInventory().getType().name().toLowerCase()).append(" (")
+                    locations.append(holder.getInventory().getType().name().toLowerCase(Locale.ENGLISH)).append(" (")
                             .append(tileEntity.getX()).append(',').append(tileEntity.getY()).append(',')
                             .append(tileEntity.getZ()).append("), ");
                 }

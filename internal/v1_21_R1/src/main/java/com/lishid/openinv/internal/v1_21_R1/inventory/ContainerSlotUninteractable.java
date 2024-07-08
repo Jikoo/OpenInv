@@ -67,8 +67,10 @@ class ContainerSlotUninteractable implements ContainerSlot {
       return PlaceholderManager.notSlot;
     }
 
+    @Override
     public void onQuickCraft(ItemStack var0, ItemStack var1) {}
 
+    @Override
     public void onTake(Player var0, ItemStack var1) {}
 
     @Override
@@ -76,6 +78,7 @@ class ContainerSlotUninteractable implements ContainerSlot {
       return false;
     }
 
+    @Override
     public ItemStack getItem() {
       return ItemStack.EMPTY;
     }
@@ -85,22 +88,29 @@ class ContainerSlotUninteractable implements ContainerSlot {
       return false;
     }
 
+    @Override
     public void setByPlayer(ItemStack newStack) {}
 
+    @Override
     public void setByPlayer(ItemStack newStack, ItemStack oldStack) {}
 
+    @Override
     public void set(ItemStack var0) {}
 
+    @Override
     public void setChanged() {}
 
+    @Override
     public int getMaxStackSize() {
       return 0;
     }
 
+    @Override
     public int getMaxStackSize(ItemStack itemStack) {
       return 0;
     }
 
+    @Override
     public ItemStack remove(int amount) {
       return ItemStack.EMPTY;
     }
@@ -110,22 +120,27 @@ class ContainerSlotUninteractable implements ContainerSlot {
       return false;
     }
 
+    @Override
     public boolean isActive() {
       return false;
     }
 
+    @Override
     public Optional<ItemStack> tryRemove(int var0, int var1, Player var2) {
       return Optional.empty();
     }
 
+    @Override
     public ItemStack safeTake(int var0, int var1, Player var2) {
       return ItemStack.EMPTY;
     }
 
+    @Override
     public ItemStack safeInsert(ItemStack itemStack) {
       return itemStack;
     }
 
+    @Override
     public ItemStack safeInsert(ItemStack itemStack, int amount) {
       return itemStack;
     }
@@ -135,10 +150,12 @@ class ContainerSlotUninteractable implements ContainerSlot {
       return false;
     }
 
+    @Override
     public int getContainerSlot() {
       return this.slot;
     }
 
+    @Override
     public boolean isHighlightable() {
       return false;
     }
