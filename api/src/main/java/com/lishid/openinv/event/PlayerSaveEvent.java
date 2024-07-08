@@ -27,7 +27,7 @@ public class PlayerSaveEvent extends PlayerEvent implements Cancellable {
   @RestrictedApi(
       explanation = "Constructor is not considered part of the API and may be subject to change.",
       link = "",
-      allowedOnPath = "com/lishid/openinv/event/OpenEvents")
+      allowedOnPath = ".*/com/lishid/openinv/event/(OpenPlayerSaveEvent|OpenEvents).java")
   PlayerSaveEvent(@NotNull Player player) {
     super(player);
   }
