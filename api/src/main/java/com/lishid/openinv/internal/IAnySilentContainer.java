@@ -52,17 +52,6 @@ public interface IAnySilentContainer {
     void deactivateContainer(@NotNull Player player);
 
     /**
-     * @param player the player opening the container
-     * @param block  the {@link Block} of the container
-     * @return true if the container is blocked
-     * @deprecated use {@link #isAnyContainerNeeded(Block)}
-     */
-    @Deprecated(forRemoval = true, since = "4.1.9")
-    default boolean isAnyContainerNeeded(@NotNull Player player, @NotNull Block block) {
-        return isAnyContainerNeeded(block);
-    }
-
-    /**
      * Check if the container at the given coordinates is blocked.
      *
      * @param block the {@link Block} of the container
@@ -118,18 +107,6 @@ public interface IAnySilentContainer {
         }
 
         return isChestBlocked(relative);
-    }
-
-    /**
-     * Check if a {@link ShulkerBox} cannot be opened under ordinary circumstances.
-     *
-     * @deprecated Use {@link #isShulkerBlocked(Block)}.
-     * @param shulkerBox the shulker box container
-     * @return whether the container is blocked
-     */
-    @Deprecated(since = "4.4.4", forRemoval = true)
-    default boolean isShulkerBlocked(@NotNull ShulkerBox shulkerBox) {
-        return isShulkerBlocked(shulkerBox.getBlock());
     }
 
     /**

@@ -16,7 +16,6 @@
 
 package com.lishid.openinv.util;
 
-import com.lishid.openinv.internal.IInventoryAccess;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
@@ -27,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 
-public final class InventoryAccess implements IInventoryAccess {
+public final class InventoryAccess {
 
     private static Class<?> craftInventory = null;
     private static Method getInventory = null;
@@ -38,14 +37,6 @@ public final class InventoryAccess implements IInventoryAccess {
             craftInventory = Class.forName(packageName + ".inventory.CraftInventory");
             getInventory = craftInventory.getDeclaredMethod("getInventory");
         } catch (ClassNotFoundException | NoSuchMethodException ignored) {}
-    }
-
-    /**
-     * @deprecated use {@link #isUsable()}
-     */
-    @Deprecated(forRemoval = true)
-    public static boolean isUseable() {
-        return isUsable();
     }
 
     public static boolean isUsable() {
@@ -126,10 +117,8 @@ public final class InventoryAccess implements IInventoryAccess {
         return null;
     }
 
-    /**
-     * @deprecated Do not create a new instance to use static methods.
-     */
-    @Deprecated(forRemoval = true, since = "4.2.0")
-    public InventoryAccess() {}
+    private InventoryAccess() {
+        throw new IllegalStateException("Do not create a new instance to use static methods.");
+    }
 
 }
