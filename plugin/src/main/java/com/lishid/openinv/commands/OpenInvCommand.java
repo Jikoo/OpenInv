@@ -56,7 +56,7 @@ public class OpenInvCommand implements TabExecutor {
         }
 
         if (!(sender instanceof Player player)) {
-            plugin.sendMessage(sender, "messages.error.consoleUnsupported");
+            plugin.getLanguageManager().sendMessage(sender, "messages.error.consoleUnsupported");
             return true;
         }
 
@@ -87,7 +87,7 @@ public class OpenInvCommand implements TabExecutor {
                 final OfflinePlayer offlinePlayer = OpenInvCommand.this.plugin.matchPlayer(name);
 
                 if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) {
-                    plugin.sendMessage(player, "messages.error.invalidPlayer");
+                    plugin.getLanguageManager().sendMessage(player, "messages.error.invalidPlayer");
                     return;
                 }
 
@@ -144,20 +144,20 @@ public class OpenInvCommand implements TabExecutor {
                 // Try loading the player's data
                 onlineTarget = this.plugin.loadPlayer(target);
             } else {
-                plugin.sendMessage(player, "messages.error.permissionPlayerOffline");
+                plugin.getLanguageManager().sendMessage(player, "messages.error.permissionPlayerOffline");
                 return;
             }
         } else {
             if (Permissions.ACCESS_ONLINE.hasPermission(player)) {
                 onlineTarget = target.getPlayer();
             } else {
-                plugin.sendMessage(player, "messages.error.permissionPlayerOnline");
+                plugin.getLanguageManager().sendMessage(player, "messages.error.permissionPlayerOnline");
                 return;
             }
         }
 
         if (onlineTarget == null) {
-            plugin.sendMessage(player, "messages.error.invalidPlayer");
+            plugin.getLanguageManager().sendMessage(player, "messages.error.invalidPlayer");
             return;
         }
 
@@ -165,14 +165,14 @@ public class OpenInvCommand implements TabExecutor {
         if (onlineTarget.equals(player)) {
             // Permission for opening own inventory.
             if (!(openinv ? Permissions.INVENTORY_OPEN_SELF : Permissions.ENDERCHEST_OPEN_SELF).hasPermission(player)) {
-                plugin.sendMessage(player, "messages.error.permissionOpenSelf");
+                plugin.getLanguageManager().sendMessage(player, "messages.error.permissionOpenSelf");
                 return;
 
             }
         } else {
             // Permission for opening others' inventories.
             if (!(openinv ? Permissions.INVENTORY_OPEN_OTHER : Permissions.ENDERCHEST_OPEN_OTHER).hasPermission(player)) {
-                plugin.sendMessage(player, "messages.error.permissionOpenOther");
+                plugin.getLanguageManager().sendMessage(player, "messages.error.permissionOpenOther");
                 return;
             }
 
@@ -181,7 +181,7 @@ public class OpenInvCommand implements TabExecutor {
                 String permission = "openinv.access.level." + level;
                 if (onlineTarget.hasPermission(permission)
                         && !player.hasPermission(permission)) {
-                    plugin.sendMessage(
+                    plugin.getLanguageManager().sendMessage(
                         player,
                         "messages.error.permissionExempt",
                         new Replacement("%target%", onlineTarget.getDisplayName()));
@@ -192,7 +192,7 @@ public class OpenInvCommand implements TabExecutor {
             // Crossworld check
             if (!Permissions.ACCESS_CROSSWORLD.hasPermission(player)
                     && !onlineTarget.getWorld().equals(player.getWorld())) {
-                plugin.sendMessage(
+                plugin.getLanguageManager().sendMessage(
                         player,
                         "messages.error.permissionCrossWorld",
                         new Replacement("%target%", onlineTarget.getDisplayName()));
@@ -210,7 +210,7 @@ public class OpenInvCommand implements TabExecutor {
         try {
             inv = openinv ? this.plugin.getSpecialInventory(onlineTarget, online) : this.plugin.getSpecialEnderChest(onlineTarget, online);
         } catch (Exception e) {
-            plugin.sendMessage(player, "messages.error.commandException");
+            plugin.getLanguageManager().sendMessage(player, "messages.error.commandException");
             plugin.getLogger().log(Level.WARNING, "Unable to create ISpecialInventory", e);
             return;
         }

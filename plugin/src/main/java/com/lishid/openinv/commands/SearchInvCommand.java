@@ -16,9 +16,10 @@
 
 package com.lishid.openinv.commands;
 
-import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.TabCompleter;
+import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -33,10 +34,10 @@ import java.util.List;
 
 public class SearchInvCommand implements TabExecutor {
 
-    private final OpenInv plugin;
+    private final LanguageManager lang;
 
-    public SearchInvCommand(OpenInv plugin) {
-        this.plugin = plugin;
+    public SearchInvCommand(LanguageManager lang) {
+        this.lang = lang;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class SearchInvCommand implements TabExecutor {
         }
 
         if (material == null) {
-            plugin.sendMessage(
+            lang.sendMessage(
                     sender,
                     "messages.error.invalidMaterial",
                     new Replacement("%target%", args.length > 0 ? args[0] : "null"));
@@ -62,7 +63,7 @@ public class SearchInvCommand implements TabExecutor {
             try {
                 count = Integer.parseInt(args[1]);
             } catch (NumberFormatException ex) {
-                plugin.sendMessage(
+                lang.sendMessage(
                         sender,
                         "messages.error.invalidNumber",
                         new Replacement("%target%", args[1]));
@@ -72,7 +73,7 @@ public class SearchInvCommand implements TabExecutor {
 
         StringBuilder players = new StringBuilder();
         boolean searchInv = command.getName().equals("searchinv");
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             Inventory inventory = searchInv ? player.getInventory() : player.getEnderChest();
             int total = 0;
             for (ItemStack itemStack : inventory.getContents()) {
@@ -90,14 +91,14 @@ public class SearchInvCommand implements TabExecutor {
         if (!players.isEmpty()) {
             players.delete(players.length() - 2, players.length());
         } else {
-            plugin.sendMessage(
+            lang.sendMessage(
                     sender,
                     "messages.info.player.noMatches",
                     new Replacement("%target%", material.name()));
             return true;
         }
 
-        plugin.sendMessage(
+        lang.sendMessage(
                 sender,
                 "messages.info.player.matches",
                 new Replacement("%target%", material.name()),

@@ -1,9 +1,10 @@
 package com.lishid.openinv.internal;
 
-import com.lishid.openinv.OpenInv;
+import com.lishid.openinv.ManagerProvider;
 import com.lishid.openinv.util.lang.Replacement;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +26,8 @@ public enum InventoryViewTitle {
   public @NotNull String getTitle(@NotNull Player viewer, @NotNull ISpecialInventory inventory) {
     HumanEntity owner = inventory.getPlayer();
 
-    String localTitle = OpenInv.getPlugin(OpenInv.class)
+    String localTitle = ((ManagerProvider) JavaPlugin.getProvidingPlugin(ManagerProvider.class))
+        .getLanguageManager()
         .getLocalizedMessage(
             viewer,
             localizationKey,

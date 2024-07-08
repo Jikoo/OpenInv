@@ -16,20 +16,21 @@
 
 package com.lishid.openinv.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Function;
+
 /**
  * Utility class for common tab completions.
  */
-public class TabCompleter {
+public final class TabCompleter {
 
     /**
      * Offer tab completions for whole numbers.
@@ -142,6 +143,8 @@ public class TabCompleter {
         return completions;
     }
 
-    private TabCompleter() {}
+    private TabCompleter() {
+        throw new IllegalStateException("Cannot create instance of utility class.");
+    }
 
 }

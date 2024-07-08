@@ -16,6 +16,7 @@
 
 package com.lishid.openinv.internal.v1_20_R4;
 
+import com.lishid.openinv.ManagerProvider;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.util.ReflectionHelper;
@@ -42,6 +43,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,7 +123,9 @@ public class AnySilentContainer implements IAnySilentContainer {
             menuProvider = chestBlock.getMenuProvider(blockState, level, blockPos, true);
 
             if (menuProvider == null) {
-                OpenInv.getPlugin(OpenInv.class).sendSystemMessage(bukkitPlayer, "messages.error.lootNotGenerated");
+                ((ManagerProvider) JavaPlugin.getProvidingPlugin(ManagerProvider.class))
+                    .getLanguageManager()
+                    .sendSystemMessage(bukkitPlayer, "messages.error.lootNotGenerated");
                 return false;
             }
 
@@ -153,7 +157,9 @@ public class AnySilentContainer implements IAnySilentContainer {
 
         if (blockEntity instanceof RandomizableContainerBlockEntity lootable) {
             if (lootable.lootTable != null) {
-                OpenInv.getPlugin(OpenInv.class).sendSystemMessage(bukkitPlayer, "messages.error.lootNotGenerated");
+                ((ManagerProvider) JavaPlugin.getProvidingPlugin(ManagerProvider.class))
+                    .getLanguageManager()
+                    .sendSystemMessage(bukkitPlayer, "messages.error.lootNotGenerated");
                 return false;
             }
         }

@@ -34,9 +34,6 @@ import com.lishid.openinv.util.ConfigUpdater;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.StringMetric;
 import com.lishid.openinv.util.lang.LanguageManager;
-import com.lishid.openinv.util.lang.Replacement;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -71,7 +68,7 @@ import java.util.stream.Stream;
  *
  * @author lishid
  */
-public class OpenInv extends JavaPlugin implements IOpenInv {
+public class OpenInv extends JavaPlugin implements IOpenInv, ManagerProvider {
 
     private final Cache<String, PlayerProfile> offlineLookUpCache = CacheBuilder.newBuilder().maximumSize(10).build();
     private final Map<UUID, ISpecialPlayerInventory> inventories = new ConcurrentHashMap<>();
@@ -162,8 +159,8 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             // Register commands to their executors
             this.setCommandExecutor(new OpenInvCommand(this), "openinv", "openender");
             this.setCommandExecutor(new SearchContainerCommand(this), "searchcontainer");
-            this.setCommandExecutor(new SearchInvCommand(this), "searchinv", "searchender");
-            this.setCommandExecutor(new SearchEnchantCommand(this), "searchenchant");
+            this.setCommandExecutor(new SearchInvCommand(languageManager), "searchinv", "searchender");
+            this.setCommandExecutor(new SearchEnchantCommand(languageManager), "searchenchant");
             this.setCommandExecutor(new ContainerSettingCommand(this), "silentcontainer", "anycontainer");
 
         } else {
@@ -436,61 +433,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
                                 && !Objects.equals(viewer.getWorld(), player.getWorld()));
     }
 
-    public @Nullable String getLocalizedMessage(@NotNull CommandSender sender, @NotNull String key) {
-        return this.languageManager.getValue(key, getLocale(sender));
-    }
-
-    public @Nullable String getLocalizedMessage(
-            @NotNull CommandSender sender,
-            @NotNull String key,
-            Replacement @NotNull ... replacements) {
-        return this.languageManager.getValue(key, getLocale(sender), replacements);
-    }
-
-    private @NotNull String getLocale(@NotNull CommandSender sender) {
-        if (sender instanceof Player) {
-            return ((Player) sender).getLocale();
-        } else {
-            return this.getConfig().getString("settings.locale", "en_us");
-        }
-    }
-
-    public void sendMessage(@NotNull CommandSender sender, @NotNull String key) {
-        String message = getLocalizedMessage(sender, key);
-
-        if (message != null && !message.isEmpty()) {
-            sender.sendMessage(message);
-        }
-    }
-
-    public void sendMessage(@NotNull CommandSender sender, @NotNull String key, Replacement @NotNull... replacements) {
-        String message = getLocalizedMessage(sender, key, replacements);
-
-        if (message != null && !message.isEmpty()) {
-            sender.sendMessage(message);
-        }
-    }
-
-    public void sendSystemMessage(@NotNull Player player, @NotNull String key) {
-        String message = getLocalizedMessage(player, key);
-
-        if (message == null) {
-            return;
-        }
-
-        int newline = message.indexOf('\n');
-        if (newline != -1) {
-            // No newlines in action bar chat.
-            message = message.substring(0, newline);
-        }
-
-        if (message.isEmpty()) {
-            return;
-        }
-
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
-    }
-
     /**
      * Method for handling a Player going offline.
      *
@@ -651,6 +593,11 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
                 viewer.closeInventory();
             }
         }
+    }
+
+    @Override
+    public LanguageManager getLanguageManager() {
+        return this.languageManager;
     }
 
 }

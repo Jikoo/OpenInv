@@ -16,7 +16,18 @@
 
 package com.lishid.openinv.util.lang;
 
-import com.lishid.openinv.OpenInv;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -29,12 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.logging.Level;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A simple language manager supporting both custom and bundled languages.
@@ -43,11 +48,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LanguageManager {
 
-    private final OpenInv plugin;
+    private final Plugin plugin;
     private final String defaultLocale;
     private final Map<String, YamlConfiguration> locales;
 
-    public LanguageManager(@NotNull OpenInv plugin, @NotNull String defaultLocale) {
+    public LanguageManager(@NotNull Plugin plugin, @NotNull String defaultLocale) {
         this.plugin = plugin;
         this.defaultLocale = defaultLocale;
         this.locales = new HashMap<>();
@@ -213,6 +218,61 @@ public class LanguageManager {
         }
 
         return value;
+    }
+
+    public @Nullable String getLocalizedMessage(@NotNull CommandSender sender, @NotNull String key) {
+        return getValue(key, getLocale(sender));
+    }
+
+    public @Nullable String getLocalizedMessage(
+        @NotNull CommandSender sender,
+        @NotNull String key,
+        Replacement @NotNull ... replacements) {
+        return getValue(key, getLocale(sender), replacements);
+    }
+
+    private @NotNull String getLocale(@NotNull CommandSender sender) {
+        if (sender instanceof Player) {
+            return ((Player) sender).getLocale();
+        } else {
+            return plugin.getConfig().getString("settings.locale", "en_us");
+        }
+    }
+
+    public void sendMessage(@NotNull CommandSender sender, @NotNull String key) {
+        String message = getLocalizedMessage(sender, key);
+
+        if (message != null && !message.isEmpty()) {
+            sender.sendMessage(message);
+        }
+    }
+
+    public void sendMessage(@NotNull CommandSender sender, @NotNull String key, Replacement @NotNull... replacements) {
+        String message = getLocalizedMessage(sender, key, replacements);
+
+        if (message != null && !message.isEmpty()) {
+            sender.sendMessage(message);
+        }
+    }
+
+    public void sendSystemMessage(@NotNull Player player, @NotNull String key) {
+        String message = getLocalizedMessage(player, key);
+
+        if (message == null) {
+            return;
+        }
+
+        int newline = message.indexOf('\n');
+        if (newline != -1) {
+            // No newlines in action bar chat.
+            message = message.substring(0, newline);
+        }
+
+        if (message.isEmpty()) {
+            return;
+        }
+
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
     }
 
 }

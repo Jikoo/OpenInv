@@ -74,11 +74,11 @@ record PlayerListener(OpenInv plugin) implements Listener {
         if (any || silent) {
             if (plugin.getAnySilentContainer().activateContainer(player, silent, event.getClickedBlock())) {
                 if (silent && needsAny) {
-                    plugin.sendSystemMessage(player, "messages.info.containerBlockedSilent");
+                    plugin.getLanguageManager().sendSystemMessage(player, "messages.info.containerBlockedSilent");
                 } else if (needsAny) {
-                    plugin.sendSystemMessage(player, "messages.info.containerBlocked");
+                    plugin.getLanguageManager().sendSystemMessage(player, "messages.info.containerBlocked");
                 } else if (silent) {
-                    plugin.sendSystemMessage(player, "messages.info.containerSilent");
+                    plugin.getLanguageManager().sendSystemMessage(player, "messages.info.containerSilent");
                 }
             }
             event.setCancelled(true);

@@ -16,9 +16,10 @@
 
 package com.lishid.openinv.commands;
 
-import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.TabCompleter;
+import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -44,10 +45,10 @@ import java.util.List;
  */
 public class SearchEnchantCommand implements TabExecutor {
 
-    private final OpenInv plugin;
+    private final LanguageManager lang;
 
-    public SearchEnchantCommand(OpenInv plugin) {
-        this.plugin = plugin;
+    public SearchEnchantCommand(LanguageManager lang) {
+        this.lang = lang;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class SearchEnchantCommand implements TabExecutor {
         }
 
         StringBuilder players = new StringBuilder();
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             boolean flagInventory = containsEnchantment(player.getInventory(), enchant, level);
             boolean flagEnder = containsEnchantment(player.getEnderChest(), enchant, level);
 
@@ -110,14 +111,14 @@ public class SearchEnchantCommand implements TabExecutor {
             // Matches found, delete trailing comma and space
             players.delete(players.length() - 2, players.length());
         } else {
-            plugin.sendMessage(
+            lang.sendMessage(
                     sender,
                     "messages.info.player.noMatches",
                     new Replacement("%target%", (enchant != null ? enchant.getKey().toString() : "") + " >= " + level));
             return true;
         }
 
-        plugin.sendMessage(
+        lang.sendMessage(
                 sender,
                 "messages.info.player.matches",
                 new Replacement("%target%", (enchant != null ? enchant.getKey().toString() : "") + " >= " + level),
