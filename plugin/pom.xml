@@ -33,6 +33,10 @@
       <groupId>com.lishid</groupId>
     </dependency>
     <dependency>
+      <artifactId>openinvcommon</artifactId>
+      <groupId>com.lishid</groupId>
+    </dependency>
+    <dependency>
       <artifactId>annotations</artifactId>
       <groupId>org.jetbrains</groupId>
     </dependency>

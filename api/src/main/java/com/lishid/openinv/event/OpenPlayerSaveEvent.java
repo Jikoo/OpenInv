@@ -1,5 +1,6 @@
 package com.lishid.openinv.event;
 
+import com.google.errorprone.annotations.RestrictedApi;
 import com.lishid.openinv.internal.ISpecialInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -18,7 +19,19 @@ public class OpenPlayerSaveEvent extends Event implements Cancellable {
   private final ISpecialInventory inventory;
   private boolean cancelled = false;
 
-  public OpenPlayerSaveEvent(@NotNull Player player, @NotNull ISpecialInventory inventory) {
+  /**
+   * Construct a new {@code OpenPlayerSaveEvent}.
+   *
+   * <p>The constructor is not considered part of the API, and may be subject to change.</p>
+   *
+   * @param player the player to be saved
+   * @param inventory the {@link ISpecialInventory} being closed
+   */
+  @RestrictedApi(
+      explanation = "Constructor is not considered part of the API and may be subject to change.",
+      link = "",
+      allowedOnPath = "com/lishid/openinv/event/OpenEvents")
+  OpenPlayerSaveEvent(@NotNull Player player, @NotNull ISpecialInventory inventory) {
     this.player = player;
     this.inventory = inventory;
   }
