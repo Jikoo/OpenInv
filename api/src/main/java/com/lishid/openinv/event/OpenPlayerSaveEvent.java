@@ -3,21 +3,14 @@ package com.lishid.openinv.event;
 import com.google.errorprone.annotations.RestrictedApi;
 import com.lishid.openinv.internal.ISpecialInventory;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Event fired before OpenInv saves a player's data.
+ * Event fired before OpenInv saves a player's data when closing an {@link ISpecialInventory}.
  */
-public class OpenPlayerSaveEvent extends Event implements Cancellable {
+public class OpenPlayerSaveEvent extends PlayerSaveEvent {
 
-  private static final HandlerList HANDLERS = new HandlerList();
-
-  private final Player player;
   private final ISpecialInventory inventory;
-  private boolean cancelled = false;
 
   /**
    * Construct a new {@code OpenPlayerSaveEvent}.
@@ -32,17 +25,8 @@ public class OpenPlayerSaveEvent extends Event implements Cancellable {
       link = "",
       allowedOnPath = "com/lishid/openinv/event/OpenEvents")
   OpenPlayerSaveEvent(@NotNull Player player, @NotNull ISpecialInventory inventory) {
-    this.player = player;
+    super(player);
     this.inventory = inventory;
-  }
-
-  /**
-   * Get the {@link Player} whose data is being saved.
-   *
-   * @return player the Player whose data is being saved
-   */
-  public @NotNull Player getPlayer() {
-    return player;
   }
 
   /**
@@ -52,36 +36,6 @@ public class OpenPlayerSaveEvent extends Event implements Cancellable {
    */
   public @NotNull ISpecialInventory getInventory() {
     return inventory;
-  }
-
-  /**
-   * Get whether the event is cancelled.
-   *
-   * @return true if the event is cancelled
-   */
-  @Override
-  public boolean isCancelled() {
-    return cancelled;
-  }
-
-  /**
-   * Set whether the event is cancelled.
-   *
-   * @param cancel whether the event is cancelled
-   */
-  @Override
-  public void setCancelled(boolean cancel) {
-    this.cancelled = cancel;
-  }
-
-  @NotNull
-  @Override
-  public HandlerList getHandlers() {
-    return HANDLERS;
-  }
-
-  public static HandlerList getHandlerList() {
-    return HANDLERS;
   }
 
 }

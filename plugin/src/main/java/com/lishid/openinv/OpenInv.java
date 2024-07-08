@@ -26,7 +26,6 @@ import com.lishid.openinv.commands.SearchContainerCommand;
 import com.lishid.openinv.commands.SearchEnchantCommand;
 import com.lishid.openinv.commands.SearchInvCommand;
 import com.lishid.openinv.event.OpenEvents;
-import com.lishid.openinv.event.OpenPlayerSaveEvent;
 import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
@@ -563,10 +562,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
                 return;
             }
 
-            OpenPlayerSaveEvent event = OpenEvents.save(player, current);
-            getServer().getPluginManager().callEvent(event);
-
-            if (!event.isCancelled()) {
+            if (!OpenEvents.saveCancelled(player, current)) {
                 this.accessor.getPlayerDataManager().inject(player).saveData();
             }
         });
