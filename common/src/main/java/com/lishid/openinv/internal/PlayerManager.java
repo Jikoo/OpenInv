@@ -22,7 +22,7 @@ import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface IPlayerDataManager {
+public interface PlayerManager {
 
     /**
      * Loads a Player for an OfflinePlayer.

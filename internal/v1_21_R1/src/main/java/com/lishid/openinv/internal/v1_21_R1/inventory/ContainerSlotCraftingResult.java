@@ -31,7 +31,7 @@ class ContainerSlotCraftingResult extends ContainerSlotUninteractable {
       @Override
       ItemStack getOrDefault() {
         if (!ContainerSlotCrafting.isAvailable(holder)) {
-          return PlaceholderManager.survivalOnly(holder);
+          return Placeholders.survivalOnly(holder);
         }
         InventoryMenu inventoryMenu = holder.inventoryMenu;
         return inventoryMenu.getSlot(inventoryMenu.getResultSlotIndex()).getItem();

@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,6 +29,7 @@ public class PlayerSaveEvent extends PlayerEvent implements Cancellable {
       explanation = "Constructor is not considered part of the API and may be subject to change.",
       link = "",
       allowedOnPath = ".*/com/lishid/openinv/event/(OpenPlayerSaveEvent|OpenEvents).java")
+  @ApiStatus.Internal
   PlayerSaveEvent(@NotNull Player player) {
     super(player);
   }

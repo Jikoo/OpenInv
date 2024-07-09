@@ -81,13 +81,13 @@ public class OpenPlayer extends CraftPlayer {
         "Brain"
     );
 
-    public OpenPlayer(CraftServer server, ServerPlayer entity) {
+    OpenPlayer(CraftServer server, ServerPlayer entity) {
         super(server, entity);
     }
 
     @Override
     public void loadData() {
-        PlayerDataManager.loadData(getHandle());
+        PlayerManager.loadData(getHandle());
     }
 
     @Override

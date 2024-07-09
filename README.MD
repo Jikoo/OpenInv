@@ -49,11 +49,9 @@ As OpenInv is compiled against Mojang's mappings, you must run BuildTools with t
 `java -jar BuildTools.jar --remapped --rev $serverVersion`  
 `$serverVersion` is the version of the server, i.e. `1.18.1`
 
-To compile for a single version, specify the module you are targeting:  
-`mvn -pl $moduleName -am clean install`  
-`$moduleName` is the name of the module, i.e. `internal/v1_18_R1`.
+To compile just the API, execute Maven as usual:  
+`mvn clean package`  
 
-To compile for a set of versions, use a profile. Select a profile using the `-P` argument:  
+To compile the full plugin, use the provided profile with `-P all`:  
 `mvn clean package -am -P all`  
-The only provided profile is `all`. The final file is `target/OpenInv.jar`  
 For more information, check out the [official Maven guide](http://maven.apache.org/guides/introduction/introduction-to-profiles.html).

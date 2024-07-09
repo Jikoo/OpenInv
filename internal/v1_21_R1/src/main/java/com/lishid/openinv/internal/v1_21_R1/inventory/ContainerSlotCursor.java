@@ -85,10 +85,10 @@ class ContainerSlotCursor implements ContainerSlot {
     @Override
     ItemStack getOrDefault() {
       if (!isAvailable()) {
-        return PlaceholderManager.survivalOnly(holder);
+        return Placeholders.survivalOnly(holder);
       }
       ItemStack carried = holder.containerMenu.getCarried();
-      return carried.isEmpty() ? PlaceholderManager.cursor : carried;
+      return carried.isEmpty() ? Placeholders.cursor : carried;
     }
 
     @Override

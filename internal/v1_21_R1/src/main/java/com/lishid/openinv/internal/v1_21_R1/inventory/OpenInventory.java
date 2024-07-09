@@ -1,7 +1,7 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import com.lishid.openinv.internal.v1_21_R1.PlayerDataManager;
+import com.lishid.openinv.internal.v1_21_R1.PlayerManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -38,7 +38,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
   public List<HumanEntity> transaction = new ArrayList<>();
 
   public OpenInventory(@NotNull org.bukkit.entity.Player bukkitPlayer) {
-    owner = PlayerDataManager.getHandle(bukkitPlayer);
+    owner = PlayerManager.getHandle(bukkitPlayer);
 
     // Get total size, rounding up to nearest 9 for client compatibility.
     int rawSize = owner.getInventory().getContainerSize() + owner.inventoryMenu.getCraftSlots().getContainerSize() + 1;
@@ -175,7 +175,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
           return new SlotUninteractable(container, index, x, y) {
             @Override
             ItemStack getOrDefault() {
-              return PlaceholderManager.craftingOutput;
+              return Placeholders.craftingOutput;
             }
           };
         }
@@ -230,7 +230,7 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
 
   @Override
   public void setPlayerOnline(@NotNull org.bukkit.entity.Player player) {
-    ServerPlayer newOwner = PlayerDataManager.getHandle(player);
+    ServerPlayer newOwner = PlayerManager.getHandle(player);
     // Only transfer regular inventory - crafting and cursor slots are transient.
     newOwner.getInventory().replaceWith(owner.getInventory());
     owner = newOwner;

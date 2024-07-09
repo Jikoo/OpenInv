@@ -63,8 +63,8 @@ class ContainerSlotDrop implements ContainerSlot {
     @Override
     ItemStack getOrDefault() {
       return holder.connection != null && !holder.connection.isDisconnected()
-          ? PlaceholderManager.drop
-          : PlaceholderManager.blockedOffline;
+          ? Placeholders.drop
+          : Placeholders.blockedOffline;
     }
 
     @Override

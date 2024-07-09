@@ -16,8 +16,9 @@
 
 package com.lishid.openinv.commands;
 
-import com.lishid.openinv.OpenInv;
+import com.lishid.openinv.IOpenInv;
 import com.lishid.openinv.util.TabCompleter;
+import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -34,16 +35,18 @@ import java.util.function.Predicate;
 
 public class ContainerSettingCommand implements TabExecutor {
 
-    private final OpenInv plugin;
+    private final @NotNull IOpenInv plugin;
+    private final @NotNull LanguageManager lang;
 
-    public ContainerSettingCommand(final OpenInv plugin) {
+    public ContainerSettingCommand(@NotNull IOpenInv plugin, @NotNull LanguageManager lang) {
         this.plugin = plugin;
+        this.lang = lang;
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
-            plugin.getLanguageManager().sendMessage(sender, "messages.error.consoleUnsupported");
+            lang.sendMessage(sender, "messages.error.consoleUnsupported");
             return true;
         }
 
@@ -67,12 +70,12 @@ public class ContainerSettingCommand implements TabExecutor {
             setSetting.accept(player, !getSetting.test(player));
         }
 
-        String onOff = plugin.getLanguageManager().getLocalizedMessage(player, getSetting.test(player) ? "messages.info.on" : "messages.info.off");
+        String onOff = lang.getLocalizedMessage(player, getSetting.test(player) ? "messages.info.on" : "messages.info.off");
         if (onOff == null) {
             onOff = String.valueOf(getSetting.test(player));
         }
 
-        plugin.getLanguageManager().sendMessage(
+        lang.sendMessage(
                 sender,
                 "messages.info.settingState",
                 new Replacement("%setting%", any ? "AnyContainer" : "SilentContainer"),

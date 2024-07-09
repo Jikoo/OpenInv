@@ -63,7 +63,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
     private List<NonNullList<ItemStack>> compartments;
 
     public SpecialPlayerInventory(@NotNull org.bukkit.entity.Player bukkitPlayer, @NotNull Boolean online) {
-        super(PlayerDataManager.getHandle(bukkitPlayer));
+        super(PlayerManager.getHandle(bukkitPlayer));
         this.inventory = new CraftInventory(this);
         this.playerOnline = online;
         this.player = super.player;
@@ -81,7 +81,7 @@ public class SpecialPlayerInventory extends Inventory implements ISpecialPlayerI
         }
 
         Player offlinePlayer = this.player;
-        Player onlinePlayer = PlayerDataManager.getHandle(player);
+        Player onlinePlayer = PlayerManager.getHandle(player);
         onlinePlayer.getInventory().transaction.addAll(this.transaction);
 
         // Set owner to new player.

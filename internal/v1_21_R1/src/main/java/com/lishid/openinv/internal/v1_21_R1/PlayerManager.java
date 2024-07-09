@@ -14,13 +14,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.lishid.openinv.internal.v1_20_R3;
+package com.lishid.openinv.internal.v1_21_R1;
 
-import com.lishid.openinv.OpenInv;
-import com.lishid.openinv.internal.IPlayerDataManager;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.InventoryViewTitle;
 import com.lishid.openinv.internal.OpenInventoryView;
+import com.lishid.openinv.internal.v1_21_R1.inventory.OpenInventory;
+import com.lishid.openinv.util.lang.LanguageManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
@@ -37,18 +37,18 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
+import org.apache.commons.lang3.function.TriFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R3.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftContainer;
+import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R1.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,9 +56,11 @@ import java.lang.reflect.Field;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class PlayerDataManager implements IPlayerDataManager {
+public class PlayerManager implements com.lishid.openinv.internal.PlayerManager {
 
     private static boolean paper;
+    private static TriFunction<Player, ISpecialInventory, String, InventoryView> viewProvider;
+    private static Logger logger;
 
     static {
         try {
@@ -67,15 +69,23 @@ public class PlayerDataManager implements IPlayerDataManager {
         } catch (ClassNotFoundException ignored) {
             paper = false;
         }
+        try {
+            Class.forName(Bukkit.getServer().getClass().getPackageName() + ".inventory.CraftAbstractInventoryView");
+            viewProvider = OpenCraftView::new;
+        } catch (ClassNotFoundException ignored) {
+            viewProvider = OpenInventoryView::new;
+        }
     }
 
+    private final @NotNull LanguageManager lang;
     private @Nullable Field bukkitEntity;
 
-    public PlayerDataManager() {
+    public PlayerManager(@NotNull Logger logger, @NotNull LanguageManager lang) {
+        PlayerManager.logger = logger;
+        this.lang = lang;
         try {
             bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
         } catch (NoSuchFieldException e) {
-            Logger logger = JavaPlugin.getPlugin(OpenInv.class).getLogger();
             logger.warning("Unable to obtain field to inject custom save process - certain player data may be lost when saving!");
             logger.log(java.util.logging.Level.WARNING, e.getMessage(), e);
             bukkitEntity = null;
@@ -156,7 +166,7 @@ public class PlayerDataManager implements IPlayerDataManager {
         try {
             injectPlayer(entity);
         } catch (IllegalAccessException e) {
-            JavaPlugin.getPlugin(OpenInv.class).getLogger().log(
+            logger.log(
                 java.util.logging.Level.WARNING,
                 e,
                 () -> "Unable to inject ServerPlayer, certain player data may be lost when saving!");
@@ -167,7 +177,7 @@ public class PlayerDataManager implements IPlayerDataManager {
 
     static boolean loadData(@NotNull ServerPlayer player) {
         // See CraftPlayer#loadData
-        CompoundTag loadedData = player.server.getPlayerList().playerIo.load(player);
+        CompoundTag loadedData = player.server.getPlayerList().playerIo.load(player).orElse(null);
 
         if (loadedData == null) {
             // Exceptions with loading are logged by Mojang.
@@ -201,7 +211,7 @@ public class PlayerDataManager implements IPlayerDataManager {
         } else {
             // Vanilla player data.
             DimensionType.parseLegacy(new Dynamic<>(NbtOps.INSTANCE, loadedData.get("Dimension")))
-                .resultOrPartial(JavaPlugin.getPlugin(OpenInv.class).getLogger()::warning)
+                .resultOrPartial(logger::warning)
                 .map(player.server::getLevel)
                 // If ServerLevel exists, set, otherwise move to spawn.
                 .ifPresentOrElse(player::setServerLevel, () -> player.spawnIn(null));
@@ -234,7 +244,7 @@ public class PlayerDataManager implements IPlayerDataManager {
             injectPlayer(nmsPlayer);
             return nmsPlayer.getBukkitEntity();
         } catch (IllegalAccessException e) {
-            JavaPlugin.getPlugin(OpenInv.class).getLogger().log(
+            logger.log(
                 java.util.logging.Level.WARNING,
                 e,
                 () -> "Unable to inject ServerPlayer, certain player data may be lost when saving!");
@@ -243,50 +253,79 @@ public class PlayerDataManager implements IPlayerDataManager {
     }
 
     @Override
-    public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
+    public @Nullable InventoryView openInventory(@NotNull Player bukkitPlayer, @NotNull ISpecialInventory inventory) {
+        ServerPlayer player = getHandle(bukkitPlayer);
 
-        ServerPlayer nmsPlayer = getHandle(player);
-
-        if (nmsPlayer.connection == null) {
+        if (player.connection == null) {
             return null;
         }
 
-        InventoryViewTitle title = InventoryViewTitle.of(inventory);
+        if (inventory instanceof OpenInventory container) {
+            // See net.minecraft.server.level.ServerPlayer#openMenu(MenuProvider)
+            AbstractContainerMenu menu = container.createMenu(player.nextContainerCounter(), player.getInventory(), player);
 
-        if (title == null) {
-            return player.openInventory(inventory.getBukkitInventory());
+            // Should never happen, player is a ServerPlayer with an active connection.
+            if (menu == null) {
+                return null;
+            }
+
+            // Set up title (the whole reason we're not just using Player#openInventory(Inventory)).
+            // Title can only be set once for a menu, and is set during the open process.
+            menu.setTitle(container.getTitle(player));
+
+            menu = CraftEventFactory.callInventoryOpenEvent(player, menu, false);
+
+            // Menu is null if event is cancelled.
+            if (menu == null) {
+                return null;
+            }
+
+            player.containerMenu = menu;
+            player.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), menu.getTitle()));
+            player.initMenu(menu);
+
+            return menu.getBukkitView();
         }
 
-        InventoryView view = new OpenInventoryView(player, inventory, title.getTitle(player, inventory));
-        AbstractContainerMenu container = new CraftContainer(view, nmsPlayer, nmsPlayer.nextContainerCounter()) {
+        InventoryViewTitle viewTitle = InventoryViewTitle.of(inventory);
+
+        if (viewTitle == null) {
+            return bukkitPlayer.openInventory(inventory.getBukkitInventory());
+        }
+
+        String originalTitle = viewTitle.getTitle(lang, bukkitPlayer, inventory);
+        InventoryView view = viewProvider.apply(bukkitPlayer, inventory, originalTitle);
+        Component title = Component.literal(originalTitle);
+        AbstractContainerMenu container = new CraftContainer(view, player, player.nextContainerCounter()) {
             @Override
             public MenuType<?> getType() {
                 return getContainers(inventory.getBukkitInventory().getSize());
             }
         };
+        container.setTitle(title);
 
-        container.setTitle(Component.literal(view.getOriginalTitle()));
-        container = CraftEventFactory.callInventoryOpenEvent(nmsPlayer, container);
+        container = CraftEventFactory.callInventoryOpenEvent(player, container);
 
         if (container == null) {
             return null;
         }
 
-        nmsPlayer.connection.send(new ClientboundOpenScreenPacket(container.containerId, container.getType(),
-                Component.literal(container.getBukkitView().getTitle())));
-        nmsPlayer.containerMenu = container;
-        nmsPlayer.initMenu(container);
+        // Note: Reusing component prevents plugins from changing title during InventoryOpenEvent, but there's not much
+        // we can do about that - we can't call InventoryView#getTitle on older versions without causing an
+        // IncompatibleClassChangeError due to the fact that InventoryView is now an interface.
+        player.connection.send(new ClientboundOpenScreenPacket(container.containerId, container.getType(), title));
+        player.containerMenu = container;
+        player.initMenu(container);
 
         return container.getBukkitView();
 
     }
 
     static @NotNull MenuType<?> getContainers(int inventorySize) {
-
         return switch (inventorySize) {
             case 9 -> MenuType.GENERIC_9x1;
             case 18 -> MenuType.GENERIC_9x2;
-            case 36 -> MenuType.GENERIC_9x4; // PLAYER
+            case 36 -> MenuType.GENERIC_9x4;
             case 41, 45 -> MenuType.GENERIC_9x5;
             case 54 -> MenuType.GENERIC_9x6;
             default -> MenuType.GENERIC_9x3; // Default 27-slot inventory

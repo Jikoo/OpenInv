@@ -25,8 +25,6 @@ import java.lang.reflect.Field;
  */
 public final class ReflectionHelper {
 
-    private ReflectionHelper() {}
-
     /**
      * Grab an {@link Object} stored in a {@link Field} of another {@code Object}.
      *
@@ -71,6 +69,10 @@ public final class ReflectionHelper {
         }
 
         return null;
+    }
+
+    private ReflectionHelper() {
+        throw new IllegalStateException("Cannot create instance of utility class.");
     }
 
 }

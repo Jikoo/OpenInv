@@ -42,11 +42,10 @@
       <modules>
         <module>api</module>
         <module>common</module>
-        <module>plugin</module>
         <module>internal/v1_21_R1</module>
         <module>internal/v1_20_R4</module>
         <module>internal/v1_20_R3</module>
-        <module>assembly</module>
+        <module>plugin</module>
       </modules>
     </profile>
 
@@ -97,18 +96,6 @@
         <groupId>com.lishid</groupId>
         <scope>compile</scope>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>openinvplugincore</artifactId>
-        <groupId>com.lishid</groupId>
-        <scope>compile</scope>
-        <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.lishid</groupId>
-            <artifactId>openinvapi</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <artifactId>planarwrappers</artifactId>

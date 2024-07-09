@@ -19,11 +19,11 @@ class ContainerSlotEquipment extends ContainerSlotList {
   ContainerSlotEquipment(ServerPlayer holder, int index, EquipmentSlot equipmentSlot) {
     super(holder, index, InventoryType.SlotType.ARMOR);
     placeholder = switch (equipmentSlot) {
-      case HEAD -> PlaceholderManager.emptyHelmet;
-      case CHEST -> PlaceholderManager.emptyChestplate;
-      case LEGS -> PlaceholderManager.emptyLeggings;
-      case FEET -> PlaceholderManager.emptyBoots;
-      default -> PlaceholderManager.emptyOffHand;
+      case HEAD -> Placeholders.emptyHelmet;
+      case CHEST -> Placeholders.emptyChestplate;
+      case LEGS -> Placeholders.emptyLeggings;
+      case FEET -> Placeholders.emptyBoots;
+      default -> Placeholders.emptyOffHand;
     };
     this.equipmentSlot = equipmentSlot;
   }

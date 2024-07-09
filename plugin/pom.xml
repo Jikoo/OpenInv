@@ -24,10 +24,18 @@
     <version>5.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>openinvplugincore</artifactId>
+  <artifactId>openinvplugin</artifactId>
   <name>OpenInvPlugin</name>
 
   <dependencies>
+    <dependency>
+      <artifactId>spigot-api</artifactId>
+      <groupId>org.spigotmc</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>planarwrappers</artifactId>
+      <groupId>com.github.jikoo</groupId>
+    </dependency>
     <dependency>
       <artifactId>openinvapi</artifactId>
       <groupId>com.lishid</groupId>
@@ -37,20 +45,31 @@
       <groupId>com.lishid</groupId>
     </dependency>
     <dependency>
+      <groupId>com.lishid</groupId>
+      <artifactId>openinvadapter1_21_R1</artifactId>
+      <version>5.0.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.lishid</groupId>
+      <artifactId>openinvadapter1_20_R4</artifactId>
+      <version>5.0.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.lishid</groupId>
+      <artifactId>openinvadapter1_20_R3</artifactId>
+      <version>5.0.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <artifactId>annotations</artifactId>
       <groupId>org.jetbrains</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>spigot-api</artifactId>
-      <groupId>org.spigotmc</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>planarwrappers</artifactId>
-      <groupId>com.github.jikoo</groupId>
     </dependency>
   </dependencies>
 
   <build>
+    <finalName>OpenInv</finalName>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -89,6 +108,15 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <!-- TODO maven-copy-plugin or whatever it is? Should make this more elegant. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.1</version>
+        <configuration>
+          <outputDirectory>../target</outputDirectory>
+        </configuration>
       </plugin>
     </plugins>
   </build>

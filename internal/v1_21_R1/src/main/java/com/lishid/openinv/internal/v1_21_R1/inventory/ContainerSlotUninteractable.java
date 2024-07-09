@@ -64,7 +64,7 @@ class ContainerSlotUninteractable implements ContainerSlot {
 
     @Override
     ItemStack getOrDefault() {
-      return PlaceholderManager.notSlot;
+      return Placeholders.notSlot;
     }
 
     @Override

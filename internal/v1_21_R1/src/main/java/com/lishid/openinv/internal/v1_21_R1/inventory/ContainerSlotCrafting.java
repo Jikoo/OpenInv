@@ -102,7 +102,7 @@ class ContainerSlotCrafting implements ContainerSlot {
 
     @Override
     ItemStack getOrDefault() {
-      return isAvailable() ? items.get(ContainerSlotCrafting.this.index) : PlaceholderManager.survivalOnly(holder);
+      return isAvailable() ? items.get(ContainerSlotCrafting.this.index) : Placeholders.survivalOnly(holder);
     }
 
     @Override

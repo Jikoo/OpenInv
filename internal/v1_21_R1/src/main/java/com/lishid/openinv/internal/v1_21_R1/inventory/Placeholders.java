@@ -1,6 +1,5 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
-import com.lishid.openinv.internal.PlaceholderParser;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
@@ -28,7 +27,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 
-public class PlaceholderManager implements PlaceholderParser {
+public final class Placeholders {
 
   private static final CustomModelData DEFAULT_CUSTOM_MODEL_DATA = new CustomModelData(9999);
   static final @NotNull EnumMap<GameType, ItemStack> BLOCKED_GAME_TYPE = new EnumMap<>(GameType.class);
@@ -54,8 +53,7 @@ public class PlaceholderManager implements PlaceholderParser {
     }
   }
 
-  @Override
-  public void load(@NotNull ConfigurationSection section) throws Exception {
+  public static void load(@NotNull ConfigurationSection section) throws Exception {
     craftingOutput = parse(section, "crafting-output", craftingOutput);
     cursor = parse(section, "cursor", cursor);
     drop = parse(section, "drop", drop);
@@ -70,7 +68,7 @@ public class PlaceholderManager implements PlaceholderParser {
     BLOCKED_GAME_TYPE.put(GameType.SPECTATOR, parse(section, "blocked.spectator", BLOCKED_GAME_TYPE.get(GameType.SPECTATOR)));
   }
 
-  private @NotNull ItemStack parse(
+  private static @NotNull ItemStack parse(
       @NotNull ConfigurationSection section,
       @NotNull String path,
       @NotNull ItemStack defaultStack) throws Exception {
@@ -176,6 +174,10 @@ public class PlaceholderManager implements PlaceholderParser {
             .append(Component.literal(" - "))
             .append(Component.translatable("gui.socialInteractions.status_offline")));
     return itemStack;
+  }
+
+  private Placeholders() {
+    throw new IllegalStateException("Cannot create instance of utility class.");
   }
 
 }

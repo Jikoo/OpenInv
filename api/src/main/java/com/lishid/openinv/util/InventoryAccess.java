@@ -21,6 +21,7 @@ import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,7 @@ import java.util.function.BiFunction;
 
 public final class InventoryAccess {
 
-    private static BiFunction<Inventory, Class<? extends ISpecialInventory>, ISpecialInventory> provider;
+    private static @Nullable BiFunction<Inventory, Class<? extends ISpecialInventory>, ISpecialInventory> provider;
 
     public static boolean isUsable() {
         return provider != null;
@@ -90,8 +91,9 @@ public final class InventoryAccess {
     @RestrictedApi(
         explanation = "Not part of the API.",
         link = "",
-        allowedOnPath = ".*/com/lishid/openinv/util/AccessHelper.java")
-    static void setProvider(BiFunction<Inventory, Class<? extends ISpecialInventory>, ISpecialInventory> provider) {
+        allowedOnPath = ".*/com/lishid/openinv/util/InternalAccessor.java")
+    @ApiStatus.Internal
+    static void setProvider(@Nullable BiFunction<Inventory, Class<? extends ISpecialInventory>, ISpecialInventory> provider) {
         InventoryAccess.provider = provider;
     }
 

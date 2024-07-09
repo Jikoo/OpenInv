@@ -3,6 +3,7 @@ package com.lishid.openinv.event;
 import com.google.errorprone.annotations.RestrictedApi;
 import com.lishid.openinv.internal.ISpecialInventory;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,6 +25,7 @@ public class OpenPlayerSaveEvent extends PlayerSaveEvent {
       explanation = "Constructor is not considered part of the API and may be subject to change.",
       link = "",
       allowedOnPath = ".*/com/lishid/openinv/event/OpenEvents.java")
+  @ApiStatus.Internal
   OpenPlayerSaveEvent(@NotNull Player player, @NotNull ISpecialInventory inventory) {
     super(player);
     this.inventory = inventory;
