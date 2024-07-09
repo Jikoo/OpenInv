@@ -16,8 +16,9 @@
 
 package com.lishid.openinv.util;
 
-import java.lang.reflect.Field;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
 
 /**
  * A utility for making reflection easier.
@@ -59,8 +60,8 @@ public final class ReflectionHelper {
      */
     public static @Nullable Field grabFieldByType(Class<?> holderType, Class<?> fieldType) {
         for (Field field : holderType.getDeclaredFields()) {
-            field.setAccessible(true);
             if (fieldType.isAssignableFrom(field.getType())) {
+                field.setAccessible(true);
                 return field;
             }
         }

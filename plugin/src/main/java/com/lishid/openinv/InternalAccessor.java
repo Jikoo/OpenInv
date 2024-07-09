@@ -24,7 +24,9 @@ import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.PlaceholderParser;
+import com.lishid.openinv.util.AccessHelper;
 import com.lishid.openinv.util.InventoryAccess;
+import com.lishid.openinv.util.ReflectionHelper;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -64,8 +66,12 @@ class InternalAccessor {
             Class.forName("com.lishid.openinv.internal." + this.versionPackage + ".SpecialEnderChest");
             this.playerDataManager = this.createObject(IPlayerDataManager.class, "PlayerDataManager");
             this.anySilentContainer = this.createObject(IAnySilentContainer.class, "AnySilentContainer");
+            AccessHelper.setProvider(ReflectionHelper::grabObjectByType); // TODO internals
+            // TODO also repackage this class to util?
             this.supported = InventoryAccess.isUsable();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+            // Cannot load support; prettier notification will be printed by plugin.
+        }
     }
 
     private @Nullable String getVersionPackage() {
