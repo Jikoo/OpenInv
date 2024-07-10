@@ -51,12 +51,10 @@
     <dependency>
       <artifactId>openinvapi</artifactId>
       <groupId>com.lishid</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>openinvcommon</artifactId>
       <groupId>com.lishid</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>annotations</artifactId>

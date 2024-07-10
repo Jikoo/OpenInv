@@ -100,6 +100,7 @@
       <dependency>
         <artifactId>planarwrappers</artifactId>
         <groupId>com.github.jikoo</groupId>
+        <scope>compile</scope>
         <version>3.2.3</version>
       </dependency>
     </dependencies>
@@ -125,8 +126,8 @@
         </plugin>
 
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
+          <groupId>org.apache.maven.plugins</groupId>
           <version>3.3.1</version>
         </plugin>
 
@@ -145,10 +146,14 @@
 
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <groupId>org.apache.maven.plugins</groupId>
-          <version>3.13.0</version>
           <configuration>
-            <fork>true</fork>
+            <annotationProcessorPaths>
+              <path>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_core</artifactId>
+                <version>2.28.0</version>
+              </path>
+            </annotationProcessorPaths>
             <compilerArgs>
               <arg>-XDcompilePolicy=simple</arg>
               <arg>-Xplugin:ErrorProne</arg>
@@ -163,14 +168,10 @@
               <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
               <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
             </compilerArgs>
-            <annotationProcessorPaths>
-              <path>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_core</artifactId>
-                <version>2.28.0</version>
-              </path>
-            </annotationProcessorPaths>
+            <fork>true</fork>
           </configuration>
+          <groupId>org.apache.maven.plugins</groupId>
+          <version>3.13.0</version>
         </plugin>
 
         <plugin>
@@ -180,9 +181,7 @@
         </plugin>
 
         <plugin>
-          <groupId>net.md-5</groupId>
           <artifactId>specialsource-maven-plugin</artifactId>
-          <version>2.0.3</version>
           <executions>
             <execution>
               <phase>package</phase>
@@ -211,6 +210,8 @@
               </configuration>
             </execution>
           </executions>
+          <groupId>net.md-5</groupId>
+          <version>2.0.3</version>
         </plugin>
       </plugins>
     </pluginManagement>
