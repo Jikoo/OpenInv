@@ -30,8 +30,8 @@
   <name>OpenInvAdapter1_20_R3</name>
 
   <properties>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.system>17</maven.compiler.system>
+    <maven.compiler.release>17</maven.compiler.release>
     <spigot.version>1.20.4-R0.1-SNAPSHOT</spigot.version>
   </properties>
 

@@ -120,35 +120,14 @@
 
         <plugin>
           <artifactId>maven-shade-plugin</artifactId>
-          <configuration>
-            <filters>
-              <filter>
-                <!-- Always shade entirety of required modules. -->
-                <artifact>com.lishid:openinv*</artifact>
-                <includes>
-                  <include>**</include>
-                </includes>
-              </filter>
-              <filter>
-                <artifact>*:*</artifact>
-                <!-- Don't warn about file conflicts that'll be clobbered anyway. -->
-                <excludes>
-                  <exclude>META-INF/MANIFEST.MF</exclude>
-                </excludes>
-              </filter>
-            </filters>
-            <minimizeJar>true</minimizeJar>
-          </configuration>
-          <executions>
-            <execution>
-              <phase>package</phase>
-              <goals>
-                <goal>shade</goal>
-              </goals>
-            </execution>
-          </executions>
           <groupId>org.apache.maven.plugins</groupId>
           <version>3.6.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.3.1</version>
         </plugin>
 
         <plugin>
