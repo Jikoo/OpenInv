@@ -57,7 +57,6 @@ import java.util.logging.Logger;
 public class PlayerManager implements com.lishid.openinv.internal.PlayerManager {
 
     private static boolean paper;
-    private static Logger logger;
 
     static {
         try {
@@ -68,11 +67,12 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
         }
     }
 
+    private final @NotNull Logger logger;
     private final @NotNull LanguageManager lang;
     private @Nullable Field bukkitEntity;
 
     public PlayerManager(@NotNull Logger logger, @NotNull LanguageManager lang) {
-        PlayerManager.logger = logger;
+        this.logger = logger;
         this.lang = lang;
         try {
             bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
@@ -166,7 +166,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
         return entity;
     }
 
-    static boolean loadData(@NotNull ServerPlayer player) {
+    boolean loadData(@NotNull ServerPlayer player) {
         // See CraftPlayer#loadData
         CompoundTag loadedData = player.server.getPlayerList().playerIo.load(player).orElse(null);
 
@@ -190,7 +190,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
         return true;
     }
 
-    private static void parseWorld(@NotNull ServerPlayer player, @NotNull CompoundTag loadedData) {
+    private void parseWorld(@NotNull ServerPlayer player, @NotNull CompoundTag loadedData) {
         // See PlayerList#placeNewPlayer
         World bukkitWorld;
         if (loadedData.contains("WorldUUIDMost") && loadedData.contains("WorldUUIDLeast")) {
@@ -222,7 +222,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
 
         bukkitEntity.setAccessible(true);
 
-        bukkitEntity.set(player, new OpenPlayer(player.server.server, player));
+        bukkitEntity.set(player, new OpenPlayer(player.server.server, player, this));
     }
 
     @Override

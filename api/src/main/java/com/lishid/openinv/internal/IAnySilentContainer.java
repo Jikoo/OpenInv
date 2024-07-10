@@ -88,9 +88,14 @@ public interface IAnySilentContainer {
             return false;
         }
 
-        int ordinal = (chest.getFacing().ordinal() + 4 + (chest.getType() == Chest.Type.RIGHT ? -1 : 1)) % 4;
-        BlockFace relativeFace = BlockFace.values()[ordinal];
-        org.bukkit.block.Block relative = block.getRelative(relativeFace);
+        BlockFace relativeFace = switch (chest.getFacing()) {
+            case NORTH -> chest.getType() == Chest.Type.RIGHT ? BlockFace.WEST : BlockFace.EAST;
+            case EAST -> chest.getType() == Chest.Type.RIGHT ? BlockFace.NORTH : BlockFace.SOUTH;
+            case SOUTH -> chest.getType() == Chest.Type.RIGHT ? BlockFace.EAST : BlockFace.WEST;
+            case WEST -> chest.getType() == Chest.Type.RIGHT ? BlockFace.SOUTH : BlockFace.NORTH;
+            default -> BlockFace.SELF;
+        };
+        Block relative = block.getRelative(relativeFace);
 
         if (relative.getType() != block.getType()) {
             return false;
