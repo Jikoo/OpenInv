@@ -128,6 +128,7 @@ public abstract class OpenContainerMenu extends AbstractContainerMenu {
     return true;
   }
 
+  // Overrides from here on are purely to modify the sync process to send placeholder items.
   @Override
   protected Slot addSlot(Slot slot) {
     slot.index = this.slots.size();

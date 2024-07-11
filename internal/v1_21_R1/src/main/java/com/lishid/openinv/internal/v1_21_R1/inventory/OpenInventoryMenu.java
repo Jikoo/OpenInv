@@ -160,9 +160,8 @@ public class OpenInventoryMenu extends OpenContainerMenu {
           return rawSlot < topSize;
         }
 
-        @NotNull
         @Override
-        public InventoryType.SlotType getSlotType(int slot) {
+        public @NotNull InventoryType.SlotType getSlotType(int slot) {
           if (slot < 0) {
             return InventoryType.SlotType.OUTSIDE;
           }
