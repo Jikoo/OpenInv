@@ -19,21 +19,21 @@ interface ContainerSlot {
   void setHolder(@NotNull ServerPlayer holder);
 
   /**
-   * Get the current item. May be fake for display purposes!
+   * Get the current item.
    *
    * @return the current item
    */
   ItemStack get();
 
   /**
-   * Remove the current item. Item removed is real.
+   * Remove the current item.
    *
    * @return the current item
    */
   ItemStack remove();
 
   /**
-   * Remove some of the current item. Item removed is real.
+   * Remove some of the current item.
    *
    * @return the current item
    */

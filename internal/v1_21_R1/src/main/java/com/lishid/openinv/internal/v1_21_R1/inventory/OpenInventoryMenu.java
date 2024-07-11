@@ -1,6 +1,7 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
 import com.google.common.base.Suppliers;
+import com.lishid.openinv.internal.v1_21_R1.AnySilentContainer;
 import com.lishid.openinv.util.Permissions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -135,21 +136,13 @@ public class OpenInventoryMenu extends AbstractContainerMenu {
       size = ((int) Math.ceil(size / 9.0)) * 9;
     }
 
-    return switch (size) {
-      case 9 -> MenuType.GENERIC_9x1;
-      case 18 -> MenuType.GENERIC_9x2;
-      case 36 -> MenuType.GENERIC_9x4;
-      case 45 -> MenuType.GENERIC_9x5;
-      case 54 -> MenuType.GENERIC_9x6;
-      // Default to 27-slot inventory.
-      default -> MenuType.GENERIC_9x3;
-    };
+    return AnySilentContainer.getContainers(size);
   }
 
   @Override
   public CraftInventoryView getBukkitView() {
     if (bukkitEntity == null) {
-      bukkitEntity = new CraftInventoryView(viewer.getBukkitEntity(), new OpenPlayerInventory(inventory), this) {
+      bukkitEntity = new CraftInventoryView(viewer.getBukkitEntity(), inventory.getBukkitInventory(), this) {
         @Override
         public org.bukkit.inventory.ItemStack getItem(int index) {
           if (index < 0) {

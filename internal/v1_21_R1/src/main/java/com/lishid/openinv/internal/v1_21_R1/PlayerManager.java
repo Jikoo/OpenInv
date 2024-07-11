@@ -17,10 +17,8 @@
 package com.lishid.openinv.internal.v1_21_R1;
 
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.internal.InventoryViewTitle;
-import com.lishid.openinv.internal.OpenInventoryView;
+import com.lishid.openinv.internal.v1_21_R1.inventory.OpenEnderChest;
 import com.lishid.openinv.internal.v1_21_R1.inventory.OpenInventory;
-import com.lishid.openinv.util.lang.LanguageManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
@@ -31,13 +29,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
-import org.apache.commons.lang3.function.TriFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -46,7 +43,6 @@ import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_21_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
@@ -59,31 +55,22 @@ import java.util.logging.Logger;
 public class PlayerManager implements com.lishid.openinv.internal.PlayerManager {
 
     private static boolean paper;
-    private static TriFunction<Player, ISpecialInventory, String, InventoryView> viewProvider;
 
-    static {
+  static {
         try {
             Class.forName("io.papermc.paper.configuration.Configuration");
             paper = true;
         } catch (ClassNotFoundException ignored) {
             paper = false;
         }
-        try {
-            Class.forName(Bukkit.getServer().getClass().getPackageName() + ".inventory.CraftAbstractInventoryView");
-            viewProvider = OpenCraftView::new;
-        } catch (ClassNotFoundException ignored) {
-            viewProvider = OpenInventoryView::new;
-        }
     }
 
     private final @NotNull Logger logger;
-    private final @NotNull LanguageManager lang;
     private @Nullable Field bukkitEntity;
 
-    public PlayerManager(@NotNull Logger logger, @NotNull LanguageManager lang) {
+    public PlayerManager(@NotNull Logger logger) {
         this.logger = logger;
-        this.lang = lang;
-        try {
+      try {
             bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
         } catch (NoSuchFieldException e) {
             logger.warning("Unable to obtain field to inject custom save process - certain player data may be lost when saving!");
@@ -260,76 +247,42 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
             return null;
         }
 
-        if (inventory instanceof OpenInventory container) {
-            // See net.minecraft.server.level.ServerPlayer#openMenu(MenuProvider)
-            AbstractContainerMenu menu = container.createMenu(player.nextContainerCounter(), player.getInventory(), player);
-
-            // Should never happen, player is a ServerPlayer with an active connection.
-            if (menu == null) {
-                return null;
-            }
-
-            // Set up title (the whole reason we're not just using Player#openInventory(Inventory)).
-            // Title can only be set once for a menu, and is set during the open process.
-            menu.setTitle(container.getTitle(player));
-
-            menu = CraftEventFactory.callInventoryOpenEvent(player, menu, false);
-
-            // Menu is null if event is cancelled.
-            if (menu == null) {
-                return null;
-            }
-
-            player.containerMenu = menu;
-            player.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), menu.getTitle()));
-            player.initMenu(menu);
-
-            return menu.getBukkitView();
-        }
-
-        InventoryViewTitle viewTitle = InventoryViewTitle.of(inventory);
-
-        if (viewTitle == null) {
-            return bukkitPlayer.openInventory(inventory.getBukkitInventory());
-        }
-
-        String originalTitle = viewTitle.getTitle(lang, bukkitPlayer, inventory);
-        InventoryView view = viewProvider.apply(bukkitPlayer, inventory, originalTitle);
-        Component title = Component.literal(originalTitle);
-        AbstractContainerMenu container = new CraftContainer(view, player, player.nextContainerCounter()) {
-            @Override
-            public MenuType<?> getType() {
-                return getContainers(inventory.getBukkitInventory().getSize());
-            }
-        };
-        container.setTitle(title);
-
-        container = CraftEventFactory.callInventoryOpenEvent(player, container);
-
-        if (container == null) {
+        MenuProvider provider;
+        Component title;
+        if (inventory instanceof OpenInventory playerInv) {
+            provider = playerInv;
+            title = playerInv.getTitle(player);
+        } else if (inventory instanceof OpenEnderChest enderChest) {
+            provider = enderChest;
+            title = enderChest.getDisplayName();
+        } else {
             return null;
         }
 
-        // Note: Reusing component prevents plugins from changing title during InventoryOpenEvent, but there's not much
-        // we can do about that - we can't call InventoryView#getTitle on older versions without causing an
-        // IncompatibleClassChangeError due to the fact that InventoryView is now an interface.
-        player.connection.send(new ClientboundOpenScreenPacket(container.containerId, container.getType(), title));
-        player.containerMenu = container;
-        player.initMenu(container);
+        // See net.minecraft.server.level.ServerPlayer#openMenu(MenuProvider)
+        AbstractContainerMenu menu = provider.createMenu(player.nextContainerCounter(), player.getInventory(), player);
 
-        return container.getBukkitView();
+        // Should never happen, player is a ServerPlayer with an active connection.
+        if (menu == null) {
+            return null;
+        }
 
-    }
+        // Set up title (the whole reason we're not just using Player#openInventory(Inventory)).
+        // Title can only be set once for a menu, and is set during the open process.
+        menu.setTitle(title);
 
-    static @NotNull MenuType<?> getContainers(int inventorySize) {
-        return switch (inventorySize) {
-            case 9 -> MenuType.GENERIC_9x1;
-            case 18 -> MenuType.GENERIC_9x2;
-            case 36 -> MenuType.GENERIC_9x4;
-            case 41, 45 -> MenuType.GENERIC_9x5;
-            case 54 -> MenuType.GENERIC_9x6;
-            default -> MenuType.GENERIC_9x3; // Default 27-slot inventory
-        };
+        menu = CraftEventFactory.callInventoryOpenEvent(player, menu, false);
+
+        // Menu is null if event is cancelled.
+        if (menu == null) {
+            return null;
+        }
+
+        player.containerMenu = menu;
+        player.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), menu.getTitle()));
+        player.initMenu(menu);
+
+        return menu.getBukkitView();
     }
 
 }

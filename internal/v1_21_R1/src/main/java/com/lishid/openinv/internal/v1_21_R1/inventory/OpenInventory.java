@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OpenInventory implements Container, Nameable, MenuProvider, ISpecialPlayerInventory {
+public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInventory {
 
   private final List<ContainerSlot> slots;
   private final int size;
@@ -215,7 +214,8 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
                   .withColor(ChatFormatting.WHITE)));
     }
     // Normal title: "Inventory - OwnerName"
-    component.append(Component.translatable("container.inventory"))
+    component.append(Component.translatableWithFallback("openinv.container.inventory.prefix", "", owner.getName()))
+        .append(Component.translatable("container.inventory"))
         .append(Component.translatableWithFallback("openinv.container.inventory.suffix", " - %s", owner.getName()));
     return component;
   }
@@ -240,6 +240,11 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
 
   @Override
   public void setPlayerOffline() {}
+
+  @Override
+  public boolean isInUse() {
+    return !transaction.isEmpty();
+  }
 
   @Override
   public @NotNull org.bukkit.entity.Player getPlayer() {
@@ -337,13 +342,8 @@ public class OpenInventory implements Container, Nameable, MenuProvider, ISpecia
   }
 
   @Override
-  public Component getName() {
-    return getTitle(null);
-  }
-
-  @Override
   public Component getDisplayName() {
-    return getName();
+    return getTitle(null);
   }
 
   @Override

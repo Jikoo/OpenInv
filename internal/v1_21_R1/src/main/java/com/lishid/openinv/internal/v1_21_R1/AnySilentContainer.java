@@ -74,6 +74,18 @@ public class AnySilentContainer implements IAnySilentContainer {
         }
     }
 
+    public static @NotNull MenuType<?> getContainers(int inventorySize) {
+        return switch (inventorySize) {
+            case 9 -> MenuType.GENERIC_9x1;
+            case 18 -> MenuType.GENERIC_9x2;
+            case 36 -> MenuType.GENERIC_9x4;
+            case 45 -> MenuType.GENERIC_9x5;
+            case 54 -> MenuType.GENERIC_9x6;
+            // Default to 27-slot inventory
+            default -> MenuType.GENERIC_9x3;
+        };
+    }
+
     @Override
     public boolean activateContainer(
             @NotNull final Player bukkitPlayer,
@@ -102,7 +114,7 @@ public class AnySilentContainer implements IAnySilentContainer {
             PlayerEnderChestContainer enderChest = player.getEnderChestInventory();
             enderChest.setActiveChest(enderChestTile);
             player.openMenu(new SimpleMenuProvider((containerCounter, playerInventory, ignored) -> {
-                MenuType<?> containers = PlayerManager.getContainers(enderChest.getContainerSize());
+                MenuType<?> containers = getContainers(enderChest.getContainerSize());
                 int rows = enderChest.getContainerSize() / 9;
                 return new ChestMenu(containers, containerCounter, playerInventory, enderChest, rows);
             }, Component.translatable("container.enderchest")));

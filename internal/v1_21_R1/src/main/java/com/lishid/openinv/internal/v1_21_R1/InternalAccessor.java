@@ -5,6 +5,7 @@ import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
+import com.lishid.openinv.internal.v1_21_R1.inventory.OpenEnderChest;
 import com.lishid.openinv.internal.v1_21_R1.inventory.OpenInventory;
 import com.lishid.openinv.internal.v1_21_R1.inventory.Placeholders;
 import com.lishid.openinv.util.lang.LanguageManager;
@@ -27,7 +28,7 @@ public class InternalAccessor implements Accessor {
 
   public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
     this.logger = logger;
-    manager = new PlayerManager(logger, lang);
+    manager = new PlayerManager(logger);
     anySilentContainer = new AnySilentContainer(logger, lang);
   }
 
@@ -48,7 +49,7 @@ public class InternalAccessor implements Accessor {
 
   @Override
   public @NotNull ISpecialEnderChest createEnderChest(@NotNull Player player) {
-    return new SpecialEnderChest(player, player.isOnline());
+    return new OpenEnderChest(player);
   }
 
   @Override
