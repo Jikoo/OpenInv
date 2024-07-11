@@ -30,17 +30,17 @@ import java.util.Optional;
 public final class Placeholders {
 
   private static final CustomModelData DEFAULT_CUSTOM_MODEL_DATA = new CustomModelData(9999);
-  static final @NotNull EnumMap<GameType, ItemStack> BLOCKED_GAME_TYPE = new EnumMap<>(GameType.class);
-  static @NotNull ItemStack craftingOutput = defaultCraftingOutput();
-  static @NotNull ItemStack cursor = defaultCursor();
-  static @NotNull ItemStack drop = defaultDrop();
-  static @NotNull ItemStack emptyHelmet = getEmptyArmor(Items.LEATHER_HELMET);
-  static @NotNull ItemStack emptyChestplate = getEmptyArmor(Items.LEATHER_CHESTPLATE);
-  static @NotNull ItemStack emptyLeggings = getEmptyArmor(Items.LEATHER_LEGGINGS);
-  static @NotNull ItemStack emptyBoots = getEmptyArmor(Items.LEATHER_BOOTS);
-  static @NotNull ItemStack emptyOffHand = getEmptyShield();
-  static @NotNull ItemStack notSlot = defaultNotSlot();
-  static @NotNull ItemStack blockedOffline = defaultBlockedOffline();
+  public static final @NotNull EnumMap<GameType, ItemStack> BLOCKED_GAME_TYPE = new EnumMap<>(GameType.class);
+  public static @NotNull ItemStack craftingOutput = defaultCraftingOutput();
+  public static @NotNull ItemStack cursor = defaultCursor();
+  public static @NotNull ItemStack drop = defaultDrop();
+  public static @NotNull ItemStack emptyHelmet = getEmptyArmor(Items.LEATHER_HELMET);
+  public static @NotNull ItemStack emptyChestplate = getEmptyArmor(Items.LEATHER_CHESTPLATE);
+  public static @NotNull ItemStack emptyLeggings = getEmptyArmor(Items.LEATHER_LEGGINGS);
+  public static @NotNull ItemStack emptyBoots = getEmptyArmor(Items.LEATHER_BOOTS);
+  public static @NotNull ItemStack emptyOffHand = getEmptyShield();
+  public static @NotNull ItemStack notSlot = defaultNotSlot();
+  public static @NotNull ItemStack blockedOffline = defaultBlockedOffline();
 
   static {
     for (GameType type : GameType.values()) {
@@ -83,7 +83,7 @@ public final class Placeholders {
     return parsed.filter(itemStack -> !itemStack.isEmpty()).orElse(defaultStack);
   }
 
-  static ItemStack survivalOnly(@NotNull ServerPlayer serverPlayer) {
+  public static ItemStack survivalOnly(@NotNull ServerPlayer serverPlayer) {
     if (serverPlayer.connection == null || serverPlayer.connection.isDisconnected()) {
       return blockedOffline;
     }

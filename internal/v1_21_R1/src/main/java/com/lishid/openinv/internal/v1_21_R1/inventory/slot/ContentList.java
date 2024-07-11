@@ -1,4 +1,4 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -12,13 +12,13 @@ import java.util.List;
 /**
  * A normal slot backed by an item list.
  */
-abstract class ContainerSlotList implements ContainerSlot {
+public abstract class ContentList implements Content {
 
   private final int index;
   private final InventoryType.SlotType slotType;
-  List<ItemStack> items;
+  protected List<ItemStack> items;
 
-  ContainerSlotList(ServerPlayer holder, int index, InventoryType.SlotType slotType) {
+  public ContentList(ServerPlayer holder, int index, InventoryType.SlotType slotType) {
     this.index = index;
     this.slotType = slotType;
     setHolder(holder);
@@ -46,8 +46,8 @@ abstract class ContainerSlotList implements ContainerSlot {
   }
 
   @Override
-  public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new Slot(container, index, x, y);
+  public Slot asSlot(Container container, int slot, int x, int y) {
+    return new Slot(container, slot, x, y);
   }
 
   @Override

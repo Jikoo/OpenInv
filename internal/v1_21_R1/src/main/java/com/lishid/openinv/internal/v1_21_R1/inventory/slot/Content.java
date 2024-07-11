@@ -1,4 +1,4 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -7,9 +7,9 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An interface defining behaviors for entries in a {@link Container}. Used to reduce duplicate slot reordering.
+ * An interface defining behaviors for entries in a {@link Container}. Used to reduce duplicate content reordering.
  */
-interface ContainerSlot {
+public interface Content {
 
   /**
    * Update internal holder.
@@ -51,12 +51,12 @@ interface ContainerSlot {
    * impose any specific restrictions to insertion or removal.
    *
    * @param container the backing container
-   * @param index the slot of the backing container represented
+   * @param slot the slot of the backing container represented
    * @param x clientside x dimension from top left of inventory, not used
    * @param y clientside y dimension from top left of inventory, not used
    * @return a menu slot
    */
-  Slot asMenuSlot(Container container, int index, int x, int y);
+  Slot asSlot(Container container, int slot, int x, int y);
 
   /**
    * Get a loose Bukkit translation of what this slot stores. For example, any slot that drops items at the owner rather

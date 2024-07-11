@@ -1,5 +1,6 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
+import com.lishid.openinv.internal.v1_21_R1.inventory.Placeholders;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -11,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A slot for equipment that displays placeholders if empty.
  */
-class ContainerSlotEquipment extends ContainerSlotList {
+public class ContentEquipment extends ContentList {
 
   private final ItemStack placeholder;
   private final EquipmentSlot equipmentSlot;
 
-  ContainerSlotEquipment(ServerPlayer holder, int index, EquipmentSlot equipmentSlot) {
+  public ContentEquipment(ServerPlayer holder, int index, EquipmentSlot equipmentSlot) {
     super(holder, index, InventoryType.SlotType.ARMOR);
     placeholder = switch (equipmentSlot) {
       case HEAD -> Placeholders.emptyHelmet;
@@ -34,11 +35,11 @@ class ContainerSlotEquipment extends ContainerSlotList {
   }
 
   @Override
-  public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new SlotEquipment(container, index, x, y);
+  public Slot asSlot(Container container, int slot, int x, int y) {
+    return new SlotEquipment(container, slot, x, y);
   }
 
-  class SlotEquipment extends MenuSlotPlaceholder {
+  public class SlotEquipment extends SlotPlaceholder {
 
     private ServerPlayer viewer;
 
@@ -47,7 +48,7 @@ class ContainerSlotEquipment extends ContainerSlotList {
     }
 
     @Override
-    ItemStack getOrDefault() {
+    public ItemStack getOrDefault() {
       ItemStack itemStack = getItem();
       if (!itemStack.isEmpty()) {
         return itemStack;
@@ -55,11 +56,11 @@ class ContainerSlotEquipment extends ContainerSlotList {
       return placeholder;
     }
 
-    EquipmentSlot getEquipmentSlot() {
+    public EquipmentSlot getEquipmentSlot() {
       return equipmentSlot;
     }
 
-    void onlyEquipmentFor(ServerPlayer viewer) {
+    public void onlyEquipmentFor(ServerPlayer viewer) {
       this.viewer = viewer;
     }
 

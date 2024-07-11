@@ -1,24 +1,7 @@
-/*
- * Copyright (C) 2011-2023 lishid. All rights reserved.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
 import com.lishid.openinv.internal.ISpecialEnderChest;
-import com.lishid.openinv.internal.v1_21_R1.AnySilentContainer;
-import com.lishid.openinv.internal.v1_21_R1.PlayerManager;
+import com.lishid.openinv.internal.v1_21_R1.player.PlayerManager;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,13 +12,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.StackedContentsCompatible;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventoryView;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
@@ -200,20 +181,12 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Men
         .append(Component.translatableWithFallback("openinv.container.enderchest.suffix", " - %s", owner.getName()));
   }
 
-  @Nullable
   @Override
-  public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-    int rows = (getContainerSize() % 9) + 1;
-    return new ChestMenu(AnySilentContainer.getContainers(getContainerSize()), i, inventory, this, rows) {
-      private CraftInventoryView view;
-      @Override
-      public CraftInventoryView getBukkitView() {
-        if (view == null) {
-          view = new CraftInventoryView(player.getBukkitEntity(), getBukkitInventory(), this);
-        }
-        return view;
-      }
-    };
+  public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+    if (player instanceof ServerPlayer serverPlayer) {
+      return new OpenEnderChestMenu(this, serverPlayer, i);
+    }
+    return null;
   }
 
 }

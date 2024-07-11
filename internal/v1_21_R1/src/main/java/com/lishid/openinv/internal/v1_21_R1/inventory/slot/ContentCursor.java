@@ -1,5 +1,6 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
+import com.lishid.openinv.internal.v1_21_R1.inventory.Placeholders;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -11,11 +12,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A slot wrapping the active menu's cursor. Unavailable when not online in a survival mode.
  */
-class ContainerSlotCursor implements ContainerSlot {
+public class ContentCursor implements Content {
 
   private @NotNull ServerPlayer holder;
 
-  ContainerSlotCursor(@NotNull ServerPlayer holder) {
+  public ContentCursor(@NotNull ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -66,8 +67,8 @@ class ContainerSlotCursor implements ContainerSlot {
   }
 
   @Override
-  public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new SlotCursor(container, index, x, y);
+  public Slot asSlot(Container container, int slot, int x, int y) {
+    return new SlotCursor(container, slot, x, y);
   }
 
   @Override
@@ -76,14 +77,14 @@ class ContainerSlotCursor implements ContainerSlot {
     return InventoryType.SlotType.OUTSIDE;
   }
 
-  class SlotCursor extends MenuSlotPlaceholder {
+  public class SlotCursor extends SlotPlaceholder {
 
     private SlotCursor(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
 
     @Override
-    ItemStack getOrDefault() {
+    public ItemStack getOrDefault() {
       if (!isAvailable()) {
         return Placeholders.survivalOnly(holder);
       }

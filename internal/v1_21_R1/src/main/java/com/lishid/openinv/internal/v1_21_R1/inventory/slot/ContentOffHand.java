@@ -1,4 +1,4 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -10,11 +10,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A slot for equipment that updates held items if necessary.
  */
-class ContainerSlotOffHand extends ContainerSlotEquipment {
+public class ContentOffHand extends ContentEquipment {
 
   private ServerPlayer holder;
 
-  public ContainerSlotOffHand(ServerPlayer holder, int localIndex) {
+  public ContentOffHand(ServerPlayer holder, int localIndex) {
     super(holder, localIndex, EquipmentSlot.OFFHAND);
   }
 
@@ -30,8 +30,8 @@ class ContainerSlotOffHand extends ContainerSlotEquipment {
   }
 
   @Override
-  public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new SlotEquipment(container, index, x, y) {
+  public Slot asSlot(Container container, int slot, int x, int y) {
+    return new SlotEquipment(container, slot, x, y) {
       @Override
       public void setChanged() {
         if (holder.connection != null

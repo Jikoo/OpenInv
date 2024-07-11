@@ -1,5 +1,6 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
+import com.lishid.openinv.internal.v1_21_R1.inventory.Placeholders;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
@@ -10,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A fake slot used to drop items. Unavailable offline.
  */
-class ContainerSlotDrop implements ContainerSlot {
+public class ContentDrop implements Content {
 
   private ServerPlayer holder;
 
-  ContainerSlotDrop(@NotNull ServerPlayer holder) {
+  public ContentDrop(@NotNull ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -44,8 +45,8 @@ class ContainerSlotDrop implements ContainerSlot {
   }
 
   @Override
-  public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new SlotDrop(container, index, x, y);
+  public Slot asSlot(Container container, int slot, int x, int y) {
+    return new SlotDrop(container, slot, x, y);
   }
 
   @Override
@@ -54,14 +55,14 @@ class ContainerSlotDrop implements ContainerSlot {
     return InventoryType.SlotType.OUTSIDE;
   }
 
-  class SlotDrop extends MenuSlotPlaceholder {
+  public class SlotDrop extends SlotPlaceholder {
 
     private SlotDrop(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
 
     @Override
-    ItemStack getOrDefault() {
+    public ItemStack getOrDefault() {
       return holder.connection != null && !holder.connection.isDisconnected()
           ? Placeholders.drop
           : Placeholders.blockedOffline;

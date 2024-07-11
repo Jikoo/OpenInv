@@ -1,5 +1,6 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
+import com.lishid.openinv.internal.v1_21_R1.inventory.Placeholders;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -14,13 +15,13 @@ import java.util.List;
 /**
  * A slot in a survival crafting inventory. Unavailable when not online in a survival mode.
  */
-class ContainerSlotCrafting implements ContainerSlot {
+public class ContentCrafting implements Content {
 
   private final int index;
   private ServerPlayer holder;
   private List<ItemStack> items;
 
-  ContainerSlotCrafting(@NotNull ServerPlayer holder, int index) {
+  public ContentCrafting(@NotNull ServerPlayer holder, int index) {
     setHolder(holder);
     this.index = index;
   }
@@ -85,8 +86,8 @@ class ContainerSlotCrafting implements ContainerSlot {
   }
 
   @Override
-  public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new SlotCrafting(container, index, x, y);
+  public Slot asSlot(Container container, int slot, int x, int y) {
+    return new SlotCrafting(container, slot, x, y);
   }
 
   @Override
@@ -94,15 +95,15 @@ class ContainerSlotCrafting implements ContainerSlot {
     return isAvailable() ? InventoryType.SlotType.CRAFTING : InventoryType.SlotType.OUTSIDE;
   }
 
-  class SlotCrafting extends MenuSlotPlaceholder {
+  public class SlotCrafting extends SlotPlaceholder {
 
     private SlotCrafting(Container container, int index, int x, int y) {
       super(container, index, x, y);
     }
 
     @Override
-    ItemStack getOrDefault() {
-      return isAvailable() ? items.get(ContainerSlotCrafting.this.index) : Placeholders.survivalOnly(holder);
+    public ItemStack getOrDefault() {
+      return isAvailable() ? items.get(ContentCrafting.this.index) : Placeholders.survivalOnly(holder);
     }
 
     @Override

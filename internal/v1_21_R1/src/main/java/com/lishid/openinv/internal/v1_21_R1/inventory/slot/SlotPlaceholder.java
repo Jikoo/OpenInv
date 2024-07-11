@@ -1,4 +1,4 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
@@ -9,12 +9,12 @@ import net.minecraft.world.item.ItemStack;
  *
  * <p>Used to prevent plugins (particularly sorting plugins) from adding placeholders to inventories.</p>
  */
-abstract class MenuSlotPlaceholder extends Slot {
+public abstract class SlotPlaceholder extends Slot {
 
-  MenuSlotPlaceholder(Container container, int index, int x, int y) {
+  public SlotPlaceholder(Container container, int index, int x, int y) {
     super(container, index, x, y);
   }
 
-  abstract ItemStack getOrDefault();
+  public abstract ItemStack getOrDefault();
 
 }

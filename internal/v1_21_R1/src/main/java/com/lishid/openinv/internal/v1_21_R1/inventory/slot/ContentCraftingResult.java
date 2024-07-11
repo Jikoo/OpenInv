@@ -1,5 +1,6 @@
-package com.lishid.openinv.internal.v1_21_R1.inventory;
+package com.lishid.openinv.internal.v1_21_R1.inventory.slot;
 
+import com.lishid.openinv.internal.v1_21_R1.inventory.Placeholders;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -13,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
  *
  * <p>Unmodifiable because I said so. Use your own crafting grid.</p>
  */
-class ContainerSlotCraftingResult extends ContainerSlotUninteractable {
+public class ContentCraftingResult extends ContentViewOnly {
 
-  ContainerSlotCraftingResult(@NotNull ServerPlayer holder) {
+  public ContentCraftingResult(@NotNull ServerPlayer holder) {
     super(holder);
   }
 
@@ -26,11 +27,11 @@ class ContainerSlotCraftingResult extends ContainerSlotUninteractable {
   }
 
   @Override
-  public Slot asMenuSlot(Container container, int index, int x, int y) {
-    return new SlotUninteractable(container, index, x, y) {
+  public Slot asSlot(Container container, int slot, int x, int y) {
+    return new SlotViewOnly(container, slot, x, y) {
       @Override
-      ItemStack getOrDefault() {
-        if (!ContainerSlotCrafting.isAvailable(holder)) {
+      public ItemStack getOrDefault() {
+        if (!ContentCrafting.isAvailable(holder)) {
           return Placeholders.survivalOnly(holder);
         }
         InventoryMenu inventoryMenu = holder.inventoryMenu;

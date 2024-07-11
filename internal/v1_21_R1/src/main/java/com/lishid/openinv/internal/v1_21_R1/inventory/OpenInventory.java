@@ -1,7 +1,17 @@
 package com.lishid.openinv.internal.v1_21_R1.inventory;
 
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import com.lishid.openinv.internal.v1_21_R1.PlayerManager;
+import com.lishid.openinv.internal.v1_21_R1.player.PlayerManager;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.Content;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.ContentCrafting;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.ContentCraftingResult;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.ContentCursor;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.ContentDrop;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.ContentEquipment;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.ContentList;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.ContentOffHand;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.ContentViewOnly;
+import com.lishid.openinv.internal.v1_21_R1.inventory.slot.SlotViewOnly;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -29,7 +39,7 @@ import java.util.List;
 
 public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInventory {
 
-  private final List<ContainerSlot> slots;
+  private final List<Content> slots;
   private final int size;
   private ServerPlayer owner;
   private int maxStackSize = 99;
@@ -43,7 +53,7 @@ public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInv
     int rawSize = owner.getInventory().getContainerSize() + owner.inventoryMenu.getCraftSlots().getContainerSize() + 1;
     size = ((int) Math.ceil(rawSize / 9.0)) * 9;
 
-    slots = NonNullList.withSize(size, new ContainerSlotUninteractable(owner));
+    slots = NonNullList.withSize(size, new ContentViewOnly(owner));
     setupSlots();
   }
 
@@ -62,9 +72,9 @@ public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInv
       // Off-hand: Below chestplate.
       addOffHand(46);
       // Drop slot: Bottom right.
-      slots.set(53, new ContainerSlotDrop(owner));
+      slots.set(53, new ContentDrop(owner));
       // Cursor slot: Above drop.
-      slots.set(44, new ContainerSlotCursor(owner));
+      slots.set(44, new ContentCursor(owner));
 
       // Crafting is displayed in the bottom right corner.
       // As we're using the pretty view, this is a 3x2.
@@ -76,9 +86,9 @@ public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInv
     nextIndex = addArmor(nextIndex);
     nextIndex = addOffHand(nextIndex);
     nextIndex = addCrafting(nextIndex, false);
-    slots.set(nextIndex, new ContainerSlotCursor(owner));
+    slots.set(nextIndex, new ContentCursor(owner));
     // Drop slot last.
-    slots.set(slots.size() - 1, new ContainerSlotDrop(owner));
+    slots.set(slots.size() - 1, new ContentDrop(owner));
   }
 
   private int addMainInventory() {
@@ -97,7 +107,7 @@ public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInv
         invIndex = localIndex - hotbarDiff;
       }
 
-      slots.set(localIndex, new ContainerSlotList(owner, invIndex, type) {
+      slots.set(localIndex, new ContentList(owner, invIndex, type) {
         @Override
         public void setHolder(@NotNull ServerPlayer holder) {
           items = holder.getInventory().items;
@@ -140,7 +150,7 @@ public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInv
         }
       }
 
-      slots.set(startIndex + i, new ContainerSlotEquipment(owner, armorIndex, slot));
+      slots.set(startIndex + i, new ContentEquipment(owner, armorIndex, slot));
     }
 
     return startIndex + listSize;
@@ -149,7 +159,7 @@ public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInv
   private int addOffHand(int startIndex) {
     int listSize = owner.getInventory().offhand.size();
     for (int localIndex = 0; localIndex < listSize; ++localIndex) {
-      slots.set(startIndex + localIndex, new ContainerSlotOffHand(owner, localIndex));
+      slots.set(startIndex + localIndex, new ContentOffHand(owner, localIndex));
     }
     return startIndex + listSize;
   }
@@ -164,29 +174,29 @@ public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInv
       // Otherwise, subtract 2 and add 9 to start in the same position on the next row.
       int modIndex = startIndex + (localIndex < 2 || !pretty ? localIndex : localIndex + 7);
 
-      slots.set(modIndex, new ContainerSlotCrafting(owner, localIndex));
+      slots.set(modIndex, new ContentCrafting(owner, localIndex));
     }
 
     if (pretty) {
-      slots.set(startIndex + 2, new ContainerSlotUninteractable(owner) {
+      slots.set(startIndex + 2, new ContentViewOnly(owner) {
         @Override
-        public Slot asMenuSlot(Container container, int index, int x, int y) {
-          return new SlotUninteractable(container, index, x, y) {
+        public Slot asSlot(Container container, int slot, int x, int y) {
+          return new SlotViewOnly(container, slot, x, y) {
             @Override
-            ItemStack getOrDefault() {
+            public ItemStack getOrDefault() {
               return Placeholders.craftingOutput;
             }
           };
         }
       });
-      slots.set(startIndex + 11, new ContainerSlotCraftingResult(owner));
+      slots.set(startIndex + 11, new ContentCraftingResult(owner));
     }
 
     return startIndex + listSize;
   }
 
   public Slot getMenuSlot(int index, int x, int y) {
-    return slots.get(index).asMenuSlot(this, index, x, y);
+    return slots.get(index).asSlot(this, index, x, y);
   }
 
   public InventoryType.SlotType getSlotType(int index) {
@@ -258,7 +268,7 @@ public class OpenInventory implements Container, MenuProvider, ISpecialPlayerInv
 
   @Override
   public boolean isEmpty() {
-    return slots.stream().map(ContainerSlot::get).allMatch(ItemStack::isEmpty);
+    return slots.stream().map(Content::get).allMatch(ItemStack::isEmpty);
   }
 
   @Override
