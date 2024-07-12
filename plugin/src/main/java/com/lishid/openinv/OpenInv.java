@@ -32,6 +32,7 @@ import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.util.ConfigUpdater;
 import com.lishid.openinv.util.InternalAccessor;
+import com.lishid.openinv.util.LangMigrator;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.StringMetric;
 import com.lishid.openinv.util.lang.LanguageManager;
@@ -51,6 +52,7 @@ import org.bukkit.profile.PlayerProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -83,6 +85,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
     @Override
     public void reloadConfig() {
         super.reloadConfig();
+        languageManager.reload();
         this.offlineHandler = disableOfflineAccess() ? OfflineHandler.REMOVE_AND_CLOSE : OfflineHandler.REQUIRE_PERMISSIONS;
         if (this.accessor != null && this.accessor.isSupported()) {
             this.accessor.reload(this.getConfig());
@@ -128,7 +131,11 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         // Save default configuration if not present.
         this.saveDefaultConfig();
 
-        this.languageManager = new LanguageManager(this, "en_us");
+        // Migrate locale files to a subfolder.
+        Path dataFolder = getDataFolder().toPath();
+        new LangMigrator(dataFolder, dataFolder.resolve("locale"), getLogger()).migrate();
+
+        this.languageManager = new LanguageManager(this, "en");
         this.accessor = new InternalAccessor(getLogger(), languageManager);
 
         try {

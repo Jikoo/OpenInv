@@ -24,8 +24,8 @@ messages:
     container:
       noMatches: 找不到放有 %target% 的储物箱。
       matches: '找到放有 %target% 的储物箱 ： %detail%'
-    'true': '开启'
-    'false': '关闭'
+    'on': '开启'
+    'off': '关闭'
 container:
   player: '%player% 的物品栏'
   enderchest: '%player% 的末影箱' 

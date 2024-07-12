@@ -23,8 +23,8 @@ messages:
     container:
       noMatches: 'Keine Container mit %target% gefunden.'
       matches: 'Container hat %target%: %detail%'
-    on: 'an'
-    off: 'aus'
+    'on': 'an'
+    'off': 'aus'
 container:
   player: '%player%''s Inventar'
   enderchest: '%player%''s Endertruhe'
