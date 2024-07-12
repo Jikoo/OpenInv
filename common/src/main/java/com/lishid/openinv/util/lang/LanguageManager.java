@@ -66,14 +66,23 @@ public class LanguageManager {
             return loaded;
         }
 
-        File file = new File(plugin.getDataFolder(), locale + ".yml");
+        LangLocation location = bestMatch(locale, null);
+
+        // If a parent was a better match, check if it is already loaded.
+        if (!locale.equals(location.locale)) {
+            loaded = locales.get(location.locale);
+            if (loaded != null) {
+                locales.put(locale, loaded);
+                return loaded;
+            }
+        }
 
         // Load locale config from disk and bundled locale defaults.
-        YamlConfiguration localeConfig = loadLocale(locale, file);
+        YamlConfiguration localeConfig = loadLocale(location);
 
         // If the locale is not the default locale, also handle any missing translations from the default locale.
         if (!locale.equals(defaultLocale)) {
-            addTranslationFallthrough(locale, localeConfig, file);
+            addTranslationFallthrough(location, localeConfig);
 
             if (plugin.getConfig().getBoolean("settings.secret.warn-about-guess-section", true)
                     && localeConfig.isConfigurationSection("guess")) {
@@ -84,39 +93,61 @@ public class LanguageManager {
         }
 
         locales.put(locale, localeConfig);
+        locales.put(location.locale, localeConfig);
+
         return localeConfig;
     }
 
-    private @NotNull YamlConfiguration loadLocale(
-            @NotNull String locale,
-            @NotNull File file) {
-        // Load defaults from the plugin's bundled resources.
-        InputStream resourceStream = plugin.getResource("locale/" + locale + ".yml");
+    private record LangLocation(@NotNull String locale, @NotNull File file, @Nullable InputStream bundled) {}
+
+    private @NotNull LangLocation bestMatch(@NotNull String locale, @Nullable LangLocation initial) {
+        File file = new File(plugin.getDataFolder(), locale + ".yml");
+        InputStream bundled = plugin.getResource("locale/" + locale + ".yml");
+
+        if (file.exists() || bundled != null) {
+            return new LangLocation(locale, file, bundled);
+        }
+
+        if (initial == null) {
+            initial = new LangLocation(locale, file, null);
+        }
+
+        int lastSeparator = locale.lastIndexOf('_');
+
+        // Must be at least some content before separator.
+        if (lastSeparator < 1) {
+            return initial;
+        }
+
+        return bestMatch(locale.substring(0, lastSeparator), initial);
+    }
+
+    private @NotNull YamlConfiguration loadLocale(@NotNull LangLocation location) {
         YamlConfiguration localeConfigDefaults;
-        if (resourceStream == null) {
+        if (location.bundled == null) {
             localeConfigDefaults = new YamlConfiguration();
         } else {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream, StandardCharsets.UTF_8))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(location.bundled, StandardCharsets.UTF_8))) {
                 localeConfigDefaults = YamlConfiguration.loadConfiguration(reader);
             } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to load resource " + locale + ".yml");
+                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to load resource " + location.locale + ".yml");
                 localeConfigDefaults = new YamlConfiguration();
             }
         }
 
-        if (!file.exists()) {
+        if (!location.file.exists()) {
             // If the file does not exist on disk, save bundled defaults.
             try {
-                localeConfigDefaults.save(file);
+                localeConfigDefaults.save(location.file);
             } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
+                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + location.locale + ".yml");
             }
             // Return loaded bundled locale.
             return localeConfigDefaults;
         }
 
         // If the file does exist on disk, load it.
-        YamlConfiguration localeConfig = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration localeConfig = YamlConfiguration.loadConfiguration(location.file);
         // Check for missing translations from the bundled file.
         List<String> newKeys = getMissingKeys(localeConfigDefaults, localeConfig::isSet);
 
@@ -142,22 +173,19 @@ public class LanguageManager {
             localeConfig.set("guess", null);
         }
 
-        plugin.getLogger().info(() -> "[LanguageManager] Added new translation keys to " + locale + ".yml: " + String.join(", ", newKeys));
+        plugin.getLogger().info(() -> "[LanguageManager] Added new translation keys to " + location.locale + ".yml: " + String.join(", ", newKeys));
 
         // Write new keys to disk.
         try {
-            localeConfig.save(file);
+            localeConfig.save(location.file);
         } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
+            plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + location.locale + ".yml");
         }
 
         return localeConfig;
     }
 
-    private void addTranslationFallthrough(
-            @NotNull String locale,
-            @NotNull YamlConfiguration localeConfig,
-            @NotNull File file) {
+    private void addTranslationFallthrough(@NotNull LangLocation location, @NotNull YamlConfiguration localeConfig) {
         YamlConfiguration defaultLocaleConfig = locales.get(defaultLocale);
 
         // Get missing keys. Keys that already have a guess value are not new and don't need to trigger another write.
@@ -173,9 +201,9 @@ public class LanguageManager {
 
             // Write modified guess section to disk.
             try {
-                localeConfig.save(file);
+                localeConfig.save(location.file);
             } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + locale + ".yml");
+                plugin.getLogger().log(Level.WARNING, e, () -> "[LanguageManager] Unable to save resource " + location.locale + ".yml");
             }
         }
 
