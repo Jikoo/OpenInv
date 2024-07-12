@@ -13,7 +13,10 @@ import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class OpenInventoryMenu extends OpenContainerMenu {
 
@@ -21,15 +24,16 @@ public class OpenInventoryMenu extends OpenContainerMenu {
   private final ServerPlayer viewer;
   private final int topSize;
   private final int offset;
+  private final boolean ownInv;
   private CraftInventoryView bukkitEntity;
 
   protected OpenInventoryMenu(OpenInventory inventory, ServerPlayer viewer, int i) {
     super(getMenuType(inventory, viewer), i);
     this.inventory = inventory;
     this.viewer = viewer;
+    ownInv = inventory.getOwnerHandle().equals(viewer);
 
     int upperRows;
-    boolean ownInv = inventory.getOwnerHandle().equals(viewer);
     if (ownInv) {
       // Disallow duplicate access to own main inventory contents.
       offset = viewer.getInventory().items.size();
@@ -144,7 +148,14 @@ public class OpenInventoryMenu extends OpenContainerMenu {
   @Override
   public CraftInventoryView getBukkitView() {
     if (bukkitEntity == null) {
-      bukkitEntity = new CraftInventoryView(viewer.getBukkitEntity(), inventory.getBukkitInventory(), this) {
+      org.bukkit.inventory.Inventory bukkitInventory;
+      if (ownInv) {
+        bukkitInventory = new OpenPlayerInventorySelf(inventory, offset);
+      } else {
+        bukkitInventory = inventory.getBukkitInventory();
+      }
+
+      bukkitEntity = new CraftInventoryView(viewer.getBukkitEntity(), bukkitInventory, this) {
         @Override
         public org.bukkit.inventory.ItemStack getItem(int index) {
           if (index < 0) {
@@ -161,6 +172,36 @@ public class OpenInventoryMenu extends OpenContainerMenu {
         }
 
         @Override
+        public @Nullable Inventory getInventory(int rawSlot) {
+          if (rawSlot < 0) {
+            return super.getInventory(rawSlot);
+          }
+          if (rawSlot > topSize) {
+            return super.getInventory(offset + rawSlot);
+          }
+          Slot slot = slots.get(rawSlot);
+          if (slot.isFake()) {
+            return null;
+          }
+          return getTopInventory();
+        }
+
+        @Override
+        public int convertSlot(int rawSlot) {
+          if (rawSlot < 0) {
+            return rawSlot;
+          }
+          if (rawSlot < topSize) {
+            Slot slot = slots.get(rawSlot);
+            if (slot.isFake()) {
+              return InventoryView.OUTSIDE;
+            }
+            return rawSlot;
+          }
+          return super.convertSlot(offset + rawSlot);
+        }
+
+        @Override
         public @NotNull InventoryType.SlotType getSlotType(int slot) {
           if (slot < 0) {
             return InventoryType.SlotType.OUTSIDE;
@@ -169,6 +210,11 @@ public class OpenInventoryMenu extends OpenContainerMenu {
             return super.getSlotType(offset + slot);
           }
           return inventory.getSlotType(offset + slot);
+        }
+
+        @Override
+        public int countSlots() {
+          return topSize + getBottomInventory().getSize();
         }
       };
     }
