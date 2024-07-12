@@ -225,8 +225,8 @@ public class LanguageManager {
     }
 
     public @Nullable String getValue(@NotNull String key, @Nullable String locale) {
-        String value = getOrLoadLocale(locale == null ? defaultLocale : locale.toLowerCase(Locale.ROOT)).getString(key);
-        if (value == null || value.isEmpty()) {
+        String value = getOrLoadLocale(locale == null ? defaultLocale : locale.toLowerCase(Locale.ENGLISH)).getString(key);
+        if (value == null || value.isBlank()) {
             return null;
         }
 
