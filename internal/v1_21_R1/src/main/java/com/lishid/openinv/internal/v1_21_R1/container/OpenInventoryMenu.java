@@ -21,20 +21,16 @@ import org.jetbrains.annotations.Nullable;
 public class OpenInventoryMenu extends OpenContainerMenu {
 
   private final OpenInventory inventory;
-  private final ServerPlayer viewer;
   private final int topSize;
   private final int offset;
-  private final boolean ownInv;
   private CraftInventoryView bukkitEntity;
 
   protected OpenInventoryMenu(OpenInventory inventory, ServerPlayer viewer, int i) {
-    super(getMenuType(inventory, viewer), i);
+    super(getMenuType(inventory, viewer), i, inventory.getOwnerHandle(), viewer);
     this.inventory = inventory;
-    this.viewer = viewer;
-    ownInv = inventory.getOwnerHandle().equals(viewer);
 
     int upperRows;
-    if (ownInv) {
+    if (ownContainer) {
       // Disallow duplicate access to own main inventory contents.
       offset = viewer.getInventory().items.size();
       upperRows = ((int) Math.ceil((inventory.getContainerSize() - offset) / 9.0));
@@ -42,9 +38,6 @@ public class OpenInventoryMenu extends OpenContainerMenu {
       offset = 0;
       upperRows = inventory.getContainerSize() / 9;
     }
-
-    boolean viewOnly = !(ownInv ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER)
-        .hasPermission(viewer.getBukkitEntity());
 
     // View's upper inventory - our container
     for (int row = 0; row < upperRows; ++row) {
@@ -61,7 +54,7 @@ public class OpenInventoryMenu extends OpenContainerMenu {
           continue;
         }
 
-        Slot slot = getUpperSlot(index, x, y, ownInv, viewOnly);
+        Slot slot = getUpperSlot(index, x, y);
 
         addSlot(slot);
       }
@@ -86,7 +79,17 @@ public class OpenInventoryMenu extends OpenContainerMenu {
     this.topSize = slots.size() - 36;
   }
 
-  private Slot getUpperSlot(int index, int x, int y, boolean ownInv, boolean viewOnly) {
+  private static MenuType<?> getMenuType(OpenInventory inventory, ServerPlayer viewer) {
+    int size = inventory.getContainerSize();
+    if (inventory.getOwnerHandle().equals(viewer)) {
+      size -= viewer.getInventory().items.size();
+      size = ((int) Math.ceil(size / 9.0)) * 9;
+    }
+
+    return OpenContainerMenu.getContainers(size);
+  }
+
+  private Slot getUpperSlot(int index, int x, int y) {
     Slot slot = inventory.getMenuSlot(index, x, y);
 
     // If the slot is cannot be interacted with there's nothing to configure.
@@ -124,7 +127,7 @@ public class OpenInventoryMenu extends OpenContainerMenu {
     }
 
     // When viewing own inventory, only allow access to equipment and drop slots (equipment allowed above).
-    if (ownInv && !(slot instanceof ContentDrop.SlotDrop)) {
+    if (ownContainer && !(slot instanceof ContentDrop.SlotDrop)) {
       return new SlotViewOnly(inventory, index, x, y);
     }
 
@@ -135,21 +138,19 @@ public class OpenInventoryMenu extends OpenContainerMenu {
     return slot;
   }
 
-  private static MenuType<?> getMenuType(OpenInventory inventory, ServerPlayer viewer) {
-    int size = inventory.getContainerSize();
-    if (inventory.getOwnerHandle().equals(viewer)) {
-      size -= viewer.getInventory().items.size();
-      size = ((int) Math.ceil(size / 9.0)) * 9;
-    }
-
-    return OpenContainerMenu.getContainers(size);
+  @Override
+  protected boolean checkViewOnly() {
+    return !(ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER)
+        .hasPermission(viewer.getBukkitEntity());
   }
 
   @Override
   public CraftInventoryView getBukkitView() {
     if (bukkitEntity == null) {
       org.bukkit.inventory.Inventory bukkitInventory;
-      if (ownInv) {
+      if (viewOnly) {
+        bukkitInventory = new OpenViewInventory(inventory);
+      } else if (ownContainer) {
         bukkitInventory = new OpenPlayerInventorySelf(inventory, offset);
       } else {
         bukkitInventory = inventory.getBukkitInventory();
@@ -158,7 +159,7 @@ public class OpenInventoryMenu extends OpenContainerMenu {
       bukkitEntity = new CraftInventoryView(viewer.getBukkitEntity(), bukkitInventory, this) {
         @Override
         public org.bukkit.inventory.ItemStack getItem(int index) {
-          if (index < 0) {
+          if (viewOnly || index < 0) {
             return null;
           }
 
@@ -173,6 +174,9 @@ public class OpenInventoryMenu extends OpenContainerMenu {
 
         @Override
         public @Nullable Inventory getInventory(int rawSlot) {
+          if (viewOnly) {
+            return null;
+          }
           if (rawSlot < 0) {
             return super.getInventory(rawSlot);
           }
@@ -188,6 +192,9 @@ public class OpenInventoryMenu extends OpenContainerMenu {
 
         @Override
         public int convertSlot(int rawSlot) {
+          if (viewOnly) {
+            return InventoryView.OUTSIDE;
+          }
           if (rawSlot < 0) {
             return rawSlot;
           }
@@ -203,7 +210,7 @@ public class OpenInventoryMenu extends OpenContainerMenu {
 
         @Override
         public @NotNull InventoryType.SlotType getSlotType(int slot) {
-          if (slot < 0) {
+          if (viewOnly || slot < 0) {
             return InventoryType.SlotType.OUTSIDE;
           }
           if (slot >= topSize) {

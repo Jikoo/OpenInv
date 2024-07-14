@@ -20,7 +20,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public OpenInventory getInventory() {
+  public @NotNull OpenInventory getInventory() {
     return (OpenInventory) super.getInventory();
   }
 

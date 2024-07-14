@@ -8,24 +8,21 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventoryView;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 class OpenEnderChestMenu extends OpenContainerMenu {
 
   private final OpenEnderChest enderChest;
-  private final boolean viewOnly;
-  private final ServerPlayer viewer;
   private final int topSize;
   private CraftInventoryView view;
 
   OpenEnderChestMenu(OpenEnderChest enderChest, ServerPlayer viewer, int containerId) {
-    super(getMenuType(enderChest), containerId);
+    super(getMenuType(enderChest), containerId, enderChest.getOwnerHandle(), viewer);
     this.enderChest = enderChest;
-    this.viewer = viewer;
-    var bukkitViewer = viewer.getBukkitEntity();
-    viewOnly = !(bukkitViewer.equals(enderChest.getPlayer())
-        ? Permissions.ENDERCHEST_EDIT_SELF
-        : Permissions.ENDERCHEST_OPEN_OTHER)
-        .hasPermission(bukkitViewer);
     int upperRows = (int) Math.ceil(enderChest.getContainerSize() / 9.0);
     topSize = upperRows * 9;
 
@@ -70,24 +67,47 @@ class OpenEnderChestMenu extends OpenContainerMenu {
   }
 
   @Override
-  public CraftInventoryView getBukkitView() {
-    if (view == null) {
-      view = new CraftInventoryView(viewer.getBukkitEntity(), enderChest.getBukkitInventory(), this);
-    }
-    return view;
+  protected boolean checkViewOnly() {
+    return  !(ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_OPEN_OTHER)
+        .hasPermission(viewer.getBukkitEntity());
   }
 
   @Override
-  protected Slot addSlot(Slot slot) {
-    slot = super.addSlot(slot);
+  public CraftInventoryView getBukkitView() {
+    if (view == null) {
+      Inventory top;
+      if (viewOnly) {
+        top = new OpenViewInventory(enderChest);
+      } else {
+        top = enderChest.getBukkitInventory();
+      }
+      view = new CraftInventoryView(viewer.getBukkitEntity(), top, this) {
+        @Override
+        public @Nullable Inventory getInventory(int rawSlot) {
+          if (viewOnly) {
+            return null;
+          }
+          return super.getInventory(rawSlot);
+        }
 
-    // If view-only and slot is in upper inventory, wrap it.
-    if (viewOnly && slot.index < enderChest.getContainerSize()) {
-      slot = SlotViewOnly.wrap(slot);
-      slots.set(slot.index, slot);
+        @Override
+        public int convertSlot(int rawSlot) {
+          if (viewOnly) {
+            return InventoryView.OUTSIDE;
+          }
+          return super.convertSlot(rawSlot);
+        }
+
+        @Override
+        public @NotNull InventoryType.SlotType getSlotType(int slot) {
+          if (viewOnly) {
+            return InventoryType.SlotType.OUTSIDE;
+          }
+          return super.getSlotType(slot);
+        }
+      };
     }
-
-    return slot;
+    return view;
   }
 
   @Override

@@ -2,9 +2,13 @@ package com.lishid.openinv.internal.v1_21_R1.container;
 
 import com.google.common.base.Suppliers;
 import com.lishid.openinv.internal.v1_21_R1.container.slot.SlotPlaceholder;
+import com.lishid.openinv.internal.v1_21_R1.container.slot.SlotViewOnly;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.inventory.ContainerSynchronizer;
@@ -24,6 +28,10 @@ import java.util.function.Supplier;
  */
 public abstract class OpenContainerMenu extends AbstractContainerMenu {
 
+  protected final ServerPlayer viewer;
+  protected final boolean viewOnly;
+  protected final boolean ownContainer;
+  // Syncher fields
   private @Nullable ContainerSynchronizer synchronizer;
   private final List<DataSlot> dataSlots = new ArrayList<>();
   private final IntList remoteDataSlots = new IntArrayList();
@@ -31,9 +39,14 @@ public abstract class OpenContainerMenu extends AbstractContainerMenu {
   private ItemStack remoteCarried = ItemStack.EMPTY;
   private boolean suppressRemoteUpdates;
 
-  protected OpenContainerMenu(@Nullable MenuType<?> containers, int containerCounter) {
+  protected OpenContainerMenu(@Nullable MenuType<?> containers, int containerCounter,ServerPlayer owner, ServerPlayer viewer) {
     super(containers, containerCounter);
+    this.viewer = viewer;
+    ownContainer = owner.equals(viewer);
+    viewOnly = checkViewOnly();
   }
+
+  protected abstract boolean checkViewOnly();
 
   static @NotNull MenuType<?> getContainers(int inventorySize) {
       return switch (inventorySize) {
@@ -128,16 +141,30 @@ public abstract class OpenContainerMenu extends AbstractContainerMenu {
     return true;
   }
 
-  // Overrides from here on are purely to modify the sync process to send placeholder items.
+  @Override
+  public void clicked(int i, int j, ClickType clickType, Player player) {
+    if (viewOnly) {
+      if (clickType == ClickType.QUICK_CRAFT) {
+        sendAllDataToRemote();
+      }
+      return;
+    }
+    super.clicked(i, j, clickType, player);
+  }
+
   @Override
   protected Slot addSlot(Slot slot) {
     slot.index = this.slots.size();
+    if (viewOnly && !(slot instanceof SlotViewOnly)) {
+      slot = SlotViewOnly.wrap(slot);
+    }
     this.slots.add(slot);
     this.lastSlots.add(ItemStack.EMPTY);
     this.remoteSlots.add(ItemStack.EMPTY);
     return slot;
   }
 
+  // Overrides from here on are purely to modify the sync process to send placeholder items.
   @Override
   protected DataSlot addDataSlot(DataSlot dataSlot) {
     this.dataSlots.add(dataSlot);

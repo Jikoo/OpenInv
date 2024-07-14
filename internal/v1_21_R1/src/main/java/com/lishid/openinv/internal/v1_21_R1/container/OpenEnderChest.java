@@ -38,6 +38,10 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Men
     this.items = owner.getEnderChestInventory().items;
   }
 
+  public @NotNull ServerPlayer getOwnerHandle() {
+    return owner;
+  }
+
   @Override
   public @NotNull org.bukkit.inventory.Inventory getBukkitInventory() {
     if (inventory == null) {
