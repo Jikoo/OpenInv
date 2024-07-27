@@ -12,8 +12,8 @@ import java.util.UUID;
 public final class Toggles {
 
   private static final Map<String, PlayerToggle> TOGGLES = new HashMap<>();
-  private static final PlayerToggle ANY = add(new MemoryToggle("AnyContainer"));
-  private static final PlayerToggle SILENT = add(new MemoryToggle("SilentContainer"));
+  private static final PlayerToggle ANY = add(new MemoryToggle("anycontainer"));
+  private static final PlayerToggle SILENT = add(new MemoryToggle("silentcontainer"));
 
   public static @NotNull PlayerToggle any() {
     return ANY;

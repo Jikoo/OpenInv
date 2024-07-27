@@ -26,6 +26,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -48,8 +49,14 @@ public class ContainerSettingCommand implements TabExecutor {
             return true;
         }
 
-        boolean any = command.getName().startsWith("any");
-        PlayerToggle toggle = any ? Toggles.any() : Toggles.silent();
+        PlayerToggle toggle = Toggles.get(command.getName());
+
+        // Shouldn't be possible.
+        if (toggle == null) {
+            JavaPlugin.getProvidingPlugin(getClass()).getLogger().warning("Command /" + command.getName() + " registered with no corresponding toggle!");
+            return false;
+        }
+
         UUID playerId = player.getUniqueId();
 
         if (args.length > 0) {
