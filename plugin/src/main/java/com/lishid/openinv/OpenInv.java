@@ -29,6 +29,7 @@ import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.listener.ContainerListener;
 import com.lishid.openinv.listener.LegacyInventoryListener;
+import com.lishid.openinv.listener.ToggleListener;
 import com.lishid.openinv.util.config.Config;
 import com.lishid.openinv.util.config.ConfigUpdater;
 import com.lishid.openinv.util.InternalAccessor;
@@ -60,7 +61,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
     private InternalAccessor accessor;
     private Config config;
-    private Toggles toggles;
     private InventoryManager inventoryManager;
     private LanguageManager languageManager;
     private PlayerLoader playerLoader;
@@ -70,7 +70,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
     public void reloadConfig() {
         super.reloadConfig();
         config.reload(getConfig());
-        toggles.reload(getConfig());
         languageManager.reload();
         if (accessor != null && accessor.isSupported()) {
             accessor.reload(getConfig());
@@ -103,12 +102,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         // Set up configurable features. Note that #reloadConfig is called on the first call to #getConfig!
         // Configuration values should not be accessed until after all of these have been set up.
         config = new Config();
-        toggles = new Toggles() {
-            @Override
-            public void save() {
-                saveConfig();
-            }
-        };
         languageManager = new LanguageManager(this, "en");
         accessor = new InternalAccessor(getLogger(), languageManager);
 
@@ -140,14 +133,15 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             }
             pm.registerEvents(playerLoader, this);
             pm.registerEvents(inventoryManager, this);
-            pm.registerEvents(new ContainerListener(accessor, toggles, languageManager), this);
+            pm.registerEvents(new ContainerListener(accessor, languageManager), this);
+            pm.registerEvents(new ToggleListener(), this);
 
             // Register commands to their executors
             this.setCommandExecutor(new OpenInvCommand(this, config, inventoryManager, languageManager, playerLoader), "openinv", "openender");
             this.setCommandExecutor(new SearchContainerCommand(this, languageManager), "searchcontainer");
             this.setCommandExecutor(new SearchInvCommand(languageManager), "searchinv", "searchender");
             this.setCommandExecutor(new SearchEnchantCommand(languageManager), "searchenchant");
-            this.setCommandExecutor(new ContainerSettingCommand(toggles, languageManager), "silentcontainer", "anycontainer");
+            this.setCommandExecutor(new ContainerSettingCommand(languageManager), "silentcontainer", "anycontainer");
 
         } else {
             this.sendVersionError(this.getLogger()::warning);
@@ -210,22 +204,22 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
     @Override
     public boolean getAnyContainerStatus(@NotNull final OfflinePlayer offline) {
-        return toggles.any().is(offline.getUniqueId());
+        return Toggles.any().is(offline.getUniqueId());
     }
 
     @Override
     public void setAnyContainerStatus(@NotNull final OfflinePlayer offline, final boolean status) {
-        toggles.any().set(offline.getUniqueId(), status);
+        Toggles.any().set(offline.getUniqueId(), status);
     }
 
     @Override
     public boolean getSilentContainerStatus(@NotNull final OfflinePlayer offline) {
-        return toggles.silent().is(offline.getUniqueId());
+        return Toggles.silent().is(offline.getUniqueId());
     }
 
     @Override
     public void setSilentContainerStatus(@NotNull final OfflinePlayer offline, final boolean status) {
-        toggles.silent().set(offline.getUniqueId(), status);
+        Toggles.silent().set(offline.getUniqueId(), status);
     }
 
     @Override

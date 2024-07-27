@@ -16,6 +16,7 @@
 
 package com.lishid.openinv.command;
 
+import com.lishid.openinv.event.OpenEvents;
 import com.lishid.openinv.util.setting.PlayerToggle;
 import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.setting.Toggles;
@@ -34,11 +35,9 @@ import java.util.UUID;
 
 public class ContainerSettingCommand implements TabExecutor {
 
-    private final @NotNull Toggles toggles;
     private final @NotNull LanguageManager lang;
 
-    public ContainerSettingCommand(@NotNull Toggles toggles, @NotNull LanguageManager lang) {
-        this.toggles = toggles;
+    public ContainerSettingCommand(@NotNull LanguageManager lang) {
         this.lang = lang;
     }
 
@@ -50,23 +49,23 @@ public class ContainerSettingCommand implements TabExecutor {
         }
 
         boolean any = command.getName().startsWith("any");
-        PlayerToggle toggle = any ? toggles.any() : toggles.silent();
+        PlayerToggle toggle = any ? Toggles.any() : Toggles.silent();
         UUID playerId = player.getUniqueId();
 
         if (args.length > 0) {
             args[0] = args[0].toLowerCase(Locale.ENGLISH);
 
             if (args[0].equals("on")) {
-                toggle.set(playerId, true);
+                set(toggle, playerId, true);
             } else if (args[0].equals("off")) {
-                toggle.set(playerId, false);
+                set(toggle, playerId, false);
             } else if (!args[0].equals("check")) {
                 // Invalid argument, show usage.
                 return false;
             }
 
         } else {
-            toggle.set(playerId, !toggle.is(playerId));
+            set(toggle, playerId, !toggle.is(playerId));
         }
 
         String onOff = lang.getLocalizedMessage(player, toggle.is(playerId) ? "messages.info.on" : "messages.info.off");
@@ -77,10 +76,16 @@ public class ContainerSettingCommand implements TabExecutor {
         lang.sendMessage(
                 sender,
                 "messages.info.settingState",
-                new Replacement("%setting%", any ? "AnyContainer" : "SilentContainer"),
+                new Replacement("%setting%", toggle.getName()),
                 new Replacement("%state%", onOff));
 
         return true;
+    }
+
+    private void set(@NotNull PlayerToggle toggle, @NotNull UUID uuid, boolean state) {
+        if (toggle.set(uuid, state)) {
+            OpenEvents.notifyPlayerToggle(toggle, uuid, state);
+        }
     }
 
     @Override
