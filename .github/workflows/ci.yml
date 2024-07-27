@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: ./target/OpenInv.jar
+          path: ./target/*.jar
       - name: Upload API Jar
         id: upload-api
         uses: actions/upload-artifact@v4

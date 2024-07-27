@@ -1,0 +1,10 @@
+name: OITogglePersist
+main: com.github.jikoo.openinv.togglepersist.TogglePersist
+version: ${project.version}
+author: Jikoo
+description: An OpenInv addon allowing /anycontainer and /silentcontainer to persist across sessions.
+depend: [ OpenInv ]
+
+permissions:
+  openinv.togglepersist:
+    default: true
