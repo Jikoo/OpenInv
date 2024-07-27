@@ -45,7 +45,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   protected final boolean viewOnly;
   protected final boolean ownContainer;
   protected final int topSize;
-  private CraftInventoryView bukkitEntity;
+  private CraftInventoryView<OpenChestMenu<T>> bukkitEntity;
   // Syncher fields
   private @Nullable ContainerSynchronizer synchronizer;
   private final List<DataSlot> dataSlots = new ArrayList<>();
@@ -129,7 +129,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
 
 
   @Override
-  public final @NotNull CraftInventoryView getBukkitView() {
+  public final @NotNull CraftInventoryView<OpenChestMenu<T>> getBukkitView() {
     if (bukkitEntity == null) {
       bukkitEntity = createBukkitEntity();
     }
@@ -137,14 +137,14 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     return bukkitEntity;
   }
 
-  protected @NotNull CraftInventoryView createBukkitEntity() {
+  protected @NotNull CraftInventoryView<OpenChestMenu<T>> createBukkitEntity() {
     Inventory top;
     if (viewOnly) {
       top = new OpenDummyInventory(container);
     } else {
       top = container.getBukkitInventory();
     }
-    return new CraftInventoryView(viewer.getBukkitEntity(), top, this) {
+    return new CraftInventoryView<>(viewer.getBukkitEntity(), top, this) {
       @Override
       public @Nullable Inventory getInventory(int rawSlot) {
         if (viewOnly) {

@@ -104,7 +104,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
   }
 
   @Override
-  protected @NotNull CraftInventoryView createBukkitEntity() {
+  protected @NotNull CraftInventoryView<OpenChestMenu<OpenInventory>> createBukkitEntity() {
     org.bukkit.inventory.Inventory bukkitInventory;
     if (viewOnly) {
       bukkitInventory = new OpenDummyInventory(container);
@@ -114,7 +114,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
       bukkitInventory = container.getBukkitInventory();
     }
 
-    return new CraftInventoryView(viewer.getBukkitEntity(), bukkitInventory, this) {
+    return new CraftInventoryView<>(viewer.getBukkitEntity(), bukkitInventory, this) {
       @Override
       public org.bukkit.inventory.ItemStack getItem(int index) {
         if (viewOnly || index < 0) {
@@ -174,7 +174,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
         if (slot >= topSize) {
           return super.getSlotType(offset + slot);
         }
-        return container.getSlotType(offset + slot);
+        return OpenInventoryMenu.this.container.getSlotType(offset + slot);
       }
 
       @Override
