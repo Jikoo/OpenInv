@@ -142,7 +142,11 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             this.setCommandExecutor(new SearchContainerCommand(this, languageManager), "searchcontainer");
             this.setCommandExecutor(new SearchInvCommand(languageManager), "searchinv", "searchender");
             this.setCommandExecutor(new SearchEnchantCommand(languageManager), "searchenchant");
-            this.setCommandExecutor(new ContainerSettingCommand(languageManager), "silentcontainer", "anycontainer");
+
+            ContainerSettingCommand settingCommand = new ContainerSettingCommand(languageManager);
+            for (PlayerToggle toggle : PlayerToggles.get()) {
+                setCommandExecutor(settingCommand, toggle.getName());
+            }
 
         } else {
             this.sendVersionError(this.getLogger()::warning);
