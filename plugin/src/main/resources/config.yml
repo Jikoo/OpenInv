@@ -1,4 +1,4 @@
-config-version: 6
+config-version: 7
 settings:
   command:
     open:
@@ -7,4 +7,4 @@ settings:
       max-radius: 10
   disable-offline-access: false
   disable-saving: false
-  locale: 'en_us'
+  console-locale: 'en'

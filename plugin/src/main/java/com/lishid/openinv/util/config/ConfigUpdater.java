@@ -16,17 +16,15 @@
 
 package com.lishid.openinv.util.config;
 
-import com.lishid.openinv.OpenInv;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
-public record ConfigUpdater(OpenInv plugin) {
+public record ConfigUpdater(@NotNull Plugin plugin) {
 
     public void checkForUpdates() {
         final int version = plugin.getConfig().getInt("config-version", 1);
@@ -45,119 +43,78 @@ public record ConfigUpdater(OpenInv plugin) {
             plugin.getLogger().warning("Could not back up config.yml before updating!");
         }
 
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (version < 2) {
-                updateConfig1To2();
-            }
-            if (version < 3) {
-                updateConfig2To3();
-            }
-            if (version < 4) {
-                updateConfig3To4();
-            }
-            if (version < 5) {
-                updateConfig4To5();
-            }
-            if (version < 6) {
-                updateConfig5To6();
-            }
+        if (version < 2) {
+            updateConfig1To2();
+        }
+        if (version < 3) {
+            updateConfig2To3();
+        }
+        if (version < 4) {
+            updateConfig3To4();
+        }
+        if (version < 5) {
+            updateConfig4To5();
+        }
+        if (version < 6) {
+            updateConfig5To6();
+        }
+        if (version < 7) {
+            updateConfig6To7();
+        }
 
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-                plugin.saveConfig();
-                plugin.getLogger().info("Configuration update complete!");
-            });
-        });
+        plugin.saveConfig();
+        plugin.getLogger().info("Configuration update complete!");
+    }
+
+    private void updateConfig6To7() {
+        FileConfiguration config = plugin.getConfig();
+        config.set("toggles", null);
+        String consoleLocale = config.getString("settings.locale", "en");
+        if (consoleLocale.isBlank() || consoleLocale.equalsIgnoreCase("en_us")) {
+            consoleLocale = "en";
+        }
+        config.set("settings.console-locale", consoleLocale);
+        config.set("settings.locale", null);
+        config.set("config-version", 7);
     }
 
     private void updateConfig5To6() {
-        plugin.getServer().getScheduler().runTask(plugin, () -> {
-            plugin.getConfig().set("settings.command.open.no-args-opens-self", false);
-            plugin.getConfig().set("settings.command.searchcontainer.max-radius", 10);
-            plugin.getConfig().set("config-version", 6);
-        });
+        FileConfiguration config = plugin.getConfig();
+        config.set("settings.command.open.no-args-opens-self", false);
+        config.set("settings.command.searchcontainer.max-radius", 10);
+        config.set("config-version", 6);
     }
 
     private void updateConfig4To5() {
-        plugin.getServer().getScheduler().runTask(plugin, () -> {
-            plugin.getConfig().set("settings.disable-offline-access", false);
-            plugin.getConfig().set("config-version", 5);
-        });
+        FileConfiguration config = plugin.getConfig();
+        config.set("settings.disable-offline-access", false);
+        config.set("config-version", 5);
     }
 
     private void updateConfig3To4() {
-        plugin.getServer().getScheduler().runTask(plugin, () -> {
-            plugin.getConfig().set("notify", null);
-            plugin.getConfig().set("settings.locale", "en_US");
-            plugin.getConfig().set("config-version", 4);
-        });
+        FileConfiguration config = plugin.getConfig();
+        config.set("notify", null);
+        config.set("config-version", 4);
     }
 
     private void updateConfig2To3() {
-        plugin.getServer().getScheduler().runTask(plugin, () -> {
-            plugin.getConfig().set("config-version", 3);
-            plugin.getConfig().set("items.open-inv", null);
-            plugin.getConfig().set("ItemOpenInv", null);
-            plugin.getConfig().set("toggles.items.open-inv", null);
-            plugin.getConfig().set("settings.disable-saving",
-                    plugin.getConfig().getBoolean("DisableSaving", false));
-            plugin.getConfig().set("DisableSaving", null);
-        });
+        FileConfiguration config = plugin.getConfig();
+        config.set("items", null);
+        config.set("ItemOpenInv", null);
+        config.set("toggles", null);
+        config.set("settings.disable-saving", config.getBoolean("DisableSaving", false));
+        config.set("DisableSaving", null);
+        config.set("config-version", 3);
     }
 
     private void updateConfig1To2() {
-        plugin.getServer().getScheduler().runTask(plugin, () -> {
-            // Get the old config settings
-            boolean notifySilentChest = plugin.getConfig().getBoolean("NotifySilentChest", true);
-            boolean notifyAnyChest = plugin.getConfig().getBoolean("NotifyAnyChest", true);
-            plugin.getConfig().set("ItemOpenInvItemID", null);
-            plugin.getConfig().set("NotifySilentChest", null);
-            plugin.getConfig().set("NotifyAnyChest", null);
-            plugin.getConfig().set("config-version", 2);
-            plugin.getConfig().set("notify.any-chest", notifyAnyChest);
-            plugin.getConfig().set("notify.silent-chest", notifySilentChest);
-        });
-
-        updateToggles("AnyChest", "toggles.any-chest");
-        updateToggles("SilentChest", "toggles.silent-chest");
-    }
-
-    private void updateToggles(final String sectionName, final String newSectionName) {
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection(sectionName);
-        // Ensure section exists
-        if (section == null) {
-            return;
-        }
-
-        Set<String> keys = section.getKeys(false);
-
-        // Ensure section has content
-        if (keys.isEmpty()) {
-            return;
-        }
-
-        final Map<String, Boolean> toggles = new HashMap<>();
-
-        for (String playerName : keys) {
-            OfflinePlayer player = plugin.matchPlayer(playerName);
-            if (player != null) {
-                toggles.put(player.getUniqueId().toString(), section.getBoolean(playerName + ".toggle", false));
-            }
-        }
-
-        plugin.getServer().getScheduler().runTask(plugin, () -> {
-            // Wipe old ConfigurationSection
-            plugin.getConfig().set(sectionName, null);
-
-            // Prepare new ConfigurationSection
-            ConfigurationSection newSection = plugin.getConfig().getConfigurationSection(newSectionName);
-            if (newSection == null) {
-                newSection = plugin.getConfig().createSection(newSectionName);
-            }
-            // Set new values
-            for (Map.Entry<String, Boolean> entry : toggles.entrySet()) {
-                newSection.set(entry.getKey(), entry.getValue());
-            }
-        });
+        FileConfiguration config = plugin.getConfig();
+        config.set("ItemOpenInvItemID", null);
+        config.set("NotifySilentChest", null);
+        config.set("NotifyAnyChest", null);
+        config.set("AnyChest", null);
+        config.set("SilentChest", null);
+        config.set("config-version", 2);
     }
 
 }
