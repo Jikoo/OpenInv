@@ -52,6 +52,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -158,7 +159,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
         ContainerSettingCommand settingCommand = new ContainerSettingCommand(languageManager);
         for (PlayerToggle toggle : PlayerToggles.get()) {
-            setCommandExecutor(settingCommand, toggle.getName());
+            setCommandExecutor(settingCommand, toggle.getName().toLowerCase(Locale.ENGLISH));
         }
     }
 

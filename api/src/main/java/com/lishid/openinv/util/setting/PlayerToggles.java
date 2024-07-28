@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -18,8 +19,8 @@ import java.util.UUID;
 public final class PlayerToggles {
 
   private static final Map<String, PlayerToggle> TOGGLES = new HashMap<>();
-  private static final PlayerToggle ANY = add(new MemoryToggle("anycontainer"));
-  private static final PlayerToggle SILENT = add(new MemoryToggle("silentcontainer"));
+  private static final PlayerToggle ANY = add(new MemoryToggle("AnyContainer"));
+  private static final PlayerToggle SILENT = add(new MemoryToggle("SilentContainer"));
 
   /**
    * Get the AnyContainer toggle.
@@ -46,7 +47,11 @@ public final class PlayerToggles {
    * @return the toggle, or null if no such toggle exists.
    */
   public static @Nullable PlayerToggle get(@NotNull String toggleName) {
-    return TOGGLES.get(toggleName);
+    PlayerToggle toggle = TOGGLES.get(toggleName);
+    if (toggle == null) {
+      toggle = TOGGLES.get(toggleName.toLowerCase(Locale.ENGLISH));
+    }
+    return toggle;
   }
 
   /**
@@ -59,7 +64,7 @@ public final class PlayerToggles {
   }
 
   private static @NotNull PlayerToggle add(@NotNull PlayerToggle toggle) {
-    TOGGLES.put(toggle.getName(), toggle);
+    TOGGLES.put(toggle.getName().toLowerCase(Locale.ENGLISH), toggle);
     return toggle;
   }
 
