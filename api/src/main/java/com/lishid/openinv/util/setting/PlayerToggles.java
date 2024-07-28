@@ -2,14 +2,17 @@ package com.lishid.openinv.util.setting;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public final class Toggles {
+public final class PlayerToggles {
 
   private static final Map<String, PlayerToggle> TOGGLES = new HashMap<>();
   private static final PlayerToggle ANY = add(new MemoryToggle("anycontainer"));
@@ -27,12 +30,16 @@ public final class Toggles {
     return TOGGLES.get(toggleName);
   }
 
+  public static @UnmodifiableView @NotNull Collection<PlayerToggle> get() {
+    return Collections.unmodifiableCollection(TOGGLES.values());
+  }
+
   private static @NotNull PlayerToggle add(@NotNull PlayerToggle toggle) {
     TOGGLES.put(toggle.getName(), toggle);
     return toggle;
   }
 
-  private Toggles() {
+  private PlayerToggles() {
     throw new IllegalStateException("Cannot create instance of utility class.");
   }
 

@@ -36,7 +36,8 @@ import com.lishid.openinv.util.InternalAccessor;
 import com.lishid.openinv.util.InventoryManager;
 import com.lishid.openinv.util.lang.LangMigrator;
 import com.lishid.openinv.util.PlayerLoader;
-import com.lishid.openinv.util.setting.Toggles;
+import com.lishid.openinv.util.setting.PlayerToggle;
+import com.lishid.openinv.util.setting.PlayerToggles;
 import com.lishid.openinv.util.lang.LanguageManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -204,22 +205,22 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
     @Override
     public boolean getAnyContainerStatus(@NotNull final OfflinePlayer offline) {
-        return Toggles.any().is(offline.getUniqueId());
+        return PlayerToggles.any().is(offline.getUniqueId());
     }
 
     @Override
     public void setAnyContainerStatus(@NotNull final OfflinePlayer offline, final boolean status) {
-        Toggles.any().set(offline.getUniqueId(), status);
+        PlayerToggles.any().set(offline.getUniqueId(), status);
     }
 
     @Override
     public boolean getSilentContainerStatus(@NotNull final OfflinePlayer offline) {
-        return Toggles.silent().is(offline.getUniqueId());
+        return PlayerToggles.silent().is(offline.getUniqueId());
     }
 
     @Override
     public void setSilentContainerStatus(@NotNull final OfflinePlayer offline, final boolean status) {
-        Toggles.silent().set(offline.getUniqueId(), status);
+        PlayerToggles.silent().set(offline.getUniqueId(), status);
     }
 
     @Override

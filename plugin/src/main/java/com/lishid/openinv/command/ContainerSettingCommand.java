@@ -19,7 +19,7 @@ package com.lishid.openinv.command;
 import com.lishid.openinv.event.OpenEvents;
 import com.lishid.openinv.util.setting.PlayerToggle;
 import com.lishid.openinv.util.TabCompleter;
-import com.lishid.openinv.util.setting.Toggles;
+import com.lishid.openinv.util.setting.PlayerToggles;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
 import org.bukkit.command.Command;
@@ -49,7 +49,7 @@ public class ContainerSettingCommand implements TabExecutor {
             return true;
         }
 
-        PlayerToggle toggle = Toggles.get(command.getName());
+        PlayerToggle toggle = PlayerToggles.get(command.getName());
 
         // Shouldn't be possible.
         if (toggle == null) {

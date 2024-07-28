@@ -3,7 +3,7 @@ package com.github.jikoo.openinv.togglepersist;
 import com.google.errorprone.annotations.Keep;
 import com.lishid.openinv.event.PlayerToggledEvent;
 import com.lishid.openinv.util.setting.PlayerToggle;
-import com.lishid.openinv.util.setting.Toggles;
+import com.lishid.openinv.util.setting.PlayerToggles;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
@@ -42,7 +42,7 @@ public class TogglePersist extends JavaPlugin implements Listener {
 
     // For each toggle, enable loaded players.
     for (String toggleName : loaded.getKeys(false)) {
-      PlayerToggle toggle = Toggles.get(toggleName);
+      PlayerToggle toggle = PlayerToggles.get(toggleName);
       // Ensure toggle exists.
       if (toggle == null) {
         continue;
@@ -120,7 +120,7 @@ public class TogglePersist extends JavaPlugin implements Listener {
     }
 
     for (String toggleName : toggleNames) {
-      PlayerToggle toggle = Toggles.get(toggleName);
+      PlayerToggle toggle = PlayerToggles.get(toggleName);
       if (toggle != null) {
         toggle.set(playerId, true);
       }

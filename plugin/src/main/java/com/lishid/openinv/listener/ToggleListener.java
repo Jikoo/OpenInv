@@ -1,6 +1,6 @@
 package com.lishid.openinv.listener;
 
-import com.lishid.openinv.util.setting.Toggles;
+import com.lishid.openinv.util.setting.PlayerToggles;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -13,8 +13,8 @@ public class ToggleListener implements Listener {
   @EventHandler
   private void onPlayerQuit(@NotNull PlayerQuitEvent event) {
     UUID playerId = event.getPlayer().getUniqueId();
-    Toggles.any().set(playerId, false);
-    Toggles.silent().set(playerId, false);
+    PlayerToggles.any().set(playerId, false);
+    PlayerToggles.silent().set(playerId, false);
   }
 
 }
