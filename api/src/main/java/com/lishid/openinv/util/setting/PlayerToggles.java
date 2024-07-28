@@ -12,24 +12,48 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Utility class containing all of OpenInv's {@link PlayerToggle PlayerToggles}.
+ */
 public final class PlayerToggles {
 
   private static final Map<String, PlayerToggle> TOGGLES = new HashMap<>();
   private static final PlayerToggle ANY = add(new MemoryToggle("anycontainer"));
   private static final PlayerToggle SILENT = add(new MemoryToggle("silentcontainer"));
 
+  /**
+   * Get the AnyContainer toggle.
+   *
+   * @return the AnyContainer toggle
+   */
   public static @NotNull PlayerToggle any() {
     return ANY;
   }
 
+  /**
+   * Get the SilentContainer toggle.
+   *
+   * @return the SilentContainer toggle
+   */
   public static @NotNull PlayerToggle silent() {
     return SILENT;
   }
 
+  /**
+   * Get a toggle by name.
+   *
+   * @param toggleName the name of the toggle
+   * @return the toggle, or null if no such toggle exists.
+   */
   public static @Nullable PlayerToggle get(@NotNull String toggleName) {
     return TOGGLES.get(toggleName);
   }
 
+  /**
+   * Get an unmodifable view of all toggles available.
+   *
+   * @return a view of all toggles available
+   */
   public static @UnmodifiableView @NotNull Collection<PlayerToggle> get() {
     return Collections.unmodifiableCollection(TOGGLES.values());
   }
