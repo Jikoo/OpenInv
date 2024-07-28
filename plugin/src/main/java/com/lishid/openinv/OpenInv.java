@@ -126,32 +126,40 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
             // Update existing configuration. May require internal access.
             new ConfigUpdater(this).checkForUpdates();
 
-            // Get plugin manager
-            PluginManager pm = this.getServer().getPluginManager();
-            // Register listeners
-            if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21))) {
-                pm.registerEvents(new LegacyInventoryListener(this), this);
-            }
-            pm.registerEvents(playerLoader, this);
-            pm.registerEvents(inventoryManager, this);
-            pm.registerEvents(new ContainerListener(accessor, languageManager), this);
-            pm.registerEvents(new ToggleListener(), this);
+            // Register relevant event listeners.
+            registerEvents();
 
-            // Register commands to their executors
-            this.setCommandExecutor(new OpenInvCommand(this, config, inventoryManager, languageManager, playerLoader), "openinv", "openender");
-            this.setCommandExecutor(new SearchContainerCommand(this, languageManager), "searchcontainer");
-            this.setCommandExecutor(new SearchInvCommand(languageManager), "searchinv", "searchender");
-            this.setCommandExecutor(new SearchEnchantCommand(languageManager), "searchenchant");
-
-            ContainerSettingCommand settingCommand = new ContainerSettingCommand(languageManager);
-            for (PlayerToggle toggle : PlayerToggles.get()) {
-                setCommandExecutor(settingCommand, toggle.getName());
-            }
+            // Register commands to their executors.
+            registerCommands();
 
         } else {
             this.sendVersionError(this.getLogger()::warning);
         }
 
+    }
+
+    private void registerEvents() {
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        // Legacy: extra listener for permission handling and self-view issue prevention.
+        if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21))) {
+            pluginManager.registerEvents(new LegacyInventoryListener(this), this);
+        }
+        pluginManager.registerEvents(playerLoader, this);
+        pluginManager.registerEvents(inventoryManager, this);
+        pluginManager.registerEvents(new ContainerListener(accessor, languageManager), this);
+        pluginManager.registerEvents(new ToggleListener(), this);
+    }
+
+    private void registerCommands() {
+        this.setCommandExecutor(new OpenInvCommand(this, config, inventoryManager, languageManager, playerLoader), "openinv", "openender");
+        this.setCommandExecutor(new SearchContainerCommand(this, languageManager), "searchcontainer");
+        this.setCommandExecutor(new SearchInvCommand(languageManager), "searchinv", "searchender");
+        this.setCommandExecutor(new SearchEnchantCommand(languageManager), "searchenchant");
+
+        ContainerSettingCommand settingCommand = new ContainerSettingCommand(languageManager);
+        for (PlayerToggle toggle : PlayerToggles.get()) {
+            setCommandExecutor(settingCommand, toggle.getName());
+        }
     }
 
     private void setCommandExecutor(@NotNull CommandExecutor executor, String @NotNull ... commands) {
