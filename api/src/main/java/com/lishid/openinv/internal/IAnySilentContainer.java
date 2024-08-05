@@ -31,6 +31,10 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
+
+import static com.lishid.openinv.util.InventoryAccess.getBlockState;
+
 public interface IAnySilentContainer {
 
     /**
@@ -58,7 +62,7 @@ public interface IAnySilentContainer {
      * @return true if the container is blocked
      */
     default boolean isAnyContainerNeeded(@NotNull Block block) {
-        BlockState blockState = block.getState();
+        BlockState blockState = getBlockState(block);
 
         // Barrels do not require AnyContainer.
         if (blockState instanceof Barrel) {
@@ -148,7 +152,7 @@ public interface IAnySilentContainer {
      * @return true if the type is a supported container
      */
     default boolean isAnySilentContainer(@NotNull Block block) {
-        return isAnySilentContainer(block.getState());
+        return isAnySilentContainer(getBlockState(block));
     }
 
     /**

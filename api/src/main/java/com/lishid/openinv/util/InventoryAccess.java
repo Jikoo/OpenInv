@@ -20,16 +20,42 @@ import com.google.errorprone.annotations.RestrictedApi;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.function.BiFunction;
 
 public final class InventoryAccess {
 
     private static @Nullable BiFunction<Inventory, Class<? extends ISpecialInventory>, ISpecialInventory> provider;
+    private static Method blockGetStateNoSnapshotMethod;
+
+    static {
+        try {
+            blockGetStateNoSnapshotMethod = Block.class.getMethod("getState", boolean.class);
+        } catch (NoSuchMethodException e) {
+            blockGetStateNoSnapshotMethod = null;
+        }
+    }
+
+    public static BlockState getBlockState(Block block) {
+        // Try to get block state without snapshot (only available in paper currently)
+        if (blockGetStateNoSnapshotMethod != null) {
+            try {
+                return (BlockState) blockGetStateNoSnapshotMethod.invoke(block, false);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                return block.getState();
+            }
+        } else {
+            return block.getState();
+        }
+    }
 
     public static boolean isUsable() {
         return provider != null;
