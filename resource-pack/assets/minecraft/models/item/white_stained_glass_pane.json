@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:item/white_stained_glass_pane"
+    "layer0": "minecraft:block/white_stained_glass"
   },
   "overrides": [
     {
