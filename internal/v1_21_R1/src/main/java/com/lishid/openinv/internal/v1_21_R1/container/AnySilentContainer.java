@@ -16,7 +16,7 @@
 
 package com.lishid.openinv.internal.v1_21_R1.container;
 
-import com.lishid.openinv.internal.IAnySilentContainer;
+import com.lishid.openinv.internal.AnySilentContainerBase;
 import com.lishid.openinv.internal.v1_21_R1.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.v1_21_R1.player.PlayerManager;
 import com.lishid.openinv.util.ReflectionHelper;
@@ -50,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
-public class AnySilentContainer implements IAnySilentContainer {
+public class AnySilentContainer extends AnySilentContainerBase {
 
     private final @NotNull Logger logger;
     private final @NotNull LanguageManager lang;

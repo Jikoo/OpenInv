@@ -16,7 +16,7 @@
 
 package com.lishid.openinv.internal.v1_20_R4;
 
-import com.lishid.openinv.internal.IAnySilentContainer;
+import com.lishid.openinv.internal.AnySilentContainerBase;
 import com.lishid.openinv.util.ReflectionHelper;
 import com.lishid.openinv.util.lang.LanguageManager;
 import net.minecraft.core.BlockPos;
@@ -48,7 +48,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
-public class AnySilentContainer implements IAnySilentContainer {
+public class AnySilentContainer extends AnySilentContainerBase {
 
     private final @NotNull Logger logger;
     private final @NotNull LanguageManager lang;
