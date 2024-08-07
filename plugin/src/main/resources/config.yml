@@ -1,5 +1,6 @@
-config-version: 7
+config-version: 8
 settings:
+  equal-access: allow
   command:
     open:
       no-args-opens-self: false

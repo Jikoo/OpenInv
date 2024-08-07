@@ -15,7 +15,7 @@ public class OpenEnderChestMenu extends OpenChestMenu<OpenEnderChest> {
 
   @Override
   protected boolean checkViewOnly() {
-    return  !(ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_OPEN_OTHER)
+    return !(ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_OPEN_OTHER)
         .hasPermission(viewer.getBukkitEntity());
   }
 

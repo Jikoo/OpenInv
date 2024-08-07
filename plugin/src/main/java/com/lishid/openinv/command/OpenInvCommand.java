@@ -18,6 +18,7 @@ package com.lishid.openinv.command;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.ISpecialInventory;
+import com.lishid.openinv.util.AccessEqualMode;
 import com.lishid.openinv.util.InventoryManager;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.PlayerLoader;
@@ -197,7 +198,7 @@ public class OpenInvCommand implements TabExecutor {
             for (int level = 4; level > 0; --level) {
                 String permission = "openinv.access.level." + level;
                 if (onlineTarget.hasPermission(permission)
-                        && !player.hasPermission(permission)) {
+                        && (!player.hasPermission(permission) || config.getAccessEqualMode() == AccessEqualMode.DENY)) {
                     lang.sendMessage(
                         player,
                         "messages.error.permissionExempt",
