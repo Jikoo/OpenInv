@@ -61,9 +61,18 @@ public record ConfigUpdater(@NotNull Plugin plugin) {
         if (version < 7) {
             updateConfig6To7();
         }
+        if (version < 8) {
+            updateConfig7To8();
+        }
 
         plugin.saveConfig();
         plugin.getLogger().info("Configuration update complete!");
+    }
+
+    private void updateConfig7To8() {
+        FileConfiguration config = plugin.getConfig();
+        config.set("settings.equal-access", "allow");
+        config.set("config-version", 8);
     }
 
     private void updateConfig6To7() {
