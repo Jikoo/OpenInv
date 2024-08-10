@@ -49,6 +49,6 @@ public interface PlayerManager {
      *`
      * @return the InventoryView opened
      */
-    @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory);
+    @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly);
 
 }

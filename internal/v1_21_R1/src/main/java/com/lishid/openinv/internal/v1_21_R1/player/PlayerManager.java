@@ -13,7 +13,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -219,35 +218,34 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
   }
 
   @Override
-  public @Nullable InventoryView openInventory(@NotNull Player bukkitPlayer, @NotNull ISpecialInventory inventory) {
+  public @Nullable InventoryView openInventory(@NotNull Player bukkitPlayer, @NotNull ISpecialInventory inventory, boolean viewOnly) {
     ServerPlayer player = getHandle(bukkitPlayer);
 
     if (player.connection == null) {
       return null;
     }
 
-    MenuProvider provider;
+    // See net.minecraft.server.level.ServerPlayer#openMenu(MenuProvider)
+    AbstractContainerMenu menu;
     Component title;
     if (inventory instanceof OpenInventory playerInv) {
-      provider = playerInv;
+      menu = playerInv.createMenu(player, player.nextContainerCounter(), viewOnly);
       title = playerInv.getTitle(player);
     } else if (inventory instanceof OpenEnderChest enderChest) {
-      provider = enderChest;
-      title = enderChest.getDisplayName();
+      menu = enderChest.createMenu(player, player.nextContainerCounter(), viewOnly);
+      title = enderChest.getTitle();
     } else {
       return null;
     }
-
-    // See net.minecraft.server.level.ServerPlayer#openMenu(MenuProvider)
-    AbstractContainerMenu menu = provider.createMenu(player.nextContainerCounter(), player.getInventory(), player);
 
     // Should never happen, player is a ServerPlayer with an active connection.
     if (menu == null) {
       return null;
     }
 
-    // Set up title (the whole reason we're not just using Player#openInventory(Inventory)).
-    // Title can only be set once for a menu, and is set during the open process.
+    // Set up title. Title can only be set once for a menu, and is set during the open process.
+    // Further title changes are a hack where the client is sent a "new" inventory with the same ID,
+    // resulting in a title change but no other state modifications (like cursor position).
     menu.setTitle(title);
 
     menu = CraftEventFactory.callInventoryOpenEvent(player, menu, false);

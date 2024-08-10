@@ -163,11 +163,11 @@ public class InternalAccessor {
         return internal.getAnySilentContainer();
     }
 
-    public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
+    public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly) {
         if (internal == null) {
             throw new IllegalStateException(String.format("Unsupported server version %s!", BukkitVersions.MINECRAFT));
         }
-        return internal.getPlayerManager().openInventory(player, inventory);
+        return internal.getPlayerManager().openInventory(player, inventory, viewOnly);
     }
 
     /**

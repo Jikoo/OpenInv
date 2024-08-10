@@ -7,15 +7,16 @@ import java.util.Locale;
 
 public enum AccessEqualMode {
 
-  DENY, ALLOW;
+  DENY, ALLOW, VIEW;
 
   public static @NotNull AccessEqualMode of(@Nullable String value) {
     if (value == null) {
-      return ALLOW;
+      return VIEW;
     }
     return switch (value.toLowerCase(Locale.ENGLISH)) {
       case "deny", "false" -> DENY;
-      default -> ALLOW;
+      case "allow", "true" -> ALLOW;
+      default -> VIEW;
     };
   }
 

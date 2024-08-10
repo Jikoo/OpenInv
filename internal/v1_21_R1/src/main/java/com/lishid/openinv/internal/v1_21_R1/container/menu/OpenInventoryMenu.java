@@ -26,8 +26,8 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
 
   private int offset;
 
-  public OpenInventoryMenu(OpenInventory inventory, ServerPlayer viewer, int i) {
-    super(getMenuType(inventory, viewer), i, inventory, viewer);
+  public OpenInventoryMenu(OpenInventory inventory, ServerPlayer viewer, int i, boolean viewOnly) {
+    super(getMenuType(inventory, viewer), i, inventory, viewer, viewOnly);
   }
 
   private static MenuType<ChestMenu> getMenuType(OpenInventory inventory, ServerPlayer viewer) {
@@ -95,12 +95,6 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
     }
 
     return slot;
-  }
-
-  @Override
-  protected boolean checkViewOnly() {
-    return !(ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER)
-        .hasPermission(viewer.getBukkitEntity());
   }
 
   @Override

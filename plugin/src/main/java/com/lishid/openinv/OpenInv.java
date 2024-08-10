@@ -30,20 +30,23 @@ import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.listener.ContainerListener;
 import com.lishid.openinv.listener.LegacyInventoryListener;
 import com.lishid.openinv.listener.ToggleListener;
-import com.lishid.openinv.util.config.Config;
-import com.lishid.openinv.util.config.ConfigUpdater;
+import com.lishid.openinv.util.AccessEqualMode;
 import com.lishid.openinv.util.InternalAccessor;
 import com.lishid.openinv.util.InventoryManager;
-import com.lishid.openinv.util.lang.LangMigrator;
+import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.PlayerLoader;
+import com.lishid.openinv.util.config.Config;
+import com.lishid.openinv.util.config.ConfigUpdater;
+import com.lishid.openinv.util.lang.LangMigrator;
+import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.setting.PlayerToggle;
 import com.lishid.openinv.util.setting.PlayerToggles;
-import com.lishid.openinv.util.lang.LanguageManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.PluginManager;
@@ -143,7 +146,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         PluginManager pluginManager = this.getServer().getPluginManager();
         // Legacy: extra listener for permission handling and self-view issue prevention.
         if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21))) {
-            pluginManager.registerEvents(new LegacyInventoryListener(this), this);
+            pluginManager.registerEvents(new LegacyInventoryListener(this, config), this);
         }
         pluginManager.registerEvents(playerLoader, this);
         pluginManager.registerEvents(inventoryManager, this);
@@ -248,7 +251,44 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
     @Override
     public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
-        return this.accessor.openInventory(player, inventory);
+        Permissions edit = null;
+        HumanEntity target = inventory.getPlayer();
+        boolean ownContainer = player.equals(target);
+        if (inventory instanceof ISpecialPlayerInventory) {
+            edit = ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER;
+        } else if (inventory instanceof ISpecialEnderChest) {
+            edit = ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_OPEN_OTHER;
+        }
+
+        boolean viewOnly = edit != null && !edit.hasPermission(player);
+
+        if (!ownContainer && !viewOnly) {
+            for (int level = 4; level > 0; --level) {
+                String permission = "openinv.access.level." + level;
+                // If the target doesn't have this access level...
+                if (!target.hasPermission(permission)) {
+                    // If the viewer does have the access level, all good.
+                    if (player.hasPermission(permission)) {
+                        break;
+                    }
+                    // Otherwise check next access level.
+                    continue;
+                }
+
+                // If the player doesn't have an equal access level or equal access is a denial, deny.
+                if (!player.hasPermission(permission) || config.getAccessEqualMode() == AccessEqualMode.DENY) {
+                    return null;
+                }
+
+                // Since this is a tie, setting decides view state.
+                if (config.getAccessEqualMode() == AccessEqualMode.VIEW) {
+                    viewOnly = true;
+                }
+                break;
+            }
+        }
+
+        return this.accessor.openInventory(player, inventory, viewOnly);
     }
 
     @Override

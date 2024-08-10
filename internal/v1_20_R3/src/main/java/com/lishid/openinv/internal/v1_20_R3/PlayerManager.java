@@ -239,7 +239,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     }
 
     @Override
-    public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
+    public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly) {
 
         ServerPlayer nmsPlayer = getHandle(player);
 

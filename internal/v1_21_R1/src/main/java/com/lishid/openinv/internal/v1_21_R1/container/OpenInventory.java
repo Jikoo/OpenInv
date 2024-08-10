@@ -4,7 +4,6 @@ import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.InternalOwned;
 import com.lishid.openinv.internal.v1_21_R1.container.bukkit.OpenPlayerInventory;
 import com.lishid.openinv.internal.v1_21_R1.container.menu.OpenInventoryMenu;
-import com.lishid.openinv.internal.v1_21_R1.player.PlayerManager;
 import com.lishid.openinv.internal.v1_21_R1.container.slot.Content;
 import com.lishid.openinv.internal.v1_21_R1.container.slot.ContentCrafting;
 import com.lishid.openinv.internal.v1_21_R1.container.slot.ContentCraftingResult;
@@ -15,6 +14,7 @@ import com.lishid.openinv.internal.v1_21_R1.container.slot.ContentList;
 import com.lishid.openinv.internal.v1_21_R1.container.slot.ContentOffHand;
 import com.lishid.openinv.internal.v1_21_R1.container.slot.ContentViewOnly;
 import com.lishid.openinv.internal.v1_21_R1.container.slot.SlotViewOnly;
+import com.lishid.openinv.internal.v1_21_R1.player.PlayerManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -22,7 +22,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -40,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OpenInventory implements Container, MenuProvider, InternalOwned<ServerPlayer>, ISpecialPlayerInventory {
+public class OpenInventory implements Container, InternalOwned<ServerPlayer>, ISpecialPlayerInventory {
 
   private final List<Content> slots;
   private final int size;
@@ -355,15 +354,9 @@ public class OpenInventory implements Container, MenuProvider, InternalOwned<Ser
     owner.containerMenu.setCarried(ItemStack.EMPTY);
   }
 
-  @Override
-  public Component getDisplayName() {
-    return getTitle(null);
-  }
-
-  @Override
-  public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+  public @Nullable AbstractContainerMenu createMenu(Player player, int i, boolean viewOnly) {
     if (player instanceof ServerPlayer serverPlayer) {
-      return new OpenInventoryMenu(this, serverPlayer, i);
+      return new OpenInventoryMenu(this, serverPlayer, i, viewOnly);
     }
     return null;
   }

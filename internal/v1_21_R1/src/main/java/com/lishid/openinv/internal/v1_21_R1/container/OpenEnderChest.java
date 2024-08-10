@@ -9,8 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -27,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OpenEnderChest implements Container, StackedContentsCompatible, MenuProvider,
-    InternalOwned<ServerPlayer>, ISpecialEnderChest {
+public class OpenEnderChest implements Container, StackedContentsCompatible, InternalOwned<ServerPlayer>,
+    ISpecialEnderChest {
 
   private CraftInventory inventory;
   private @NotNull ServerPlayer owner;
@@ -182,17 +180,15 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Men
     }
   }
 
-  @Override
-  public Component getDisplayName() {
+  public Component getTitle() {
     return Component.translatableWithFallback("openinv.container.enderchest.prefix", "", owner.getName())
         .append(Component.translatable("container.enderchest"))
         .append(Component.translatableWithFallback("openinv.container.enderchest.suffix", " - %s", owner.getName()));
   }
 
-  @Override
-  public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+  public @Nullable AbstractContainerMenu createMenu(Player player, int i, boolean viewOnly) {
     if (player instanceof ServerPlayer serverPlayer) {
-      return new OpenEnderChestMenu(this, serverPlayer, i);
+      return new OpenEnderChestMenu(this, serverPlayer, i, viewOnly);
     }
     return null;
   }

@@ -71,7 +71,7 @@ public record ConfigUpdater(@NotNull Plugin plugin) {
 
     private void updateConfig7To8() {
         FileConfiguration config = plugin.getConfig();
-        config.set("settings.equal-access", "allow");
+        config.set("settings.equal-access", "view");
         config.set("config-version", 8);
     }
 

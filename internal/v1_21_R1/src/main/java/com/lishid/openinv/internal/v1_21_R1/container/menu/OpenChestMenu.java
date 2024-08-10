@@ -54,13 +54,18 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   private ItemStack remoteCarried = ItemStack.EMPTY;
   private boolean suppressRemoteUpdates;
 
-  protected OpenChestMenu(MenuType<ChestMenu> type, int containerCounter, T container, ServerPlayer viewer) {
+  protected OpenChestMenu(
+      @NotNull MenuType<ChestMenu> type,
+      int containerCounter,
+      @NotNull T container,
+      @NotNull ServerPlayer viewer,
+      boolean viewOnly) {
     super(type, containerCounter);
     this.container = container;
     this.viewer = viewer;
+    this.viewOnly = viewOnly;
     ownContainer = container.getOwnerHandle().equals(viewer);
     topSize = getTopSize(viewer);
-    viewOnly = checkViewOnly();
 
     preSlotSetup();
 
@@ -115,8 +120,6 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
       default -> throw new IllegalArgumentException("Inventory size unsupported: " + inventorySize);
     };
   }
-
-  protected abstract boolean checkViewOnly();
 
   protected void preSlotSetup() {}
 

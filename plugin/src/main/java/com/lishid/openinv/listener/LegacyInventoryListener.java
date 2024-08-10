@@ -1,12 +1,13 @@
 package com.lishid.openinv.listener;
 
 import com.google.errorprone.annotations.Keep;
-import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
+import com.lishid.openinv.util.AccessEqualMode;
 import com.lishid.openinv.util.InventoryAccess;
 import com.lishid.openinv.util.Permissions;
+import com.lishid.openinv.util.config.Config;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,11 +20,11 @@ import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,10 +33,12 @@ import java.util.stream.Collectors;
  */
 public class LegacyInventoryListener implements Listener {
 
-  private final @NotNull OpenInv plugin;
+  private final @NotNull Plugin plugin;
+  private final @NotNull Config config;
 
-  public LegacyInventoryListener(@NotNull OpenInv plugin) {
+  public LegacyInventoryListener(@NotNull Plugin plugin, @NotNull Config config) {
     this.plugin = plugin;
+    this.config = config;
   }
 
   @Keep
@@ -150,35 +153,55 @@ public class LegacyInventoryListener implements Listener {
    * @return true unless the top inventory is the holder's own inventory
    */
   private boolean handleInventoryInteract(@NotNull final InventoryInteractEvent event) {
-    HumanEntity entity = event.getWhoClicked();
+    HumanEntity viewer = event.getWhoClicked();
 
     Inventory inventory = event.getView().getTopInventory();
     ISpecialInventory backing = InventoryAccess.getInventory(inventory);
-    Permissions editSelf;
-    Permissions editOther;
-    if (backing instanceof ISpecialEnderChest) {
-      editSelf = Permissions.ENDERCHEST_EDIT_SELF;
-      editOther = Permissions.ENDERCHEST_EDIT_OTHER;
-    } else if (backing instanceof ISpecialPlayerInventory) {
-      editSelf = Permissions.INVENTORY_EDIT_SELF;
-      editOther = Permissions.INVENTORY_EDIT_OTHER;
+
+    if (backing == null) {
+      return true;
+    }
+
+    Permissions edit;
+    HumanEntity target = backing.getPlayer();
+    boolean ownContainer = viewer.equals(target);
+    if (backing instanceof ISpecialPlayerInventory) {
+      edit = ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER;
+    } else if (backing instanceof ISpecialEnderChest) {
+      edit = ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_OPEN_OTHER;
     } else {
       // Unknown implementation.
       return true;
     }
 
-    if (Objects.equals(entity, backing.getPlayer())) {
-      if (!editSelf.hasPermission(entity)) {
-        event.setCancelled(true);
-        return true;
-      }
-      return !(backing instanceof ISpecialPlayerInventory);
-    } else {
-      if (!editOther.hasPermission(entity)) {
-        event.setCancelled(true);
-      }
+    if (!edit.hasPermission(viewer)) {
+      event.setCancelled(true);
       return true;
     }
+
+    // If access ties aren't view-only mode, don't bother with permission checks.
+    if (config.getAccessEqualMode() != AccessEqualMode.VIEW) {
+      return !ownContainer || !(backing instanceof ISpecialPlayerInventory);
+    }
+
+    for (int level = 4; level > 0; --level) {
+      String permission = "openinv.access.level." + level;
+      // If the target doesn't have this access level...
+      if (!target.hasPermission(permission)) {
+        // If the viewer does have the access level, all good.
+        if (viewer.hasPermission(permission)) {
+          break;
+        }
+        // Otherwise check next access level.
+        continue;
+      }
+
+      // Either the viewer lacks access (which shouldn't be possible) or this is a tie. View-only.
+      event.setCancelled(true);
+      return true;
+    }
+
+    return !ownContainer || !(backing instanceof ISpecialPlayerInventory);
   }
 
   private static int convertToPlayerSlot(InventoryView view, int rawSlot) {
