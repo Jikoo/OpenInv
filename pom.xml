@@ -117,7 +117,7 @@
             -->
           <artifactId>maven-dependency-plugin</artifactId>
           <groupId>org.apache.maven.plugins</groupId>
-          <version>3.7.1</version>
+          <version>3.8.0</version>
         </plugin>
 
         <plugin>
