@@ -43,6 +43,7 @@
         <module>api</module>
         <module>addon/togglepersist</module>
         <module>common</module>
+        <module>internal/v1_21_R2</module>
         <module>internal/v1_21_R1</module>
         <module>internal/v1_20_R4</module>
         <module>internal/v1_20_R3</module>
@@ -78,7 +79,7 @@
         <artifactId>annotations</artifactId>
         <groupId>org.jetbrains</groupId>
         <scope>provided</scope>
-        <version>24.1.0</version>
+        <version>26.0.1</version>
       </dependency>
       <dependency>
         <artifactId>spigot-api</artifactId>

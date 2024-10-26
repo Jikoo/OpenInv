@@ -40,7 +40,9 @@ public class InternalAccessor {
     public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
 
         try {
-            if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 1))
+            if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 3))) {
+                internal = new com.lishid.openinv.internal.v1_21_R2.InternalAccessor(logger, lang);
+            } else if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 1))
                     || BukkitVersions.MINECRAFT.equals(Version.of(1, 21))) {
                 internal = new com.lishid.openinv.internal.v1_21_R1.InternalAccessor(logger, lang);
             } else if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 4))) {

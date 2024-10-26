@@ -1,11 +1,11 @@
-package com.lishid.openinv.internal.v1_21_R1.container.menu;
+package com.lishid.openinv.internal.v1_21_R2.container.menu;
 
 import com.google.common.base.Suppliers;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.InternalOwned;
-import com.lishid.openinv.internal.v1_21_R1.container.bukkit.OpenDummyInventory;
-import com.lishid.openinv.internal.v1_21_R1.container.slot.SlotPlaceholder;
-import com.lishid.openinv.internal.v1_21_R1.container.slot.SlotViewOnly;
+import com.lishid.openinv.internal.v1_21_R2.container.bukkit.OpenDummyInventory;
+import com.lishid.openinv.internal.v1_21_R2.container.slot.SlotPlaceholder;
+import com.lishid.openinv.internal.v1_21_R2.container.slot.SlotViewOnly;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +21,7 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftInventoryView;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
