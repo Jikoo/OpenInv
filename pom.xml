@@ -83,7 +83,7 @@
         <artifactId>spigot-api</artifactId>
         <groupId>org.spigotmc</groupId>
         <scope>provided</scope>
-        <version>1.20.4-R0.1-SNAPSHOT</version>
+        <version>1.21.1-R0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <artifactId>openinvapi</artifactId>
