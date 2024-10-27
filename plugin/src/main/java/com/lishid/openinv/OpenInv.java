@@ -16,8 +16,6 @@
 
 package com.lishid.openinv;
 
-import com.github.jikoo.planarwrappers.util.version.BukkitVersions;
-import com.github.jikoo.planarwrappers.util.version.Version;
 import com.lishid.openinv.command.ContainerSettingCommand;
 import com.lishid.openinv.command.OpenInvCommand;
 import com.lishid.openinv.command.SearchContainerCommand;
@@ -28,7 +26,6 @@ import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.listener.ContainerListener;
-import com.lishid.openinv.listener.LegacyInventoryListener;
 import com.lishid.openinv.listener.ToggleListener;
 import com.lishid.openinv.util.AccessEqualMode;
 import com.lishid.openinv.util.InternalAccessor;
@@ -144,10 +141,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
 
     private void registerEvents() {
         PluginManager pluginManager = this.getServer().getPluginManager();
-        // Legacy: extra listener for permission handling and self-view issue prevention.
-        if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21))) {
-            pluginManager.registerEvents(new LegacyInventoryListener(this, config), this);
-        }
         pluginManager.registerEvents(playerLoader, this);
         pluginManager.registerEvents(inventoryManager, this);
         pluginManager.registerEvents(new ContainerListener(accessor, languageManager), this);
