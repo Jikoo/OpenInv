@@ -51,6 +51,7 @@ public class OpenPlayer extends CraftPlayer {
       "SpawnAngle",
       "SpawnDimension",
       "raid_omen_position",
+      "ender_pearls",
       // Player#addAdditionalSaveData(CompoundTag)
       "ShoulderEntityLeft",
       "ShoulderEntityRight",
