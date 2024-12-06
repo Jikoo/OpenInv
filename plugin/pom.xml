@@ -46,13 +46,13 @@
     </dependency>
     <dependency>
       <groupId>com.lishid</groupId>
-      <artifactId>openinvadapter1_21_R2</artifactId>
+      <artifactId>openinvadapter1_21_R3</artifactId>
       <version>5.1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.lishid</groupId>
-      <artifactId>openinvadapter1_21_R1</artifactId>
+      <artifactId>openinvadapter1_21_R2</artifactId>
       <version>5.1.4-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>

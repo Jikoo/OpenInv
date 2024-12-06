@@ -43,8 +43,8 @@
         <module>api</module>
         <module>addon/togglepersist</module>
         <module>common</module>
+        <module>internal/v1_21_R3</module>
         <module>internal/v1_21_R2</module>
-        <module>internal/v1_21_R1</module>
         <module>plugin</module>
       </modules>
     </profile>
