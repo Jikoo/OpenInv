@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "model",
+          "model": "openinv:item/not_a_slot"
+        },
+        "when": "openinv:custom"
+      }
+    ],
+    "fallback": {
+      "type": "model",
+      "model": "item/white_stained_glass_pane"
+    },
+    "property": "custom_model_data"
+  }
+}

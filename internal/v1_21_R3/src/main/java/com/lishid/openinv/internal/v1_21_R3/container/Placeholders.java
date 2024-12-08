@@ -29,8 +29,7 @@ import java.util.Optional;
 
 public final class Placeholders {
 
-  // TODO see if this can be converted to a string, i.e. openinv:custom etc.
-  private static final CustomModelData DEFAULT_CUSTOM_MODEL_DATA = new CustomModelData(List.of(9999.0F), List.of(), List.of(), List.of());
+  private static final CustomModelData DEFAULT_CUSTOM_MODEL_DATA = new CustomModelData(List.of(), List.of(), List.of("openinv:custom"), List.of());
   public static final @NotNull EnumMap<GameType, ItemStack> BLOCKED_GAME_TYPE = new EnumMap<>(GameType.class);
   public static @NotNull ItemStack craftingOutput = defaultCraftingOutput();
   public static @NotNull ItemStack cursor = defaultCursor();
