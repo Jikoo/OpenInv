@@ -1,7 +1,8 @@
 {
   "texture_size": [ 16, 32 ],
   "textures": {
-    "layer0": "openinv:item/crafting_output"
+    "layer0": "openinv:item/crafting_output",
+    "particle": "minecraft:block/crafting_table_front"
   },
   "elements": [
     {
