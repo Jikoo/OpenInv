@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:gui/sprites/container/slot/boots"
+    "layer0": "openinv:item/empty_boots"
   }
 }
