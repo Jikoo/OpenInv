@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:block/white_stained_glass"
+  },
+  "overrides": [
+    {
+      "model": "openinv:item/not_a_slot",
+      "predicate": {
+        "custom_model_data": 9999
+      }
+    }
+  ]
+}

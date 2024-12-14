@@ -2,6 +2,18 @@
   "pack": {
     "description": "Improve OpenInv's legibility",
     "pack_format": 46,
-    "supported_formats": [ 46 ]
+    "supported_formats": [ 34, 46 ]
+  },
+  "overlays": {
+    "entries": [
+      {
+        "formats": [ 44, 46 ],
+        "directory": "openinv_44"
+      },
+      {
+        "formats": [ 34, 43 ],
+        "directory": "openinv_34"
+      }
+    ]
   }
 }
