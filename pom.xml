@@ -101,7 +101,7 @@
         <artifactId>planarwrappers</artifactId>
         <groupId>com.github.jikoo</groupId>
         <scope>compile</scope>
-        <version>3.2.3</version>
+        <version>3.3.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
