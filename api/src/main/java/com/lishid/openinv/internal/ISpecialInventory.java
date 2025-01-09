@@ -18,6 +18,7 @@ package com.lishid.openinv.internal;
 
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +33,13 @@ public interface ISpecialInventory {
      * @return the Bukkit inventory
      */
     @NotNull Inventory getBukkitInventory();
+
+    /**
+     * Get the {@link InventoryType} corresponding to this {@code ISpecialInventory}.
+     *
+     * @return the type of Bukkit inventory
+     */
+    @NotNull InventoryType getBukkitType();
 
     /**
      * Set the owning {@link Player} instance to a newly-joined user.

@@ -16,35 +16,17 @@
 
 package com.lishid.openinv.internal;
 
-import java.util.List;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.inventory.InventoryType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An {@link ISpecialInventory} representing a player inventory.
  */
 public interface ISpecialPlayerInventory extends ISpecialInventory {
 
-    /*
-     * Player inventory usage varies from all other inventories - as the inventory is technically open at all times,
-     * if the player is online or has been online while the inventory is open, they are in the viewer list.
-     */
     @Override
-    default boolean isInUse() {
-        Inventory inventory = getBukkitInventory();
-        List<HumanEntity> viewers = inventory.getViewers();
-
-        if (viewers.size() != 1) {
-            return !viewers.isEmpty();
-        }
-
-        HumanEntity viewer = viewers.get(0);
-
-        if (!viewer.getUniqueId().equals(getPlayer().getUniqueId())) {
-            return true;
-        }
-
-        return viewer.getOpenInventory().getTopInventory().equals(inventory);
+    default @NotNull InventoryType getBukkitType() {
+        return InventoryType.PLAYER;
     }
 
 }

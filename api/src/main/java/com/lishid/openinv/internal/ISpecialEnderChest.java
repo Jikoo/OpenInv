@@ -16,9 +16,17 @@
 
 package com.lishid.openinv.internal;
 
+import org.bukkit.event.inventory.InventoryType;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * An {@link ISpecialInventory} representing an ender chest.
  */
 public interface ISpecialEnderChest extends ISpecialInventory {
+
+  @Override
+  default @NotNull InventoryType getBukkitType() {
+    return InventoryType.ENDER_CHEST;
+  }
 
 }

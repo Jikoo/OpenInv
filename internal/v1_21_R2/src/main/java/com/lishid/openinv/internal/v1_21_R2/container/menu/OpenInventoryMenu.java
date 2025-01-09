@@ -2,7 +2,7 @@ package com.lishid.openinv.internal.v1_21_R2.container.menu;
 
 import com.google.common.base.Preconditions;
 import com.lishid.openinv.internal.v1_21_R2.container.OpenInventory;
-import com.lishid.openinv.internal.v1_21_R2.container.bukkit.OpenDummyInventory;
+import com.lishid.openinv.internal.v1_21_R2.container.bukkit.OpenDummyPlayerInventory;
 import com.lishid.openinv.internal.v1_21_R2.container.bukkit.OpenPlayerInventorySelf;
 import com.lishid.openinv.internal.v1_21_R2.container.slot.ContentDrop;
 import com.lishid.openinv.internal.v1_21_R2.container.slot.ContentEquipment;
@@ -102,7 +102,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
   protected @NotNull CraftInventoryView<OpenChestMenu<OpenInventory>, Inventory> createBukkitEntity() {
     org.bukkit.inventory.Inventory bukkitInventory;
     if (viewOnly) {
-      bukkitInventory = new OpenDummyInventory(container);
+      bukkitInventory = new OpenDummyPlayerInventory(container);
     } else if (ownContainer) {
       bukkitInventory = new OpenPlayerInventorySelf(container, offset);
     } else {

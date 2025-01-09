@@ -143,7 +143,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   protected @NotNull CraftInventoryView<OpenChestMenu<T>, Inventory> createBukkitEntity() {
     Inventory top;
     if (viewOnly) {
-      top = new OpenDummyInventory(container);
+      top = new OpenDummyInventory(container, container.getBukkitType());
     } else {
       top = container.getBukkitInventory();
     }

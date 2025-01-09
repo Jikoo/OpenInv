@@ -4,6 +4,7 @@ import com.lishid.openinv.internal.ViewOnly;
 import net.minecraft.world.Container;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftInventory;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,8 +18,16 @@ import java.util.ListIterator;
  */
 public class OpenDummyInventory extends CraftInventory implements ViewOnly {
 
-  public OpenDummyInventory(Container inventory) {
+  private final InventoryType type;
+
+  public OpenDummyInventory(Container inventory, InventoryType type) {
     super(inventory);
+    this.type = type;
+  }
+
+  @Override
+  public @NotNull InventoryType getType() {
+    return type;
   }
 
   @Override
