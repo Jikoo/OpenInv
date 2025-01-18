@@ -256,7 +256,7 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         boolean viewOnly = edit != null && !edit.hasPermission(player);
 
         if (ownContainer || viewOnly && config.getAccessEqualMode() != AccessEqualMode.DENY) {
-            this.accessor.openInventory(player, inventory, viewOnly);
+            return this.accessor.openInventory(player, inventory, viewOnly);
         }
 
         for (int level = 4; level > 0; --level) {

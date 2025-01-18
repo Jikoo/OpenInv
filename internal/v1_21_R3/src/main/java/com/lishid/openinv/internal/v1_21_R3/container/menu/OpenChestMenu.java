@@ -124,10 +124,11 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   protected void preSlotSetup() {}
 
   protected @NotNull Slot getUpperSlot(int index, int x, int y) {
+    Slot slot = new Slot(container, index, x, y);
     if (viewOnly) {
-      return new SlotViewOnly(container, index, x, y);
+      return SlotViewOnly.wrap(slot);
     }
-    return new Slot(container, index, x, y);
+    return slot;
   }
 
 
