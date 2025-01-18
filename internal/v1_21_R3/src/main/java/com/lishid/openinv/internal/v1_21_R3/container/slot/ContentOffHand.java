@@ -1,8 +1,10 @@
 package com.lishid.openinv.internal.v1_21_R3.container.slot;
 
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +39,12 @@ public class ContentOffHand extends ContentEquipment {
         if (holder.connection != null
             && !holder.connection.isDisconnected()
             && holder.containerMenu != holder.inventoryMenu) {
-          holder.resendItemInHands();
+          holder.connection.send(
+              new ClientboundContainerSetSlotPacket(
+                  holder.inventoryMenu.containerId,
+                  holder.inventoryMenu.incrementStateId(),
+                  InventoryMenu.SHIELD_SLOT,
+                  holder.getOffhandItem()));
         }
       }
     };
