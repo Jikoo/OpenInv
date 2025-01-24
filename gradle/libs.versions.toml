@@ -1,0 +1,15 @@
+[versions]
+spigot-api = "1.21.4-R0.1-SNAPSHOT"
+planarwrappers = "3.3.0"
+annotations = "26.0.1"
+paperweight = "2.0.0-beta.14"
+shadow = "8.3.5"
+
+[libraries]
+spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot-api" }
+planarwrappers = { module = "com.github.jikoo:planarwrappers", version.ref = "planarwrappers" }
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+
+[plugins]
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

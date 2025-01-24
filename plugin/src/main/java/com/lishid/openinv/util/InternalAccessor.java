@@ -38,12 +38,25 @@ public class InternalAccessor {
     private @Nullable Accessor internal;
 
     public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
+        boolean paper = false;
+        try {
+            Class.forName("io.papermc.paper.configuration.GlobalConfiguration");
+            paper = true;
+        } catch (ClassNotFoundException ignored) {
+            // Expect remapped server.
+        }
 
         try {
-            if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 4))) {
-                internal = new com.lishid.openinv.internal.v1_21_R3.InternalAccessor(logger, lang);
-            } else if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 3))) {
-                internal = new com.lishid.openinv.internal.v1_21_R2.InternalAccessor(logger, lang);
+            Version maxSupported = Version.of(1, 21, 4);
+            // TODO investigate min version - placeholders will change, possibly more.
+            Version minSupported = Version.of(1, 21, 4);
+            if (!paper) {
+                if (BukkitVersions.MINECRAFT.equals(maxSupported)) {
+                    internal = new com.lishid.openinv.internal.reobf.InternalAccessor(logger, lang);
+                }
+            } else if (BukkitVersions.MINECRAFT.greaterThanOrEqual(minSupported)
+                    && BukkitVersions.MINECRAFT.lessThanOrEqual(maxSupported)) {
+                internal = new com.lishid.openinv.internal.common.InternalAccessor(logger, lang);
             }
             if (internal != null) {
                 InventoryAccess.setProvider(internal::get);

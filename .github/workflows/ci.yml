@@ -21,14 +21,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-          cache: 'maven'
 
-      # Install Spigot dependencies if necessary.
-      - name: Install Spigot Dependencies
-        run: . scripts/install_spigot_dependencies.sh
+      - uses: actions/setup-gradle@v4
 
-      - name: Build With Maven
-        run: mvn -e clean package -am -P all
+      - name: Build with Gradle
+        run: ./gradlew build
 
       # Upload artifacts
       - name: Upload Distributable Jar
@@ -36,10 +33,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: ./target/*.jar
+          path: ./plugin/build/libs/*-all.jar
       - name: Upload API Jar
         id: upload-api
         uses: actions/upload-artifact@v4
         with:
           name: api
-          path: ./api/target/openinvapi*.jar
+          path: ./api/build/libs/openinvapi*.jar
