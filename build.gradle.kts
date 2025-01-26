@@ -13,10 +13,12 @@ repositories {
 // but may become relevant in the future.
 java.disableAutoTargetJvm()
 
-tasks.assemble {
-  //dependsOn(tasks.shadowJar)
+// Task to delete ./dist where final files are output.
+tasks.register("cleanDist") {
+  delete("dist")
 }
 
-tasks.jar {
-  manifest.attributes("paperweight-mappings-namespace" to "mojang")
+tasks.clean {
+  // Also delete distribution folder when cleaning.
+  dependsOn(tasks.named("cleanDist"))
 }

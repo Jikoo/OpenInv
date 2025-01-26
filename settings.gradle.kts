@@ -26,7 +26,7 @@ for (internal in internals) {
   proj.name = "openinvadapter$internal"
 }
 
-// TODO resource pack
+include(":resource-pack")
 
 include(":plugin")
 project(":plugin").name = "openinvplugin"

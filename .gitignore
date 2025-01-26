@@ -8,5 +8,6 @@
 **/bin/
 **/out/
 **/build/
+**/dist/
 **/dependency-reduced-pom.xml
 **/pom.xml.versionsBackup

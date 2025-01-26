@@ -20,5 +20,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: openinv-legibility-pack
-          path: ./resource-pack/
+          path: ./resource-pack/openinv-legibility-pack/
           compression-level: 9
