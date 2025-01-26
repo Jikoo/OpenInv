@@ -15,7 +15,9 @@ dependencies {
   implementation(libs.planarwrappers)
 }
 
-// TODO resource filtering to add version to plugin.yml
+tasks.processResources {
+  expand("version" to version)
+}
 
 tasks.jar {
   dependsOn(tasks.shadowJar)
