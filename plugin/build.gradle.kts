@@ -20,6 +20,10 @@ tasks.processResources {
 }
 
 tasks.jar {
+  manifest.attributes("paperweight-mappings-namespace" to "mojang")
+}
+
+tasks.assemble {
   dependsOn(tasks.shadowJar)
 }
 
