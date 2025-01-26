@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'dev/paper-modules' # TODO remove later
     tags-ignore:
       - '**'
     paths-ignore:
