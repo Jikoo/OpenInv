@@ -41,6 +41,3 @@ function get_curseforge_minecraft_versions() {
 
 minecraft_versions=$(get_curseforge_minecraft_versions)
 echo "CURSEFORGE_MINECRAFT_VERSIONS=$minecraft_versions" >> "$GITHUB_ENV"
-
-changelog=$(get_yaml_safe_changelog "$1")
-printf "CURSEFORGE_CHANGELOG<<EOF\n%s\nEOF\n" "$changelog" >> "$GITHUB_ENV"

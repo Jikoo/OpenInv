@@ -23,6 +23,7 @@ jobs:
       - name: Set CurseForge Variables
         run: . scripts/set_curseforge_env.sh "${{ github.event.release.body }}"
 
+      # TODO Investigate swap to Kir-Antipov/mc-publish
       - name: Create CurseForge Release
         uses: itsmeow/curseforge-upload@v3
         with:
@@ -34,4 +35,4 @@ jobs:
           game_versions: "${{ env.CURSEFORGE_MINECRAFT_VERSIONS }}"
           release_type: release
           changelog_type: markdown
-          changelog: "${{ env.CURSEFORGE_CHANGELOG }}"
+          changelog: "${{ github.event.release.body }}"
