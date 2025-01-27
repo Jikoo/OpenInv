@@ -20,7 +20,8 @@
 
 # Parse Spigot dependency information into major Minecraft versions
 function get_curseforge_minecraft_versions() {
-  readarray -t versions <<< "$(. ./scripts/get_spigot_versions.sh)"
+  # TODO convert to parsing event body
+  readarray -t versions <<< "1.21.4"
 
   for version in "${versions[@]}"; do
     # Parse Minecraft major version
@@ -36,16 +37,6 @@ function get_curseforge_minecraft_versions() {
   done
 
   echo "${minecraft_versions}"
-}
-
-# Modify provided changelog to not break when inserted into yaml file.
-function get_yaml_safe_changelog() {
-  changelog=$1
-  # Since we're using a flow scalar, newlines need to be doubled.
-  echo "${changelog//
-/
-
-}"
 }
 
 minecraft_versions=$(get_curseforge_minecraft_versions)
