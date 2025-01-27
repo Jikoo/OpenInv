@@ -23,14 +23,19 @@ tasks.jar {
   manifest.attributes("paperweight-mappings-namespace" to "mojang")
 }
 
-tasks.assemble {
-  dependsOn(tasks.shadowJar)
-}
-
 tasks.shadowJar {
   minimize {
     exclude(":openinv**")
   }
 }
 
-// TODO copy final file to a better location - dist folder for convenience with scripts?
+tasks.register<Copy>("distributePlugin") {
+  into(rootProject.layout.projectDirectory.dir("dist"))
+  from(tasks.shadowJar)
+  rename("openinvplugin.*\\.jar", "OpenInv.jar")
+}
+
+tasks.assemble {
+  dependsOn(tasks.shadowJar)
+  dependsOn(tasks.named("distributePlugin"))
+}
