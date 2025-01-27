@@ -172,12 +172,6 @@ public class OpenInv extends JavaPlugin implements IOpenInv {
         if (!accessor.isSupported()) {
             messageMethod.accept("Your server version (" + accessor.getVersion() + ") is not supported.");
             messageMethod.accept("Please download the correct version of OpenInv here: " + accessor.getReleasesLink());
-
-            // We check this property late so users can use jars that were remapped by Paper already.
-            if (Boolean.getBoolean("paper.disable-plugin-rewriting")) {
-                messageMethod.accept("OpenInv uses Spigot-mapped internals, but you have disabled plugin rewriting in Paper!");
-                messageMethod.accept("Please set system property 'paper.disable-plugin-rewriting' to false.");
-            }
         }
         if (!isSpigot) {
             messageMethod.accept("OpenInv requires that you use Spigot or a Spigot fork. Per the 1.14 update thread");
