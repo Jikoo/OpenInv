@@ -4,6 +4,20 @@ plugins {
   alias(libs.plugins.shadow)
 }
 
+configurations.all {
+  resolutionStrategy.capabilitiesResolution.withCapability("org.spigotmc:spigot-api") {
+    val spigot = candidates.firstOrNull {
+      it.id.let {
+        id -> id is ModuleComponentIdentifier && id.module == "spigot-api"
+      }
+    }
+    if (spigot != null) {
+      select(spigot)
+    }
+    because("module is written for Spigot servers")
+  }
+}
+
 dependencies {
   implementation(project(":openinvadaptercommon", configuration = "reobf"))
 
