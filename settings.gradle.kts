@@ -3,14 +3,15 @@ rootProject.name = "openinvparent"
 include(":openinvapi")
 project(":openinvapi").projectDir = file("api")
 
-// TODO addons
-//val addons = listOf(
-//  "togglepersist"
-//)
-//for (addon in addons) {
-//  include("addon:$addon")
-//  project(":$addon").name = "openinv$addon"
-//}
+val addons = listOf(
+  "togglepersist"
+)
+for (addon in addons) {
+  include(":addon$addon")
+  val proj = project(":addon$addon")
+  proj.projectDir = file("addon/$addon")
+  proj.name = "openinv$addon"
+}
 
 include(":openinvcommon")
 project(":openinvcommon").projectDir = file("common")
