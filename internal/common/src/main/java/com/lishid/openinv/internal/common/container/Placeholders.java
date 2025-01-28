@@ -1,5 +1,6 @@
 package com.lishid.openinv.internal.common.container;
 
+import com.lishid.openinv.internal.common.player.OpenPlayer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
@@ -84,7 +85,7 @@ public final class Placeholders {
   }
 
   public static ItemStack survivalOnly(@NotNull ServerPlayer serverPlayer) {
-    if (serverPlayer.connection == null || serverPlayer.connection.isDisconnected()) {
+    if (!OpenPlayer.isConnected(serverPlayer.connection)) {
       return blockedOffline;
     }
 

@@ -1,6 +1,7 @@
 package com.lishid.openinv.internal.common.container.slot;
 
 import com.lishid.openinv.internal.common.container.Placeholders;
+import com.lishid.openinv.internal.common.player.OpenPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -63,7 +64,7 @@ public class ContentCursor implements Content {
     // Player must be online and not in creative - since the creative client is (semi-)authoritative,
     // it ignores changes without extra help, and will delete the item as a result.
     // Spectator mode is technically possible but may cause the item to be dropped if the client opens an inventory.
-    return holder.connection != null && !holder.connection.isDisconnected() && holder.gameMode.isSurvival();
+    return OpenPlayer.isConnected(holder.connection) && holder.gameMode.isSurvival();
   }
 
   @Override
@@ -93,12 +94,12 @@ public class ContentCursor implements Content {
     }
 
     @Override
-    public boolean mayPickup(Player player) {
+    public boolean mayPickup(@NotNull Player player) {
       return isAvailable();
     }
 
     @Override
-    public boolean mayPlace(ItemStack itemStack) {
+    public boolean mayPlace(@NotNull ItemStack itemStack) {
       return isAvailable();
     }
 

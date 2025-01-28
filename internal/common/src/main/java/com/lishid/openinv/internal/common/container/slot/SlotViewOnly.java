@@ -45,20 +45,20 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
-  public void onQuickCraft(ItemStack var0, ItemStack var1) {
+  public void onQuickCraft(@NotNull ItemStack itemStack1, @NotNull ItemStack itemStack2) {
   }
 
   @Override
-  public void onTake(Player var0, ItemStack var1) {
+  public void onTake(@NotNull Player player, @NotNull ItemStack itemStack) {
   }
 
   @Override
-  public boolean mayPlace(ItemStack var0) {
+  public boolean mayPlace(@NotNull ItemStack itemStack) {
     return false;
   }
 
   @Override
-  public ItemStack getItem() {
+  public @NotNull ItemStack getItem() {
     return ItemStack.EMPTY;
   }
 
@@ -68,15 +68,15 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
-  public void setByPlayer(ItemStack newStack) {
+  public void setByPlayer(@NotNull ItemStack newStack) {
   }
 
   @Override
-  public void setByPlayer(ItemStack newStack, ItemStack oldStack) {
+  public void setByPlayer(@NotNull ItemStack newStack, @NotNull ItemStack oldStack) {
   }
 
   @Override
-  public void set(ItemStack var0) {
+  public void set(@NotNull ItemStack itemStack) {
   }
 
   @Override
@@ -89,17 +89,17 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
-  public int getMaxStackSize(ItemStack itemStack) {
+  public int getMaxStackSize(@NotNull ItemStack itemStack) {
     return 0;
   }
 
   @Override
-  public ItemStack remove(int amount) {
+  public @NotNull ItemStack remove(int amount) {
     return ItemStack.EMPTY;
   }
 
   @Override
-  public boolean mayPickup(Player var0) {
+  public boolean mayPickup(@NotNull Player player) {
     return false;
   }
 
@@ -109,27 +109,27 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
-  public Optional<ItemStack> tryRemove(int var0, int var1, Player var2) {
+  public @NotNull Optional<ItemStack> tryRemove(int var0, int var1, @NotNull Player player) {
     return Optional.empty();
   }
 
   @Override
-  public ItemStack safeTake(int var0, int var1, Player var2) {
+  public @NotNull ItemStack safeTake(int var0, int var1, @NotNull Player player) {
     return ItemStack.EMPTY;
   }
 
   @Override
-  public ItemStack safeInsert(ItemStack itemStack) {
+  public @NotNull ItemStack safeInsert(@NotNull ItemStack itemStack) {
     return itemStack;
   }
 
   @Override
-  public ItemStack safeInsert(ItemStack itemStack, int amount) {
+  public @NotNull ItemStack safeInsert(@NotNull ItemStack itemStack, int amount) {
     return itemStack;
   }
 
   @Override
-  public boolean allowModification(Player var0) {
+  public boolean allowModification(@NotNull Player player) {
     return false;
   }
 

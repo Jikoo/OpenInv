@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -173,6 +174,10 @@ public class OpenPlayer extends CraftPlayer {
     } else {
       container.put(key, data);
     }
+  }
+
+  public static boolean isConnected(@Nullable ServerGamePacketListenerImpl connection) {
+    return connection != null && !connection.isDisconnected();
   }
 
 }

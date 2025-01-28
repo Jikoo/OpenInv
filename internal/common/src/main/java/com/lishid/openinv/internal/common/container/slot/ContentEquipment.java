@@ -65,12 +65,12 @@ public class ContentEquipment extends ContentList {
     }
 
     @Override
-    public boolean mayPlace(ItemStack var0) {
+    public boolean mayPlace(@NotNull ItemStack itemStack) {
       if (viewer == null) {
         return true;
       }
 
-      return equipmentSlot == EquipmentSlot.OFFHAND || viewer.getEquipmentSlotForItem(var0) == equipmentSlot;
+      return equipmentSlot == EquipmentSlot.OFFHAND || viewer.getEquipmentSlotForItem(itemStack) == equipmentSlot;
     }
 
   }

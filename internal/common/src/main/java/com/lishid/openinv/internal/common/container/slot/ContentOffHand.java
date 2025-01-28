@@ -1,5 +1,6 @@
 package com.lishid.openinv.internal.common.container.slot;
 
+import com.lishid.openinv.internal.common.player.OpenPlayer;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -36,9 +37,7 @@ public class ContentOffHand extends ContentEquipment {
     return new SlotEquipment(container, slot, x, y) {
       @Override
       public void setChanged() {
-        if (holder.connection != null
-            && !holder.connection.isDisconnected()
-            && holder.containerMenu != holder.inventoryMenu) {
+        if (OpenPlayer.isConnected(holder.connection) && holder.containerMenu != holder.inventoryMenu) {
           holder.connection.send(
               new ClientboundContainerSetSlotPacket(
                   holder.inventoryMenu.containerId,

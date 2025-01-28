@@ -177,9 +177,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
 
   private int getTopSize(ServerPlayer viewer) {
     MenuType<?> menuType = getType();
-    if (menuType == null) {
-      throw new IllegalStateException("MenuType cannot be null!");
-    } else if (menuType == MenuType.GENERIC_9x1) {
+    if (menuType == MenuType.GENERIC_9x1) {
       return 9;
     } else if (menuType == MenuType.GENERIC_9x2) {
       return 18;
@@ -285,7 +283,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
-  public void clicked(int i, int j, ClickType clickType, Player player) {
+  public void clicked(int i, int j, @NotNull ClickType clickType, @NotNull Player player) {
     if (viewOnly) {
       if (clickType == ClickType.QUICK_CRAFT) {
         sendAllDataToRemote();
@@ -296,13 +294,13 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
-  public boolean stillValid(Player player) {
+  public boolean stillValid(@NotNull Player player) {
     return true;
   }
 
   // Overrides from here on are purely to modify the sync process to send placeholder items.
   @Override
-  protected Slot addSlot(Slot slot) {
+  protected @NotNull Slot addSlot(@NotNull Slot slot) {
     slot.index = this.slots.size();
     this.slots.add(slot);
     this.lastSlots.add(ItemStack.EMPTY);
@@ -311,7 +309,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
-  protected DataSlot addDataSlot(DataSlot dataSlot) {
+  protected @NotNull DataSlot addDataSlot(@NotNull DataSlot dataSlot) {
     this.dataSlots.add(dataSlot);
     this.remoteDataSlots.add(0);
     return dataSlot;
@@ -325,7 +323,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
-  public void addSlotListener(ContainerListener containerListener) {
+  public void addSlotListener(@NotNull ContainerListener containerListener) {
     if (!this.containerListeners.contains(containerListener)) {
       this.containerListeners.add(containerListener);
       this.broadcastChanges();
@@ -333,7 +331,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
-  public void setSynchronizer(ContainerSynchronizer containerSynchronizer) {
+  public void setSynchronizer(@NotNull ContainerSynchronizer containerSynchronizer) {
     this.synchronizer = containerSynchronizer;
     this.sendAllDataToRemote();
   }
@@ -365,7 +363,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
-  public void removeSlotListener(ContainerListener containerListener) {
+  public void removeSlotListener(@NotNull ContainerListener containerListener) {
     this.containerListeners.remove(containerListener);
   }
 

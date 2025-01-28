@@ -195,7 +195,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
   }
 
   @Override
-  public ItemStack quickMoveStack(Player player, int index) {
+  public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
     if (viewOnly) {
       return ItemStack.EMPTY;
     }

@@ -308,12 +308,12 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
   public void setChanged() {}
 
   @Override
-  public boolean stillValid(Player player) {
+  public boolean stillValid(@NotNull Player player) {
     return true;
   }
 
   @Override
-  public List<ItemStack> getContents() {
+  public @NotNull List<ItemStack> getContents() {
     NonNullList<ItemStack> contents = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
     for (int i = 0; i < getContainerSize(); ++i) {
       contents.set(i, getItem(i));
@@ -337,7 +337,7 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
   }
 
   @Override
-  public org.bukkit.entity.Player getOwner() {
+  public @NotNull org.bukkit.entity.Player getOwner() {
     return owner.getBukkitEntity();
   }
 

@@ -90,12 +90,12 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public ItemStack getItem(int index) {
+  public @NotNull ItemStack getItem(int index) {
     return index >= 0 && index < items.size() ? items.get(index) : ItemStack.EMPTY;
   }
 
   @Override
-  public ItemStack removeItem(int index, int amount) {
+  public @NotNull ItemStack removeItem(int index, int amount) {
     ItemStack itemstack = ContainerHelper.removeItem(items, index, amount);
 
     if (!itemstack.isEmpty()) {
@@ -106,12 +106,12 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public ItemStack removeItemNoUpdate(int index) {
+  public @NotNull ItemStack removeItemNoUpdate(int index) {
     return index >= 0 && index < items.size() ? items.set(index, ItemStack.EMPTY) : ItemStack.EMPTY;
   }
 
   @Override
-  public void setItem(int index, ItemStack itemStack) {
+  public void setItem(int index, @NotNull ItemStack itemStack) {
     if (index >= 0 && index < items.size()) {
       items.set(index, itemStack);
     }
@@ -128,27 +128,27 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public boolean stillValid(Player player) {
+  public boolean stillValid(@NotNull Player player) {
     return true;
   }
 
   @Override
-  public List<ItemStack> getContents() {
+  public @NotNull List<ItemStack> getContents() {
     return items;
   }
 
   @Override
-  public void onOpen(CraftHumanEntity craftHumanEntity) {
+  public void onOpen(@NotNull CraftHumanEntity craftHumanEntity) {
     transaction.add(craftHumanEntity);
   }
 
   @Override
-  public void onClose(CraftHumanEntity craftHumanEntity) {
+  public void onClose(@NotNull CraftHumanEntity craftHumanEntity) {
     transaction.remove(craftHumanEntity);
   }
 
   @Override
-  public List<HumanEntity> getViewers() {
+  public @NotNull List<HumanEntity> getViewers() {
     return transaction;
   }
 
@@ -174,7 +174,7 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public void fillStackedContents(StackedItemContents stackedContents) {
+  public void fillStackedContents(@NotNull StackedItemContents stackedContents) {
     for (ItemStack itemstack : items) {
       stackedContents.accountStack(itemstack);
     }

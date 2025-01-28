@@ -181,14 +181,23 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
           .resultOrPartial(logger::warning)
           .map(player.server::getLevel)
           // If ServerLevel exists, set, otherwise move to spawn.
-          .ifPresentOrElse(player::setServerLevel, () -> player.spawnIn(null));
+          .ifPresentOrElse(player::setServerLevel, () -> spawnInDefaultWorld(player));
       return;
     }
     if (bukkitWorld == null) {
-      player.spawnIn(null);
+      spawnInDefaultWorld(player);
       return;
     }
     player.setServerLevel(((CraftWorld) bukkitWorld).getHandle());
+  }
+
+  private void spawnInDefaultWorld(ServerPlayer player) {
+    ServerLevel level = player.server.getLevel(Level.OVERWORLD);
+    if (level != null) {
+      player.spawnIn(level);
+    } else {
+      logger.warning("Tried to load player with invalid world when no fallback was available!");
+    }
   }
 
   private void injectPlayer(ServerPlayer player) throws IllegalAccessException {
@@ -223,7 +232,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
   public @Nullable InventoryView openInventory(@NotNull Player bukkitPlayer, @NotNull ISpecialInventory inventory, boolean viewOnly) {
     ServerPlayer player = getHandle(bukkitPlayer);
 
-    if (player.connection == null) {
+    if (!OpenPlayer.isConnected(player.connection)) {
       return null;
     }
 
