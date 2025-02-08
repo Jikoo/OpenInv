@@ -23,9 +23,14 @@ configurations.all {
 }
 
 dependencies {
-  implementation(project(":openinvadaptercommon"))
   compileOnly(libs.spigotapi)
   compileOnly(variantOf(libs.spigot) { classifier("remapped-mojang") })
+
+  compileOnly(project(":openinvapi"))
+  compileOnly(project(":openinvcommon"))
+
+  // Reduce duplicate code by lightly remapping common adapter.
+  implementation(project(":openinvadaptercommon", configuration = "spigotRelocated"))
 }
 
 tasks.shadowJar {
