@@ -6,7 +6,7 @@ plugins {
 publishing {
   publications {
     create<MavenPublication>("jitpack") {
-      groupId = "com.github.jikoo.OpenInv"
+      groupId = "com.github.Jikoo.OpenInv"
       artifactId = "openinvapi"
     }
   }
