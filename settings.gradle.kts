@@ -22,9 +22,7 @@ val internals = listOf(
 )
 for (internal in internals) {
   include(":openinvadapter$internal")
-  val proj = project(":openinvadapter$internal")
-  proj.projectDir = file("internal/$internal")
-  proj.name = "openinvadapter$internal"
+  project(":openinvadapter$internal").projectDir = file("internal/$internal")
 }
 
 include(":resource-pack")
