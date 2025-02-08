@@ -12,7 +12,6 @@ java {
 }
 
 repositories {
-  mavenLocal()
   mavenCentral()
   maven("https://repo.papermc.io/repository/maven-public/")
   maven("https://hub.spigotmc.org/nexus/content/groups/public/")
@@ -21,7 +20,7 @@ repositories {
 dependencies {
   val libs = versionCatalogs.named("libs")
   compileOnly(libs.findLibrary("annotations").orElseThrow())
-  compileOnly(libs.findLibrary("spigot.api").orElseThrow())
+  compileOnly(libs.findLibrary("spigotapi").orElseThrow())
 }
 
 tasks {

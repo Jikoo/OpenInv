@@ -1,7 +1,11 @@
 plugins {
+  `remap-spigot`
   `openinv-base`
-  alias(libs.plugins.paperweight)
   alias(libs.plugins.shadow)
+}
+
+repositories {
+  mavenLocal()
 }
 
 configurations.all {
@@ -19,15 +23,20 @@ configurations.all {
 }
 
 dependencies {
-  implementation(project(":openinvadaptercommon", configuration = "reobf"))
-
-  paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
-}
-
-tasks.jar {
-  dependsOn(tasks.shadowJar)
+  implementation(project(":openinvadaptercommon"))
+  compileOnly(libs.spigotapi)
+  compileOnly(variantOf(libs.spigot) { classifier("remapped-mojang") })
 }
 
 tasks.shadowJar {
   relocate("com.lishid.openinv.internal.common", "com.lishid.openinv.internal.reobf")
+}
+
+// TODO this appears to be a deprecated way to do things
+//   may want to just move all helper methods here.
+tasks.register<Remap_spigot_gradle.RemapTask>("reobf") {
+  notCompatibleWithConfigurationCache("gradle is hard")
+  dependsOn(tasks.shadowJar)
+  inputs.files(tasks.shadowJar.get().outputs.files.files)
+  spigotVersion = libs.spigot.get().version.toString()
 }

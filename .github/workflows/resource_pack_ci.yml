@@ -7,7 +7,7 @@ on:
     tags-ignore:
       - '**'
     paths:
-      - resource-pack/**
+      - resource-pack/openinv-legibility-pack/**
 
 jobs:
   build:

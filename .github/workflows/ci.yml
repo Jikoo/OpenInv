@@ -8,7 +8,7 @@ on:
     tags-ignore:
       - '**'
     paths-ignore:
-      - resource-pack/**
+      - resource-pack/openinv-legibility-pack/**
   # Enable running CI via other Actions, i.e. for drafting releases and handling PRs.
   workflow_call:
 
@@ -22,6 +22,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+
+      # TODO convert to a Gradle plugin later for portability
+      - name: Install Spigot dependency
+        run: ./scripts/install_spigot.sh 1.21.4
 
       - uses: gradle/actions/setup-gradle@v4
 

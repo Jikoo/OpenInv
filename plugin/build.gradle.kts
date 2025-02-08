@@ -24,6 +24,7 @@ tasks.jar {
 }
 
 tasks.shadowJar {
+  dependsOn(":openinvadapterspigot:reobf")
   minimize {
     exclude(":openinv**")
   }

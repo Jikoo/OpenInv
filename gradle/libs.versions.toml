@@ -1,12 +1,16 @@
 [versions]
-spigot-api = "1.21.4-R0.1-SNAPSHOT"
+spigotapi = "1.21.4-R0.1-SNAPSHOT"
+spigot = "1.21.4-R0.1-SNAPSHOT"
+specialsource = "1.11.4"
 planarwrappers = "3.3.0"
 annotations = "26.0.1"
 paperweight = "2.0.0-beta.14"
 shadow = "8.3.5"
 
 [libraries]
-spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot-api" }
+spigotapi = { module = "org.spigotmc:spigot-api", version.ref = "spigotapi" }
+spigot = { module = "org.spigotmc:spigot", version.ref = "spigot" }
+specialsource = { module = "net.md-5:SpecialSource", version.ref = "specialsource" }
 planarwrappers = { module = "com.github.jikoo:planarwrappers", version.ref = "planarwrappers" }
 annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 
