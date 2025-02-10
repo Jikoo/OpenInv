@@ -36,22 +36,19 @@ The OpenInv API is available via [JitPack](https://jitpack.io/).
 ```xml
   <dependencies>
     <dependency>
-      <groupId>com.github.jikoo.OpenInv</groupId>
-      <artifactId>openinvapi</artifactId>
+      <groupId>com.github.Jikoo</groupId>
+      <artifactId>OpenInv</artifactId>
       <version>${openinv.version}</version>
     </dependency>
   </dependencies>
 ```
+Note that since JitPack only builds the API now, the "full" OpenInv jar on JitPack is actually the openinvapi artifact. This is a change from previous dependency declaration that I hope to revert.
 
 ### Compilation
-To compile, the relevant Spigot jars must be installed in the local repository.
+To compile, the relevant Spigot jar must be installed in the local repository.
 As OpenInv is compiled against Mojang's mappings, you must run BuildTools with the `--remapped` argument:  
 `java -jar BuildTools.jar --remapped --rev $serverVersion`  
-`$serverVersion` is the version of the server, i.e. `1.18.1`
+`$serverVersion` is the version of the server, i.e. `1.21.4`
 
-To compile just the API, execute Maven as usual:  
-`mvn clean package`  
-
-To compile the full plugin, use the provided profile with `-P all`:  
-`mvn clean package -am -P all`  
-For more information, check out the [official Maven guide](http://maven.apache.org/guides/introduction/introduction-to-profiles.html).
+Once Spigot is installed, execute the gradle wrapper:  
+`./gradlew build`

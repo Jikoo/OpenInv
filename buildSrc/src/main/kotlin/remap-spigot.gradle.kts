@@ -17,8 +17,6 @@ abstract class RemapTask
   @get:Input
   abstract var spigotVersion: String
 
-  // TODO outputs
-
   @TaskAction
   fun remapInputs() {
     inputs.files.forEach {

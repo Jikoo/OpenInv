@@ -48,7 +48,7 @@ public class InternalAccessor {
 
         try {
             Version maxSupported = Version.of(1, 21, 4);
-            // TODO investigate min version - placeholders will change, possibly more.
+            // Placeholders currently mandate 1.21.4 minimum.
             Version minSupported = Version.of(1, 21, 4);
             if (!paper) {
                 if (BukkitVersions.MINECRAFT.equals(maxSupported)) {
@@ -139,6 +139,16 @@ public class InternalAccessor {
         }
         if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 2))) {
             return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.3";
+        }
+        boolean paper = false;
+        try {
+            Class.forName("io.papermc.paper.configuration.GlobalConfiguration");
+            paper = true;
+        } catch (ClassNotFoundException ignored) {
+            // Expected on Spigot.
+        }
+        if (!paper && BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 3))) {
+            return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.6";
         }
         return "https://github.com/Jikoo/OpenInv/releases";
     }

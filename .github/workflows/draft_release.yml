@@ -25,7 +25,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: ${{ env.VERSIONED_NAME }}
-          # TODO fetch from Gradle?
           # May actually want to manually specify Paper versions all the time; they won't all
           # need to be specified in code thanks to Mojang-mapped server internals.
           # A bit annoying, but not terribly so.
