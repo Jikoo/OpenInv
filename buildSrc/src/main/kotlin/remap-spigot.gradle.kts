@@ -31,7 +31,7 @@ abstract class RemapTask
     val specialsource = project.configurations.named("spigotRemap").get().incoming.artifacts.artifacts
       .first { it.id.componentIdentifier.toString() == "net.md-5:SpecialSource:1.11.4" }.file.path
     val repo = Paths.get(project.repositories.mavenLocal().url)
-    val spigotDir = repo.resolve("org/spigotmc/minecraft-server/$spigotVersion/")
+    val spigotDir = repo.resolve("org/spigotmc/spigot/$spigotVersion/")
     val mappingDir = repo.resolve("org/spigotmc/minecraft-server/$spigotVersion/")
 
     // Remap original Mojang-mapped jar to obfuscated intermediary
