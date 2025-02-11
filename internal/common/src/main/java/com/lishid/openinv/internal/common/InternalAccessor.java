@@ -8,7 +8,7 @@ import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.common.container.AnySilentContainer;
 import com.lishid.openinv.internal.common.container.OpenEnderChest;
 import com.lishid.openinv.internal.common.container.OpenInventory;
-import com.lishid.openinv.internal.common.container.slot.placeholder.PlaceholderLoaderImpl;
+import com.lishid.openinv.internal.common.container.slot.placeholder.PlaceholderLoader;
 import com.lishid.openinv.internal.common.player.PlayerManager;
 import com.lishid.openinv.util.lang.LanguageManager;
 import net.minecraft.world.Container;
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 public class InternalAccessor implements Accessor {
 
-  private final @NotNull Logger logger;
+  protected final @NotNull Logger logger;
   private final @NotNull PlayerManager manager;
   private final @NotNull AnySilentContainer anySilentContainer;
 
@@ -69,13 +69,11 @@ public class InternalAccessor implements Accessor {
   @Override
   public void reload(@NotNull ConfigurationSection config) {
     ConfigurationSection placeholders = config.getConfigurationSection("placeholders");
-    if (placeholders != null) {
-      try {
-        // Reset placeholders to defaults and try to load configuration.
-        new PlaceholderLoaderImpl().load(placeholders);
-      } catch (Exception e) {
-        logger.log(Level.WARNING, "Caught exception loading placeholder overrides!", e);
-      }
+    try {
+      // Reset placeholders to defaults and try to load configuration.
+      new PlaceholderLoader().load(placeholders);
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "Caught exception loading placeholder overrides!", e);
     }
   }
 

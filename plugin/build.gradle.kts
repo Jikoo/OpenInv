@@ -11,6 +11,7 @@ dependencies {
   implementation(project(":openinvapi"))
   implementation(project(":openinvcommon"))
   implementation(project(":openinvadaptercommon"))
+  implementation(project(":openinvadapterpaper1_21_1"))
   implementation(project(":openinvadapterspigot", configuration = "shadow"))
   implementation(libs.planarwrappers)
 }

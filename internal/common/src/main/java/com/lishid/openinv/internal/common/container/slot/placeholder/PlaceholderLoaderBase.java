@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.entity.BannerPatterns;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.CraftRegistry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public abstract class PlaceholderLoaderBase {
     Placeholders.blockedOffline = defaultBlockedOffline();
   }
 
-  public void load(@NotNull ConfigurationSection section) throws Exception {
+  public void load(@Nullable ConfigurationSection section) throws Exception {
     Placeholders.craftingOutput = parse(section, "crafting-output", Placeholders.craftingOutput);
     Placeholders.cursor = parse(section, "cursor", Placeholders.cursor);
     Placeholders.drop = parse(section, "drop", Placeholders.drop);
@@ -63,9 +64,13 @@ public abstract class PlaceholderLoaderBase {
   }
 
   private static @NotNull ItemStack parse(
-      @NotNull ConfigurationSection section,
+      @Nullable ConfigurationSection section,
       @NotNull String path,
       @NotNull ItemStack defaultStack) throws Exception {
+    if (section == null) {
+      return defaultStack;
+    }
+
     String itemText = section.getString(path);
 
     if (itemText == null) {

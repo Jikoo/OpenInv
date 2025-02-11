@@ -35,9 +35,9 @@ import java.util.logging.Logger;
 
 public class InternalAccessor {
 
-    private @Nullable Accessor internal;
+    private static final boolean PAPER;
 
-    public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
+    static {
         boolean paper = false;
         try {
             Class.forName("io.papermc.paper.configuration.GlobalConfiguration");
@@ -45,19 +45,15 @@ public class InternalAccessor {
         } catch (ClassNotFoundException ignored) {
             // Expect remapped server.
         }
+        PAPER = paper;
+    }
 
+    private @Nullable Accessor internal;
+
+    public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
         try {
-            Version maxSupported = Version.of(1, 21, 4);
-            // Placeholders currently mandate 1.21.4 minimum.
-            Version minSupported = Version.of(1, 21, 4);
-            if (!paper) {
-                if (BukkitVersions.MINECRAFT.equals(maxSupported)) {
-                    internal = new com.lishid.openinv.internal.reobf.InternalAccessor(logger, lang);
-                }
-            } else if (BukkitVersions.MINECRAFT.greaterThanOrEqual(minSupported)
-                    && BukkitVersions.MINECRAFT.lessThanOrEqual(maxSupported)) {
-                internal = new com.lishid.openinv.internal.common.InternalAccessor(logger, lang);
-            }
+            internal = getAccessor(logger, lang);
+
             if (internal != null) {
                 InventoryAccess.setProvider(internal::get);
             }
@@ -65,6 +61,35 @@ public class InternalAccessor {
             internal = null;
             InventoryAccess.setProvider(null);
         }
+    }
+
+    private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
+        Version maxSupported = Version.of(1, 21, 4);
+        Version minSupported = Version.of(1, 21, 1);
+
+        // Ensure version is in supported range.
+        if (BukkitVersions.MINECRAFT.greaterThan(maxSupported) || BukkitVersions.MINECRAFT.lessThan(minSupported)) {
+            return null;
+        }
+
+        // Load Spigot accessor.
+        if (!PAPER) {
+            if (BukkitVersions.MINECRAFT.equals(maxSupported)) {
+                // Current Spigot, remapped internals are available.
+                return new com.lishid.openinv.internal.reobf.InternalAccessor(logger, lang);
+            } else {
+                // Older Spigot; unsupported.
+                return null;
+            }
+        }
+
+        // Paper or a Paper fork, can use Mojang-mapped internals.
+        if (BukkitVersions.MINECRAFT.equals(maxSupported)) { // 1.21.4
+            return new com.lishid.openinv.internal.common.InternalAccessor(logger, lang);
+        }
+
+        // 1.21.1-1.21.3 placeholder format
+        return new com.lishid.openinv.internal.paper1_21_1.InternalAccessor(logger, lang);
     }
 
     public String getReleasesLink() {
@@ -133,6 +158,9 @@ public class InternalAccessor {
         }
         if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 5))) { // 1.20.5
             return "Unsupported; upgrade to 1.20.6: https://github.com/Jikoo/OpenInv/releases/tag/5.1.2";
+        }
+        if (PAPER && BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 1))) { // Paper 1.21.1-1.21.3
+            return "https://github.com/Jikoo/OpenInv/releases";
         }
         if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21))) { // 1.20.4, 1.20.6, 1.21
             return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.2";

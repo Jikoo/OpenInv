@@ -6,7 +6,7 @@ import net.minecraft.world.item.component.CustomModelData;
 
 import java.util.List;
 
-public class PlaceholderLoaderImpl extends PlaceholderLoaderBase {
+public class PlaceholderLoader extends PlaceholderLoaderBase {
 
   private static final CustomModelData DEFAULT_CUSTOM_MODEL_DATA = new CustomModelData(List.of(), List.of(), List.of("openinv:custom"), List.of());
 
