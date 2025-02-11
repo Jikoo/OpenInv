@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.common.container.slot;
 
-import com.lishid.openinv.internal.common.container.Placeholders;
+import com.lishid.openinv.internal.common.container.slot.placeholder.Placeholders;
 import com.lishid.openinv.internal.common.player.OpenPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;

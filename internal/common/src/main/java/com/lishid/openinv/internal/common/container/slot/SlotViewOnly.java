@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.common.container.slot;
 
-import com.lishid.openinv.internal.common.container.Placeholders;
+import com.lishid.openinv.internal.common.container.slot.placeholder.Placeholders;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
