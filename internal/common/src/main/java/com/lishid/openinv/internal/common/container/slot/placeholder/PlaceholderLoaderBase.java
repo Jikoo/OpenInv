@@ -43,7 +43,7 @@ public abstract class PlaceholderLoaderBase {
     Placeholders.emptyChestplate = getEmptyArmor(Items.LEATHER_CHESTPLATE);
     Placeholders.emptyLeggings = getEmptyArmor(Items.LEATHER_LEGGINGS);
     Placeholders.emptyBoots = getEmptyArmor(Items.LEATHER_BOOTS);
-    Placeholders.emptyOffHand = getEmptyShield();
+    Placeholders.emptyOffHand = defaultShield();
     Placeholders.notSlot = defaultNotSlot();
     Placeholders.blockedOffline = defaultBlockedOffline();
   }
@@ -84,7 +84,7 @@ public abstract class PlaceholderLoaderBase {
 
   protected abstract void addModelData(ItemStack itemStack);
 
-  private @NotNull ItemStack defaultCraftingOutput() {
+  protected @NotNull ItemStack defaultCraftingOutput() {
     // Crafting table: "Crafting"
     ItemStack itemStack = new ItemStack(Items.CRAFTING_TABLE);
     itemStack.set(DataComponents.ITEM_NAME, Component.translatable("container.crafting"));
@@ -92,7 +92,7 @@ public abstract class PlaceholderLoaderBase {
     return itemStack;
   }
 
-  private @NotNull ItemStack defaultCursor() {
+  protected @NotNull ItemStack defaultCursor() {
     // Cursor-like banner with no tooltip
     ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
     RegistryAccess minecraftRegistry = CraftRegistry.getMinecraftRegistry();
@@ -110,7 +110,7 @@ public abstract class PlaceholderLoaderBase {
     return itemStack;
   }
 
-  private @NotNull ItemStack defaultDrop() {
+  protected @NotNull ItemStack defaultDrop() {
     // Dropper: "Drop Selected Item"
     ItemStack itemStack = new ItemStack(Items.DROPPER);
     // Note: translatable component, not keybind component! We want the text identifying the keybind, not the key.
@@ -119,7 +119,7 @@ public abstract class PlaceholderLoaderBase {
     return itemStack;
   }
 
-  private @NotNull ItemStack getEmptyArmor(@NotNull ItemLike item) {
+  protected @NotNull ItemStack getEmptyArmor(@NotNull ItemLike item) {
     // Inventory-background-grey-ish leather armor with no tooltip
     ItemStack itemStack = new ItemStack(item);
     DyedItemColor color = new DyedItemColor(0xC8C8C8, false);
@@ -129,7 +129,7 @@ public abstract class PlaceholderLoaderBase {
     return itemStack;
   }
 
-  private @NotNull ItemStack getEmptyShield() {
+  protected @NotNull ItemStack defaultShield() {
     // Shield with "missing texture" pattern, magenta and black squares.
     ItemStack itemStack = new ItemStack(Items.SHIELD);
     itemStack.set(DataComponents.BASE_COLOR, DyeColor.MAGENTA);
@@ -152,7 +152,7 @@ public abstract class PlaceholderLoaderBase {
     return itemStack;
   }
 
-  private @NotNull ItemStack defaultNotSlot() {
+  protected @NotNull ItemStack defaultNotSlot() {
     // White pane with no tooltip
     ItemStack itemStack = new ItemStack(Items.WHITE_STAINED_GLASS_PANE);
     itemStack.set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE);
@@ -160,7 +160,7 @@ public abstract class PlaceholderLoaderBase {
     return itemStack;
   }
 
-  private @NotNull ItemStack defaultBlockedOffline() {
+  protected @NotNull ItemStack defaultBlockedOffline() {
     // Barrier: "Not available - Offline"
     ItemStack itemStack = new ItemStack(Items.BARRIER);
     itemStack.set(DataComponents.ITEM_NAME,

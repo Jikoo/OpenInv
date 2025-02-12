@@ -192,10 +192,14 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
           };
         }
       });
-      slots.set(startIndex + 11, new ContentCraftingResult(owner));
+      slots.set(startIndex + 11, getCraftingResult(owner));
     }
 
     return startIndex + listSize;
+  }
+
+  protected Content getCraftingResult(@NotNull ServerPlayer serverPlayer) {
+    return new ContentCraftingResult(serverPlayer);
   }
 
   public Slot getMenuSlot(int index, int x, int y) {

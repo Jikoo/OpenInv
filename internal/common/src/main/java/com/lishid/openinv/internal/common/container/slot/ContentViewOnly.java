@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ContentViewOnly implements Content {
 
-  @NotNull ServerPlayer holder;
+  protected @NotNull ServerPlayer holder;
 
   public ContentViewOnly(@NotNull ServerPlayer holder) {
     this.holder = holder;

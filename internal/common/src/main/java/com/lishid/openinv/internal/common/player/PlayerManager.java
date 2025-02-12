@@ -49,7 +49,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     }
   }
 
-  private final @NotNull Logger logger;
+  protected final @NotNull Logger logger;
   private @Nullable Field bukkitEntity;
 
   public PlayerManager(@NotNull Logger logger) {
@@ -107,7 +107,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     return null;
   }
 
-  private @NotNull ServerPlayer createNewPlayer(
+  protected @NotNull ServerPlayer createNewPlayer(
       @NotNull MinecraftServer server,
       @NotNull ServerLevel worldServer,
       @NotNull final OfflinePlayer offline) {
@@ -200,7 +200,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     }
   }
 
-  private void injectPlayer(ServerPlayer player) throws IllegalAccessException {
+  protected void injectPlayer(ServerPlayer player) throws IllegalAccessException {
     if (bukkitEntity == null) {
       return;
     }
@@ -259,7 +259,8 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     // resulting in a title change but no other state modifications (like cursor position).
     menu.setTitle(title);
 
-    menu = CraftEventFactory.callInventoryOpenEvent(player, menu, false);
+    var pair = CraftEventFactory.callInventoryOpenEventWithTitle(player, menu);
+    menu = pair.getSecond();
 
     // Menu is null if event is cancelled.
     if (menu == null) {

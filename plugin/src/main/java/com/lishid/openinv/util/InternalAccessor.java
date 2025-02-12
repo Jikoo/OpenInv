@@ -86,10 +86,13 @@ public class InternalAccessor {
         // Paper or a Paper fork, can use Mojang-mapped internals.
         if (BukkitVersions.MINECRAFT.equals(maxSupported)) { // 1.21.4
             return new com.lishid.openinv.internal.common.InternalAccessor(logger, lang);
+        } else if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21, 3))) {
+            // 1.21.1-1.21.2 placeholder format
+            return new com.lishid.openinv.internal.paper1_21_1.InternalAccessor(logger, lang);
         }
 
-        // 1.21.1-1.21.3 placeholder format
-        return new com.lishid.openinv.internal.paper1_21_1.InternalAccessor(logger, lang);
+        // 1.21.3
+        return new com.lishid.openinv.internal.paper1_21_3.InternalAccessor(logger, lang);
     }
 
     public String getReleasesLink() {
