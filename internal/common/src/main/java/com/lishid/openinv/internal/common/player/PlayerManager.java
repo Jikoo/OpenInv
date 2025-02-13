@@ -5,6 +5,7 @@ import com.lishid.openinv.internal.common.container.OpenEnderChest;
 import com.lishid.openinv.internal.common.container.OpenInventory;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Dynamic;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
@@ -267,8 +268,13 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
       return null;
     }
 
+    var newTitle = pair.getFirst();
+    if (newTitle != null) {
+      title = PaperAdventure.asVanilla(newTitle);
+    }
+
     player.containerMenu = menu;
-    player.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), menu.getTitle()));
+    player.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), title));
     player.initMenu(menu);
 
     return menu.getBukkitView();
