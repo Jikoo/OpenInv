@@ -39,17 +39,6 @@ import java.util.logging.Logger;
 
 public class PlayerManager implements com.lishid.openinv.internal.PlayerManager {
 
-  private static boolean paper;
-
-  static {
-    try {
-      Class.forName("io.papermc.paper.configuration.Configuration");
-      paper = true;
-    } catch (ClassNotFoundException ignored) {
-      paper = false;
-    }
-  }
-
   protected final @NotNull Logger logger;
   private @Nullable Field bukkitEntity;
 
@@ -159,10 +148,8 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     // Game type settings are also loaded separately.
     player.loadGameTypes(loadedData);
 
-    if (paper) {
-      // Paper: world is not loaded by ServerPlayer#load(CompoundTag).
-      parseWorld(player, loadedData);
-    }
+    // World is not loaded by ServerPlayer#load(CompoundTag) on Paper.
+    parseWorld(player, loadedData);
 
     return true;
   }
