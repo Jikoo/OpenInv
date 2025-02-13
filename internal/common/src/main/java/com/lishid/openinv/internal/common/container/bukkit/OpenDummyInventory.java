@@ -62,7 +62,7 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
   }
 
   @Override
-  public ItemStack[] getContents() {
+  public ItemStack @NotNull [] getContents() {
     return new ItemStack[getSize()];
   }
 
@@ -72,7 +72,7 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
   }
 
   @Override
-  public @NotNull ItemStack[] getStorageContents() {
+  public @NotNull ItemStack @NotNull [] getStorageContents() {
     return new ItemStack[getSize()];
   }
 

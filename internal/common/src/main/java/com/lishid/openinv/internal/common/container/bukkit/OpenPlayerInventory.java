@@ -170,11 +170,13 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     getInventory().getOwnerHandle().getInventory().offhand.set(0, CraftItemStack.asNMSCopy(item));
   }
 
+  @Deprecated
   @Override
   public @NotNull ItemStack getItemInHand() {
     return getItemInMainHand();
   }
 
+  @Deprecated
   @Override
   public void setItemInHand(@Nullable ItemStack stack) {
     setItemInMainHand(stack);

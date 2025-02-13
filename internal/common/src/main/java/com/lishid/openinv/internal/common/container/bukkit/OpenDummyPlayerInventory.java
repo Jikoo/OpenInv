@@ -111,11 +111,13 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
 
   }
 
+  @Deprecated
   @Override
   public @NotNull ItemStack getItemInHand() {
     return new ItemStack(Material.AIR);
   }
 
+  @Deprecated
   @Override
   public void setItemInHand(@Nullable ItemStack stack) {
 
