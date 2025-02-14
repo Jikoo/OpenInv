@@ -22,8 +22,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-          # We install Spigot to the local Maven repo.
-          cache: maven
 
       - uses: gradle/actions/setup-gradle@v4
 
