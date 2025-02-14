@@ -9,8 +9,9 @@ import java.io.File
 import java.nio.file.Paths
 import javax.inject.Inject
 
-abstract class ReobfTask
-  @Inject constructor(private var execActionFactory: ExecActionFactory): Jar() {
+abstract class ReobfTask @Inject constructor(
+  private var execActionFactory: ExecActionFactory
+) : Jar() {
 
   @get:Input
   open val spigotVersion: Property<String> = objectFactory.property(String::class.java)
@@ -21,14 +22,12 @@ abstract class ReobfTask
   @get:Input
   open val intermediaryClassifier: Property<String> = objectFactory.property(String::class.java).convention("mojang-mapped")
 
-  @get:InputFile
-  open val specialSource: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
+  private val specialSource: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
     project.configurations.named("spigotRemap").get().incoming.artifacts.artifacts
       .first { it.id.componentIdentifier.toString() == "net.md-5:SpecialSource:1.11.4" }.file
   })
 
-  @get:Input
-  open val mavenLocal: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
+  private val mavenLocal: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
     Paths.get(project.repositories.mavenLocal().url).toFile()
   })
 
@@ -62,7 +61,7 @@ abstract class ReobfTask
   private fun remapPartial(specialSourceFile: File, serverJar: File, mapping: File, input: File, output: File, reverse: Boolean) {
     // May need a direct dependency on SpecialSource later to customize behavior.
     val exec = execActionFactory.newJavaExecAction()
-    exec.classpath = project.files(specialSourceFile, serverJar)
+    exec.classpath(specialSourceFile, serverJar)
     exec.mainClass.value("net.md_5.specialsource.SpecialSource")
     exec.args(
       "--live",

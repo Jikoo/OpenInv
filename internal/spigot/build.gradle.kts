@@ -7,8 +7,8 @@ repositories {
   mavenLocal()
 }
 
-val spigotVer = "1.21.4-R0.1-SNAPSHOT"
-rootProject.extra["spigotVersion"] = spigotVer
+val spigotRev = "1.21.4"
+val spigotVer = "$spigotRev-R0.1-SNAPSHOT"
 rootProject.extra["craftbukkitPackage"] = "v1_21_R3"
 
 configurations.all {
@@ -23,6 +23,15 @@ configurations.all {
     }
     because("module is written for Spigot servers")
   }
+}
+
+val installSpigotTask = tasks.register<InstallSpigotTask>("installSpigot") {
+  spigotRevision.value(spigotRev)
+  spigotVersion.value(spigotVer)
+}
+
+tasks.compileJava {
+  dependsOn(installSpigotTask)
 }
 
 val spigotRemap = configurations.create("spigotRemap")
