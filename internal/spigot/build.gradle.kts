@@ -1,6 +1,6 @@
 plugins {
   `openinv-base`
-  id(libs.plugins.shadow.get().pluginId)
+  alias(libs.plugins.shadow)
 }
 
 repositories {

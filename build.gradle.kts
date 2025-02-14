@@ -1,7 +1,7 @@
 plugins {
   `java-library`
   alias(libs.plugins.paperweight) apply false
-  id(libs.plugins.shadow.get().pluginId) apply false
+  alias(libs.plugins.shadow) apply false
 }
 
 // Set by Spigot module, used by Paper module to convert to Spigot's version of Mojang mappings.
