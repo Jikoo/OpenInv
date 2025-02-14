@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'dev/gradle-improvements' # TODO remove
     tags-ignore:
       - '**'
     paths-ignore:
