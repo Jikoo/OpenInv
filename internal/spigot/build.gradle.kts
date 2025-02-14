@@ -1,7 +1,6 @@
 plugins {
-  `remap-spigot`
   `openinv-base`
-  alias(libs.plugins.shadow)
+  id(libs.plugins.shadow.get().pluginId)
 }
 
 repositories {
@@ -9,6 +8,7 @@ repositories {
 }
 
 val spigotVer = "1.21.4-R0.1-SNAPSHOT"
+rootProject.extra["spigotVersion"] = spigotVer
 rootProject.extra["craftbukkitPackage"] = "v1_21_R3"
 
 configurations.all {
@@ -25,7 +25,10 @@ configurations.all {
   }
 }
 
+val spigotRemap = configurations.create("spigotRemap")
+
 dependencies {
+  spigotRemap("net.md-5:SpecialSource:1.11.4:shaded")
   compileOnly(libs.spigotapi)
   compileOnly(create("org.spigotmc", "spigot", spigotVer, classifier = "remapped-mojang"))
 
@@ -37,15 +40,27 @@ dependencies {
 }
 
 tasks.shadowJar {
-  notCompatibleWithConfigurationCache("reobf task replaces output artifact") // TODO use an output of reobf
   relocate("com.lishid.openinv.internal.common", "com.lishid.openinv.internal.reobf")
 }
 
-// TODO this appears to be a deprecated way to do things
-//   may want to just move all helper methods here.
-tasks.register<Remap_spigot_gradle.RemapTask>("reobf") {
+val reobfTask = tasks.register<ReobfTask>("reobfTask") {
   notCompatibleWithConfigurationCache("gradle is hard")
   dependsOn(tasks.shadowJar)
-  inputs.files(tasks.shadowJar.get().outputs.files.files)
-  spigotVersion = spigotVer
+  inputFile.value(tasks.shadowJar.get().archiveFile.get())
+  spigotVersion.value(spigotVer)
+}
+
+configurations {
+  consumable("reobf") {
+    attributes {
+      attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+      attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+      attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
+      attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
+    }
+  }
+}
+
+artifacts {
+  add("reobf", reobfTask)
 }
