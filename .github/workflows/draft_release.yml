@@ -24,17 +24,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ env.VERSIONED_NAME }}
+          name: OpenInv ${{ env.VERSIONED_NAME }}
           # May actually want to manually specify Paper versions all the time; they won't all
           # need to be specified in code thanks to Mojang-mapped server internals.
           # A bit annoying, but not terribly so.
           # Instead, fetch min and max (which will also be Spigot version) and manually list intermediate versions?
           body: |-
             ## Supported server versions
-            ### Paper
-            TODO COMMA-SEPARATED VERSIONS
-            ### Spigot
-            TODO VERSION
+            **Paper:** TODO COMMA-SEPARATED VERSIONS
+            **Spigot:** TODO VERSION
             
             TODO HELLO HUMAN, PRESS THE GENERATE CHANGELOG BUTTON PLEASE.
           draft: true
