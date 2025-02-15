@@ -23,10 +23,23 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      # We can't use 'maven' prebuilt cache setup because it requires that the project have a pom file.
+      # BuildTools installs to Maven local if available, so it's easier to just rely on that.
+      - name: Cache Spigot dependency
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/repository/org/spigotmc/spigot
+            ~/.m2/repository/org/spigotmc/minecraft-server
+          key: ${{ runner.os }}-buildtools-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-buildtools-
+
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        # Since we're only building once, don't bother with the daemon.
+        run: ./gradlew clean build --no-daemon
 
       # Upload artifacts
       - name: Upload Distributable Jar
