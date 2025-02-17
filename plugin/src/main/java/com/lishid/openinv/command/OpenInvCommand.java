@@ -26,13 +26,13 @@ import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.config.Config;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
+import me.nahu.scheduler.wrapper.runnable.WrappedRunnable;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -99,7 +99,7 @@ public class OpenInvCommand implements TabExecutor {
             name = args[0];
         }
 
-        new BukkitRunnable() {
+        new WrappedRunnable() {
             @Override
             public void run() {
                 final OfflinePlayer offlinePlayer = playerLoader.match(name);
@@ -109,7 +109,7 @@ public class OpenInvCommand implements TabExecutor {
                     return;
                 }
 
-                new BukkitRunnable() {
+                new WrappedRunnable() {
                     @Override
                     public void run() {
                         if (!player.isOnline()) {

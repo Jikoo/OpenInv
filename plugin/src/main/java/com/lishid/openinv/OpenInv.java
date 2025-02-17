@@ -38,6 +38,7 @@ import com.lishid.openinv.util.lang.LangMigrator;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.setting.PlayerToggle;
 import com.lishid.openinv.util.setting.PlayerToggles;
+import me.nahu.scheduler.wrapper.FoliaWrappedJavaPlugin;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -59,7 +60,7 @@ import java.util.function.Consumer;
 /**
  * The main class for OpenInv.
  */
-public class OpenInv extends JavaPlugin implements IOpenInv {
+public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
 
     private InternalAccessor accessor;
     private Config config;

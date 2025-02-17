@@ -15,6 +15,7 @@ dependencies {
   implementation(project(":openinvadapterpaper1_21_1"))
   implementation(project(":openinvadapterspigot", configuration = "reobf"))
   implementation(libs.planarwrappers)
+  implementation(libs.folia)
 }
 
 tasks.processResources {
@@ -26,8 +27,10 @@ tasks.jar {
 }
 
 tasks.shadowJar {
+  relocate("me.nahu.scheduler.wrapper", "com.lishid.openinv.internal.folia.scheduler")
   minimize {
     exclude(":openinv**")
+    exclude(dependency("com.github.NahuLD.folia-scheduler-wrapper:folia-scheduler-wrapper:.*"))
   }
 }
 

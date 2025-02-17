@@ -3,6 +3,7 @@ package com.lishid.openinv.util;
 import com.github.jikoo.planarwrappers.util.version.BukkitVersions;
 import com.github.jikoo.planarwrappers.util.version.Version;
 import com.google.errorprone.annotations.Keep;
+import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.event.OpenEvents;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
@@ -44,11 +45,11 @@ public class InventoryManager implements Listener {
   private final Map<UUID, ISpecialPlayerInventory> inventories = new ConcurrentHashMap<>();
   private final Map<UUID, ISpecialEnderChest> enderChests = new ConcurrentHashMap<>();
   private final Set<UUID> expectedCloses = new HashSet<>();
-  private final @NotNull Plugin plugin;
+  private final @NotNull OpenInv plugin;
   private final @NotNull Config config;
   private final @NotNull InternalAccessor accessor;
 
-  public InventoryManager(@NotNull Plugin plugin, @NotNull Config config, @NotNull InternalAccessor accessor) {
+  public InventoryManager(@NotNull OpenInv plugin, @NotNull Config config, @NotNull InternalAccessor accessor) {
     this.plugin = plugin;
     this.config = config;
     this.accessor = accessor;
@@ -164,7 +165,7 @@ public class InventoryManager implements Listener {
     }
 
     // Schedule task to check in use status later this tick. Closing user is still in viewer list.
-    plugin.getServer().getScheduler().runTask(plugin, () -> {
+    plugin.getScheduler().runTask(() -> {
       if (loaded.isInUse()) {
         return;
       }

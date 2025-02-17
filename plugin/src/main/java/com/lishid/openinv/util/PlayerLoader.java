@@ -3,6 +3,7 @@ package com.lishid.openinv.util;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.errorprone.annotations.Keep;
+import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.config.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -28,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class PlayerLoader implements Listener {
 
-  private final @NotNull Plugin plugin;
+  private final @NotNull OpenInv plugin;
   private final @NotNull Config config;
   private final @NotNull InventoryManager inventoryManager;
   private final @NotNull InternalAccessor internalAccessor;
@@ -36,7 +38,7 @@ public class PlayerLoader implements Listener {
   private final @NotNull Cache<String, PlayerProfile> lookupCache;
 
   public PlayerLoader(
-      @NotNull Plugin plugin,
+      @NotNull OpenInv plugin,
       @NotNull Config config,
       @NotNull InventoryManager inventoryManager,
       @NotNull InternalAccessor internalAccessor,
@@ -78,8 +80,8 @@ public class PlayerLoader implements Listener {
       return internalAccessor.getPlayerDataManager().loadPlayer(offline);
     }
 
-    Future<Player> future = Bukkit.getScheduler().callSyncMethod(plugin,
-        () -> internalAccessor.getPlayerDataManager().loadPlayer(offline));
+    CompletableFuture<Player> future = new CompletableFuture<>();
+    plugin.getScheduler().runTask(() -> future.complete(internalAccessor.getPlayerDataManager().loadPlayer(offline)));
 
     try {
       player = future.get();
@@ -195,7 +197,7 @@ public class PlayerLoader implements Listener {
       return;
     }
 
-    plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+    plugin.getScheduler().runTaskLaterAsynchronously(() -> {
       Iterator<Map.Entry<String, PlayerProfile>> iterator = lookupCache.asMap().entrySet().iterator();
       while (iterator.hasNext()) {
         Map.Entry<String, PlayerProfile> entry = iterator.next();
