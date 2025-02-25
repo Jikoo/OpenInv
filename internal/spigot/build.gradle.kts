@@ -1,4 +1,5 @@
 plugins {
+  `spigot-install`
   `openinv-base`
   alias(libs.plugins.shadow)
 }
@@ -25,21 +26,13 @@ configurations.all {
   }
 }
 
-val installSpigotTask = tasks.register<InstallSpigotTask>("installSpigot") {
-  spigotRevision.value(spigotRev)
-  spigotVersion.value(spigotVer)
-}
-
-tasks.compileJava {
-  dependsOn(installSpigotTask)
-}
-
 val spigotRemap = configurations.create("spigotRemap")
 
 dependencies {
   spigotRemap("net.md-5:SpecialSource:1.11.4:shaded")
   compileOnly(libs.spigotapi)
-  compileOnly(create("org.spigotmc", "spigot", spigotVer, classifier = "remapped-mojang"))
+  spigot.add(spigotVer, spigotRev)
+  //compileOnly(create("org.spigotmc", "spigot", spigotVer, classifier = "remapped-mojang"))
 
   compileOnly(project(":openinvapi"))
   compileOnly(project(":openinvcommon"))
