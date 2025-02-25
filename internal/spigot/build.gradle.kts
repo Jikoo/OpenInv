@@ -1,6 +1,6 @@
 plugins {
-  `spigot-install`
   `openinv-base`
+  `spigot-install`
   alias(libs.plugins.shadow)
 }
 

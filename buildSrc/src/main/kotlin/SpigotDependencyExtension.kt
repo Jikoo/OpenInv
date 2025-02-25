@@ -8,6 +8,7 @@ import java.io.File
 import java.net.URI
 import java.nio.file.Files
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 abstract class SpigotDependencyExtension (
   private val dependencies: DependencyHandler,
@@ -36,22 +37,20 @@ abstract class SpigotDependencyExtension (
       return
     }
 
-    val workingDir = tempDir.get().asFile
-    val buildTools = installBuildTools(workingDir)
+    val buildTools = installBuildTools(tempDir.get().asFile)
 
     println("Installing Spigot $version (rev $revision)")
     val process = ProcessBuilder()
-      .command("java", "-jar", buildTools.path, "--rev", revision, "--remapped")
+      .directory(buildTools.parentFile)
+      .command("java", "-jar", buildTools.name, "--rev", revision, "--remapped")
       .inheritIO()
       .start()
 
     try {
-      process.waitFor(10L, TimeUnit.MINUTES)
-
-      if (process.exitValue() != 0) {
+      if (process.onExit().get(10L, TimeUnit.MINUTES).exitValue() != 0) {
         throw IllegalStateException("BuildTools installation did not complete successfully!")
       }
-    } catch (_: InterruptedException) {
+    } catch (e: TimeoutException) {
       // TODO see if manually creating Gradle's internal Java representation works
       //   Alternately can hack together something more gross and manual
       // Java's ProcessBuilder hangs if output is not consumed. We attempt to bypass this by
@@ -59,14 +58,14 @@ abstract class SpigotDependencyExtension (
       // an absolute mess.
       // The ProcessBuilder does appear to successfully run, because Spigot is built correctly,
       // but the process hangs post-completion.
-      // Theoretically this will not be a problem during Actions runs because the daemon is disabled.
       // https://github.com/gradle/gradle/issues/16716
       // https://leo3418.github.io/2021/06/20/java-processbuilder-stdout.html
-      // Does not appear to be limited to Windows.
+      // Does not appear to be limited to Windows, but the Windows version is worse.
+      process.destroyForcibly()
     }
 
     // Mark work for delete.
-    cleanUp(workingDir)
+    cleanUp(buildTools.parentFile)
 
     if (!isInstalled(version)) {
       throw IllegalStateException(
