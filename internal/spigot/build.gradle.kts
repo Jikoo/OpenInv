@@ -1,5 +1,6 @@
 plugins {
   `openinv-base`
+  `spigot-install`
   alias(libs.plugins.shadow)
 }
 
@@ -7,8 +8,8 @@ repositories {
   mavenLocal()
 }
 
-val spigotVer = "1.21.4-R0.1-SNAPSHOT"
-rootProject.extra["spigotVersion"] = spigotVer
+val spigotRev = "1.21.4"
+val spigotVer = "$spigotRev-R0.1-SNAPSHOT"
 rootProject.extra["craftbukkitPackage"] = "v1_21_R3"
 
 configurations.all {
@@ -30,7 +31,8 @@ val spigotRemap = configurations.create("spigotRemap")
 dependencies {
   spigotRemap("net.md-5:SpecialSource:1.11.4:shaded")
   compileOnly(libs.spigotapi)
-  compileOnly(create("org.spigotmc", "spigot", spigotVer, classifier = "remapped-mojang"))
+  spigot.add(spigotVer, spigotRev)
+  //compileOnly(create("org.spigotmc", "spigot", spigotVer, classifier = "remapped-mojang"))
 
   compileOnly(project(":openinvapi"))
   compileOnly(project(":openinvcommon"))
