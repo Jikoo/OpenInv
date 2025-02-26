@@ -6,8 +6,6 @@ plugins.apply("java")
 // BuildTools installs Spigot to the local Maven repo.
 val mvnLocal = repositories.mavenLocal()
 
-configurations.create("spigot")
-
 dependencies.extensions.create(
   "spigot",
   SpigotDependencyExtension::class.java,

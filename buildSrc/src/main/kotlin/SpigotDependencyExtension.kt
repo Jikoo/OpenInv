@@ -27,7 +27,7 @@ abstract class SpigotDependencyExtension (
   ): ExternalModuleDependency {
     installSpigot(revision, version, reinstall)
     val dependency = dependencies.create("org.spigotmc", "spigot", version, configuration, classifier, ext)
-    dependencies.add("spigot", dependency)
+    dependencies.add("compileOnly", dependency)
     return dependency
   }
 
