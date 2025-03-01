@@ -1,15 +1,18 @@
+import com.github.jikoo.openinv.SpigotDependencyExtension
+import com.github.jikoo.openinv.SpigotSetup
+
 plugins {
   `openinv-base`
-  `spigot-install`
   alias(libs.plugins.shadow)
 }
+
+apply<SpigotSetup>()
 
 repositories {
   mavenLocal()
 }
 
-val spigotRev = "1.21.4"
-val spigotVer = "$spigotRev-R0.1-SNAPSHOT"
+val spigotVer = "1.21.4-R0.1-SNAPSHOT"
 rootProject.extra["craftbukkitPackage"] = "v1_21_R3"
 
 configurations.all {
@@ -31,8 +34,7 @@ val spigotRemap = configurations.create("spigotRemap")
 dependencies {
   spigotRemap("net.md-5:SpecialSource:1.11.4:shaded")
   compileOnly(libs.spigotapi)
-  spigot.add(spigotVer, spigotRev)
-  //compileOnly(create("org.spigotmc", "spigot", spigotVer, classifier = "remapped-mojang"))
+  extensions.getByType(SpigotDependencyExtension::class.java).version = spigotVer
 
   compileOnly(project(":openinvapi"))
   compileOnly(project(":openinvcommon"))
