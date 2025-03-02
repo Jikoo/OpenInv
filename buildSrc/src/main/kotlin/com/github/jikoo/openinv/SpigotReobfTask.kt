@@ -24,15 +24,13 @@ abstract class SpigotReobfTask @Inject constructor(
   @get:Input
   val intermediaryClassifier: Property<String> = objectFactory.property(String::class.java).convention("mojang-mapped")
 
-  @Internal
   private val specialSource: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
     // Grab SpecialSource location from dependency declaration.
     project.configurations.named(SpigotReobf.DEP_CONFIG).get().incoming.artifacts.artifacts
       .first { it.id.componentIdentifier.toString().startsWith("net.md-5:SpecialSource:") }.file
   })
 
-  @Internal
-  internal val mavenLocal: Property<File> = objectFactory.property(File::class.java)
+  private val mavenLocal: Property<File> = objectFactory.property(File::class.java)
 
   init {
     archiveClassifier.convention(SpigotReobf.ARTIFACT_CONFIG)
@@ -74,6 +72,11 @@ abstract class SpigotReobfTask @Inject constructor(
       if (reverse) "--reverse" else ""
     )
     exec.execute().rethrowFailure()
+  }
+
+  @Internal
+  internal fun getMavenLocal(): Property<File> {
+    return mavenLocal
   }
 
 }

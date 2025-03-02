@@ -37,7 +37,7 @@ class SpigotReobf: Plugin<Project> {
       // to jump through hoops and shift around shadow declarations in the rest of the project.
       inputFile.convention(target.tasks.named<Jar>("shadowJar").get().archiveFile)
       spigotVersion.convention(spigotExt.version)
-      mavenLocal.set(Paths.get(mvnLocal.url).toFile())
+      getMavenLocal().set(Paths.get(mvnLocal.url).toFile())
     }
 
     // Create a separate configuration for SpecialSource to make it easier to locate.
