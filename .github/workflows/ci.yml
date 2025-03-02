@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'master'
-      - 'dev/gradle-improvements' # TODO remove
     tags-ignore:
       - '**'
     paths-ignore:
@@ -38,8 +37,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
-        # Since we're only building once, don't bother with the daemon.
-        run: ./gradlew clean build --no-daemon
+        run: ./gradlew clean build
 
       # Upload artifacts
       - name: Upload Distributable Jar
