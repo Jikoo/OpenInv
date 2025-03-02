@@ -1,4 +1,5 @@
 import com.github.jikoo.openinv.SpigotDependencyExtension
+import com.github.jikoo.openinv.SpigotReobf
 import com.github.jikoo.openinv.SpigotSetup
 
 plugins {
@@ -7,12 +8,10 @@ plugins {
 }
 
 apply<SpigotSetup>()
-
-repositories {
-  mavenLocal()
-}
+apply<SpigotReobf>()
 
 val spigotVer = "1.21.4-R0.1-SNAPSHOT"
+// Used by common adapter to relocate Craftbukkit classes to a versioned package.
 rootProject.extra["craftbukkitPackage"] = "v1_21_R3"
 
 configurations.all {
@@ -29,10 +28,7 @@ configurations.all {
   }
 }
 
-val spigotRemap = configurations.create("spigotRemap")
-
 dependencies {
-  spigotRemap("net.md-5:SpecialSource:1.11.4:shaded")
   compileOnly(libs.spigotapi)
   extensions.getByType(SpigotDependencyExtension::class.java).version = spigotVer
 
@@ -45,26 +41,4 @@ dependencies {
 
 tasks.shadowJar {
   relocate("com.lishid.openinv.internal.common", "com.lishid.openinv.internal.reobf")
-}
-
-val reobfTask = tasks.register<ReobfTask>("reobfTask") {
-  notCompatibleWithConfigurationCache("gradle is hard")
-  dependsOn(tasks.shadowJar)
-  inputFile.value(tasks.shadowJar.get().archiveFile.get())
-  spigotVersion.value(spigotVer)
-}
-
-configurations {
-  consumable("reobf") {
-    attributes {
-      attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-      attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-      attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
-      attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
-    }
-  }
-}
-
-artifacts {
-  add("reobf", reobfTask)
 }

@@ -1,3 +1,5 @@
+import com.github.jikoo.openinv.SpigotReobf
+
 plugins {
   `openinv-base`
   alias(libs.plugins.shadow)
@@ -13,7 +15,7 @@ dependencies {
   implementation(project(":openinvadaptercommon"))
   implementation(project(":openinvadapterpaper1_21_3"))
   implementation(project(":openinvadapterpaper1_21_1"))
-  implementation(project(":openinvadapterspigot", configuration = "reobf"))
+  implementation(project(":openinvadapterspigot", configuration = SpigotReobf.ARTIFACT_CONFIG))
   implementation(libs.planarwrappers)
 }
 

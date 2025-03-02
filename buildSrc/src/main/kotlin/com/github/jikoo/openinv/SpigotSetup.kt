@@ -16,15 +16,18 @@ abstract class SpigotSetup: Plugin<Project> {
   override fun apply(target: Project) {
     target.plugins.apply("java")
 
-    val spigotExt = target.dependencies.extensions.create(
-      "spigot",
-      SpigotDependencyExtension::class.java,
-      target.objects
-    )
+    // Set up extension for configuring Spigot dependency.
+    val spigotExt = target.dependencies.extensions.findByType(SpigotDependencyExtension::class.java)
+      ?: target.dependencies.extensions.create(
+        "spigot",
+        SpigotDependencyExtension::class.java,
+        target.objects
+      )
 
     val mvnLocal = target.repositories.mavenLocal()
 
     target.afterEvaluate {
+      // Get Java requirements, defaulting to version used for compilation.
       spigotExt.java.convention(target.extensions.getByType(JavaPluginExtension::class.java).toolchain)
       val launcher = javaToolchainService.launcherFor(spigotExt.java.get()).get()
 

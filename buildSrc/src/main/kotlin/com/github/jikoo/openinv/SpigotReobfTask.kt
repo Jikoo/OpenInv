@@ -1,3 +1,5 @@
+package com.github.jikoo.openinv
+
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -6,33 +8,31 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.process.internal.ExecActionFactory
 import java.io.File
-import java.nio.file.Paths
 import javax.inject.Inject
 
-abstract class ReobfTask @Inject constructor(
+abstract class SpigotReobfTask @Inject constructor(
   private var execActionFactory: ExecActionFactory
 ) : Jar() {
 
   @get:Input
-  open val spigotVersion: Property<String> = objectFactory.property(String::class.java)
+  val spigotVersion: Property<String> = objectFactory.property(String::class.java)
 
   @get:InputFile
-  open val inputFile: RegularFileProperty = objectFactory.fileProperty()
+  val inputFile: RegularFileProperty = objectFactory.fileProperty()
 
   @get:Input
-  open val intermediaryClassifier: Property<String> = objectFactory.property(String::class.java).convention("mojang-mapped")
+  val intermediaryClassifier: Property<String> = objectFactory.property(String::class.java).convention("mojang-mapped")
 
   private val specialSource: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
-    project.configurations.named("spigotRemap").get().incoming.artifacts.artifacts
-      .first { it.id.componentIdentifier.toString() == "net.md-5:SpecialSource:1.11.4" }.file
+    // Grab SpecialSource location from dependency declaration.
+    project.configurations.named(SpigotReobf.DEP_CONFIG).get().incoming.artifacts.artifacts
+      .first { it.id.componentIdentifier.toString().startsWith("net.md-5:SpecialSource:") }.file
   })
 
-  private val mavenLocal: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
-    Paths.get(project.repositories.mavenLocal().url).toFile()
-  })
+  internal val mavenLocal: Property<File> = objectFactory.property(File::class.java)
 
   init {
-    archiveClassifier.convention("reobf")
+    archiveClassifier.convention(SpigotReobf.ARTIFACT_CONFIG)
   }
 
   @TaskAction
