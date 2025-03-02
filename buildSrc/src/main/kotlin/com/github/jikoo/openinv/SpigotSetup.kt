@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.toolchain.JavaToolchainService
+import org.gradle.kotlin.dsl.create
 import java.nio.file.Paths
 import javax.inject.Inject
 
@@ -21,23 +22,34 @@ abstract class SpigotSetup: Plugin<Project> {
       target.objects
     )
 
-    val builder = target.gradle.sharedServices.registerIfAbsent("spigotSetup", SpigotBuildService::class.java) {
-      parameters {
-        // TODO this "secretly" adds the maven local repo. Make it clearer?
-        mavenLocal.convention(Paths.get(target.repositories.mavenLocal().url).toFile())
-        workingDir.convention(target.layout.buildDirectory.dir("tmp/buildtools"))
-      }
-    }
-
-    //target.tasks.register("spigotSetup", SpigotSetupTask::class.java)
+    val mvnLocal = target.repositories.mavenLocal()
 
     target.afterEvaluate {
       spigotExt.java.convention(target.extensions.getByType(JavaPluginExtension::class.java).toolchain)
-      spigotExt.dependencies.convention(target.dependencies)
+      val launcher = javaToolchainService.launcherFor(spigotExt.java.get()).get()
 
-      val setup = builder.get()
-      setup.generateArtifacts(spigotExt, javaToolchainService)
-      setup.addDependencies(spigotExt)
+      // Install Spigot with BuildTools.
+      target.providers.of(BuildToolsValueSource::class.java) {
+        parameters {
+          mavenLocal.set(Paths.get(mvnLocal.url).toFile())
+          workingDir.set(target.layout.buildDirectory.dir("tmp/buildtools"))
+          spigotVersion.set(spigotExt.version)
+          spigotRevision.set(spigotExt.revision)
+          ignoreCached.set(spigotExt.ignoreCached)
+          javaHome.set(launcher.metadata.installationPath)
+          javaExecutable.set(launcher.executablePath.asFile.path)
+        }
+      }.get()
+
+      // Add Spigot dependency.
+      val dependency = target.dependencies.create(
+        "org.spigotmc",
+        "spigot",
+        spigotExt.version.get(),
+        spigotExt.configuration.orNull,
+        spigotExt.classifier.orNull,
+        spigotExt.ext.orNull)
+      target.dependencies.add("compileOnly", dependency)
     }
   }
 

@@ -1,6 +1,5 @@
 package com.github.jikoo.openinv
 
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.model.ObjectFactory
 import org.gradle.jvm.toolchain.JavaToolchainSpec
 
@@ -18,6 +17,5 @@ abstract class SpigotDependencyExtension (
   val ext = objects.property(String::class.java)
   val java = objects.property(JavaToolchainSpec::class.java)
   val ignoreCached = objects.property(Boolean::class.java).convention(false)
-  internal val dependencies = objects.property(DependencyHandler::class.java)
 
 }
