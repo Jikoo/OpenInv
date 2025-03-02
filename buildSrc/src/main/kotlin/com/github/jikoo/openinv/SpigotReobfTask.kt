@@ -4,6 +4,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.process.internal.ExecActionFactory
@@ -23,12 +24,14 @@ abstract class SpigotReobfTask @Inject constructor(
   @get:Input
   val intermediaryClassifier: Property<String> = objectFactory.property(String::class.java).convention("mojang-mapped")
 
+  @Internal
   private val specialSource: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
     // Grab SpecialSource location from dependency declaration.
     project.configurations.named(SpigotReobf.DEP_CONFIG).get().incoming.artifacts.artifacts
       .first { it.id.componentIdentifier.toString().startsWith("net.md-5:SpecialSource:") }.file
   })
 
+  @Internal
   internal val mavenLocal: Property<File> = objectFactory.property(File::class.java)
 
   init {
