@@ -45,10 +45,7 @@ The OpenInv API is available via [JitPack](https://jitpack.io/).
 Note that since JitPack only builds the API now, the "full" OpenInv jar on JitPack is actually the openinvapi artifact. This is a change from previous dependency declaration that I hope to revert.
 
 ### Compilation
-To compile, the relevant Spigot jar must be installed in the local repository.
-As OpenInv is compiled against Mojang's mappings, you must run BuildTools with the `--remapped` argument:  
-`java -jar BuildTools.jar --remapped --rev $serverVersion`  
-`$serverVersion` is the version of the server, i.e. `1.21.4`
-
-Once Spigot is installed, execute the gradle wrapper:  
+Execute the gradle wrapper:  
 `./gradlew build`
+
+If you encounter issues with building the Spigot module, try running BuildTools manually.
