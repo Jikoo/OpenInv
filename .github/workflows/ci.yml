@@ -28,8 +28,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/.m2/repository/org/spigotmc/spigot
-            ~/.m2/repository/org/spigotmc/minecraft-server
+            ~/.m2/repository/org/spigotmc/
           key: ${{ runner.os }}-buildtools-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-buildtools-
