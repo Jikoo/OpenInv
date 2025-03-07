@@ -18,26 +18,41 @@
 # Note that this script is designed for use in GitHub Actions, and is not
 # particularly robust nor configurable. Run from project parent directory.
 
-# Parse Spigot dependency information into major Minecraft versions
-function get_curseforge_minecraft_versions() {
-  # TODO convert to parsing event body
-  readarray -t versions <<< "1.21.4"
+if [[ ! $1 ]]; then
+  echo "No changelog, no Minecraft versions."
+  exit 0
+fi
 
-  for version in "${versions[@]}"; do
-    # Parse Minecraft major version
-    version="${version%[.-]"${version#*.*[.-]}"}"
+# Find line declaring Paper versions.
+raw=$(grep "**Paper:**" <<< "$1")
 
-    # Skip already listed versions
-    if [[ "$minecraft_versions" =~ "$version"($|,) ]]; then
-      continue
-    fi
+# Enable extended glob pattern to match 0 or more whitespace characters.
+shopt -s extglob
+# Trim Paper versions identifier prefix.
+raw=${raw##*([[:space:]])'**'Paper:'**'*([[:space:]])}
+# Replace commas and optional spaces with a newline.
+raw=${raw//,*([[:space:]])/$'\n'}
+# Turn extglob back off.
+shopt -u extglob
 
-    # Append comma if variable is set, then append version
-    minecraft_versions="${minecraft_versions:+${minecraft_versions},}Minecraft ${version}"
-  done
+# Split into an array on newlines.
+readarray -td $'\n' versions <<< "${raw}"
 
-  echo "${minecraft_versions}"
-}
+for version in "${versions[@]}"; do
+  # Parse Minecraft minor version by dropping everything from the second period onward.
+  # CurseForge doesn't usually add patch versions for Bukkit, so we're more likely to
+  # hit a supported identifier this way.
+  version="${version%[.-]"${version#*.*[.-]}"}"
 
-minecraft_versions=$(get_curseforge_minecraft_versions)
-echo "CURSEFORGE_MINECRAFT_VERSIONS=$minecraft_versions" >> "$GITHUB_ENV"
+  # Skip already listed versions
+  if [[ "$minecraft_versions" =~ "$version"($|,) ]]; then
+    continue
+  fi
+
+  # Append comma if variable is set, then append version.
+  # Note that Minecraft versions on CurseForge are declared "Minecraft x.y.z"
+  minecraft_versions="${minecraft_versions:+${minecraft_versions},}Minecraft ${version}"
+done
+
+printf "$minecraft_versions\n"
+#echo "CURSEFORGE_MINECRAFT_VERSIONS=$minecraft_versions" >> "$GITHUB_ENV"
