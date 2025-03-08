@@ -5,14 +5,14 @@ planarwrappers = "3.3.0"
 annotations = "26.0.2"
 paperweight = "2.0.0-beta.14"
 shadow = "8.3.6"
-folia = "v0.0.3"
+folia-scheduler-wrapper = "v0.0.3"
 
 [libraries]
 spigotapi = { module = "org.spigotmc:spigot-api", version.ref = "spigotapi" }
 specialsource = { module = "net.md-5:SpecialSource", version.ref = "specialsource" }
 planarwrappers = { module = "com.github.jikoo:planarwrappers", version.ref = "planarwrappers" }
 annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
-folia = { module = "com.github.NahuLD.folia-scheduler-wrapper:folia-scheduler-wrapper", version.ref = "folia" }
+folia-scheduler-wrapper = { module = "com.github.NahuLD.folia-scheduler-wrapper:folia-scheduler-wrapper", version.ref = "folia-scheduler-wrapper" }
 
 [plugins]
 paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }

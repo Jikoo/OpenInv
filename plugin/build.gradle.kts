@@ -17,7 +17,7 @@ dependencies {
   implementation(project(":openinvadapterpaper1_21_1"))
   implementation(project(":openinvadapterspigot", configuration = SpigotReobf.ARTIFACT_CONFIG))
   implementation(libs.planarwrappers)
-  implementation(libs.folia)
+  implementation(libs.folia.scheduler.wrapper)
 }
 
 tasks.processResources {
@@ -29,10 +29,11 @@ tasks.jar {
 }
 
 tasks.shadowJar {
-  relocate("me.nahu.scheduler.wrapper", "com.lishid.openinv.internal.folia.scheduler")
+  relocate("me.nahu.scheduler.wrapper", "com.github.jikoo.openinv.lib.nahu.scheduler-wrapper")
+  relocate("com.github.jikoo.planarwrappers", "com.github.jikoo.openinv.lib.planarwrappers")
   minimize {
     exclude(":openinv**")
-    exclude(dependency("com.github.NahuLD.folia-scheduler-wrapper:folia-scheduler-wrapper:.*"))
+    exclude(dependency(libs.folia.scheduler.wrapper.get()))
   }
 }
 
