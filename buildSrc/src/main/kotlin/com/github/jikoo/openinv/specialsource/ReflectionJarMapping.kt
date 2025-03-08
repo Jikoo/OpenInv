@@ -11,9 +11,10 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
-class ReflectionJarMapping: JarMapping() {
+open class ReflectionJarMapping : JarMapping() {
 
-  private var currentClass: String? = null
+  val reflectableFields: MutableMap<String, String> = HashMap()
+  protected var currentClass: String? = null
 
   override fun loadMappings(
     reader: BufferedReader,
@@ -24,19 +25,16 @@ class ReflectionJarMapping: JarMapping() {
     val inTransformer = inputTransformer ?: MavenShade.IDENTITY
     val outTransformer = outputTransformer ?: MavenShade.IDENTITY
 
-    val lines = ArrayList<String>()
-
-    reader.lines().forEach {
-      var line = it
-      val commentIndex = line.indexOf('#')
-      if (commentIndex != -1) {
-        line = line.substring(0, commentIndex)
+    val lines = reader.lines()
+      .map {
+        val comment = it.indexOf('#')
+        if (comment == -1) {
+          return@map it
+        }
+        return@map it.substring(0, comment)
       }
-
-      if (line.isNotEmpty()) {
-        lines.add(line)
-      }
-    }
+      .filter(String::isNotBlank)
+      .toList()
 
     val meter = ProgressMeter(lines.size * 2, "Loading mappings... %2.0f%%")
     val clsMap: MutableMap<String, String> = HashMap()
@@ -45,7 +43,7 @@ class ReflectionJarMapping: JarMapping() {
     val proguard = " -> ".toRegex()
     for (l in lines) {
       if (l.endsWith(":")) {
-        val parts = l.split(proguard).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val parts = l.split(proguard).dropLastWhile(String::isEmpty)
         val orig = parts[0].replace('.', '/')
         val obf = parts[1].substring(0, parts[1].length - 1).replace('.', '/')
         clsMap[obf] = orig
@@ -55,14 +53,14 @@ class ReflectionJarMapping: JarMapping() {
           continue
         }
 
-        val tokens = l.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val tokens = l.split(" ".toRegex()).dropLastWhile(String::isEmpty)
         clsMap[tokens[0]] = tokens[1]
       } else {
         if (l.startsWith("\t")) {
           continue
         }
 
-        val tokens = l.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val tokens = l.split(" ".toRegex()).dropLastWhile(String::isEmpty)
         if (tokens.size == 2) {
           clsMap[tokens[0]] = tokens[1]
         }
@@ -105,14 +103,14 @@ class ReflectionJarMapping: JarMapping() {
           if (part.isEmpty()) {
             continue
           }
-          desc.append(toJVMType(data, part))
+          desc.append(toJvmType(data, part))
         }
         desc.append(")")
-        desc.append(toJVMType(data, ret))
+        desc.append(toJvmType(data, ret))
         return desc.toString()
       }
 
-      fun toJVMType(data: Map<String, String>, type: String): String {
+      fun toJvmType(data: Map<String, String>, type: String): String {
         when (type) {
           "byte" -> return "B"
           "char" -> return "C"
@@ -125,7 +123,7 @@ class ReflectionJarMapping: JarMapping() {
           "void" -> return "V"
           else -> {
             if (type.endsWith("[]")) {
-              return "[" + toJVMType(data, type.substring(0, type.length - 2))
+              return "[" + toJvmType(data, type.substring(0, type.length - 2))
             }
             val clazzType = type.replace('.', '/')
             val mappedType = data[clazzType]
@@ -139,7 +137,7 @@ class ReflectionJarMapping: JarMapping() {
   }
 
   @Throws(IOException::class)
-  private fun parseProguardLine(
+  open fun parseProguardLine(
     originalLine: String,
     inputTransformer: MappingTransformer,
     outputTransformer: MappingTransformer,
@@ -147,7 +145,7 @@ class ReflectionJarMapping: JarMapping() {
     reverseMap: Remapper,
     prgMap: Map<String, String>
   ) {
-    //Tsrg format, identical to Csrg, except the field and method lines start with \t and should use the last class the was parsed.
+    // Tsrg format, identical to Csrg, except the field and method lines should use the last class the was parsed.
     var line = originalLine
     if (line.startsWith("    ")) {
       if (this.currentClass == null) {
@@ -157,7 +155,7 @@ class ReflectionJarMapping: JarMapping() {
     }
 
     if (line.endsWith(":")) {
-      val parts = line.split(" -> ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+      val parts = line.split(" -> ".toRegex()).dropLastWhile { it.isEmpty() }
       val orig = parts[0].replace('.', '/')
       val obf = parts[1].substring(0, parts[1].length - 1).replace('.', '/')
 
@@ -206,20 +204,25 @@ class ReflectionJarMapping: JarMapping() {
 
         methods["$oldClassName/$oldMethodName $oldMethodDescriptor"] = newMethodName
       } else {
+        val desc = ProguardUtil.toJvmType(prgMap, matcher.group(1))
+
         var oldClassName = inputTransformer.transformClassName(currentClass)
         var oldFieldName = inputTransformer.transformFieldName(currentClass, obfName)
+        var oldFieldDesc = inputTransformer.transformMethodDescriptor(desc)
         var newFieldName = outputTransformer.transformFieldName(currentClass, nameDesc)
 
         if (reverse) {
           val newClassName = reverseMap.map(oldClassName)
           oldClassName = newClassName
+          oldFieldDesc = reverseMap.mapDesc(oldFieldDesc)
 
           val temp = newFieldName
           newFieldName = oldFieldName
           oldFieldName = temp
         }
 
-        fields["$oldClassName/$oldFieldName"] = newFieldName
+        reflectableFields["$oldClassName/$oldFieldName"] = newFieldName
+        fields["$oldClassName/$oldFieldName/$oldFieldDesc"] = newFieldName
       }
     }
   }
@@ -228,7 +231,7 @@ class ReflectionJarMapping: JarMapping() {
    * Parse a 'csrg' mapping format line and populate the data structures
    */
   @Throws(IOException::class)
-  private fun parseCsrgLine(
+  open fun parseCsrgLine(
     originalLine: String,
     inputTransformer: MappingTransformer,
     outputTransformer: MappingTransformer,
@@ -248,7 +251,7 @@ class ReflectionJarMapping: JarMapping() {
       line = currentClass + " " + line.substring(1)
     }
 
-    val tokens = line.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    val tokens = line.split(" ".toRegex()).dropLastWhile { it.isEmpty() }
 
     if (tokens.size == 2) {
       var oldClassName = inputTransformer.transformClassName(tokens[0])
@@ -293,6 +296,7 @@ class ReflectionJarMapping: JarMapping() {
         oldFieldName = temp
       }
 
+      reflectableFields["$oldClassName/$oldFieldName"] = newFieldName
       fields["$oldClassName/$oldFieldName"] = newFieldName
     } else if (tokens.size == 4) {
       var oldClassName = inputTransformer.transformClassName(tokens[0])
@@ -321,13 +325,13 @@ class ReflectionJarMapping: JarMapping() {
    * structures
    */
   @Throws(IOException::class)
-  private fun parseSrgLine(
+  open fun parseSrgLine(
     line: String,
     inputTransformer: MappingTransformer,
     outputTransformer: MappingTransformer,
     reverse: Boolean
   ) {
-    val tokens = line.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    val tokens = line.split(" ".toRegex()).dropLastWhile { it.isEmpty() }
     val kind = tokens[0]
 
     if (kind == "CL:") {
@@ -418,6 +422,7 @@ class ReflectionJarMapping: JarMapping() {
             + " but already mapped to " + fields[oldEntry] + " in line=" + line)
       }
 
+      reflectableFields[oldEntry] = newFieldName
       fields[oldEntry] = newFieldName
     } else if (kind == "MD:") {
       val oldFull = tokens[1]
