@@ -2,13 +2,11 @@ package com.github.jikoo.openinv
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.attributes.Bundling
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
 import org.gradle.api.attributes.Usage
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import java.nio.file.Paths
@@ -16,7 +14,6 @@ import java.nio.file.Paths
 class SpigotReobf: Plugin<Project> {
 
   companion object {
-    internal const val DEP_CONFIG = "spigotReobfDep"
     const val ARTIFACT_CONFIG = "reobf"
   }
 
@@ -38,13 +35,6 @@ class SpigotReobf: Plugin<Project> {
       inputFile.convention(target.tasks.named<Jar>("shadowJar").get().archiveFile)
       spigotVersion.convention(spigotExt.version)
       getMavenLocal().set(Paths.get(mvnLocal.url).toFile())
-    }
-
-    // Create a separate configuration for SpecialSource to make it easier to locate.
-    val reobfDeps = target.configurations.create(DEP_CONFIG)
-    target.dependencies {
-      val libs = target.extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
-      reobfDeps(variantOf(libs.findLibrary("specialsource").orElseThrow()) { classifier("shaded") })
     }
 
     // Set up configuration for producing reobf jar.

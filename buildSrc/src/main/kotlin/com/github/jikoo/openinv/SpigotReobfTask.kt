@@ -1,19 +1,18 @@
 package com.github.jikoo.openinv
 
+import com.github.jikoo.openinv.specialsource.ReflectionJarMapping
+import net.md_5.specialsource.*
+import net.md_5.specialsource.provider.JarProvider
+import net.md_5.specialsource.provider.JointProvider
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.bundling.Jar
-import org.gradle.process.internal.ExecActionFactory
 import java.io.File
-import javax.inject.Inject
 
-abstract class SpigotReobfTask @Inject constructor(
-  private var execActionFactory: ExecActionFactory
-) : Jar() {
+abstract class SpigotReobfTask: org.gradle.api.tasks.bundling.Jar() {
 
   @get:Input
   val spigotVersion: Property<String> = objectFactory.property(String::class.java)
@@ -23,12 +22,6 @@ abstract class SpigotReobfTask @Inject constructor(
 
   @get:Input
   val intermediaryClassifier: Property<String> = objectFactory.property(String::class.java).convention("mojang-mapped")
-
-  private val specialSource: Property<File> = objectFactory.property(File::class.java).convention(project.provider {
-    // Grab SpecialSource location from dependency declaration.
-    project.configurations.named(SpigotReobf.DEP_CONFIG).get().incoming.artifacts.artifacts
-      .first { it.id.componentIdentifier.toString().startsWith("net.md-5:SpecialSource:") }.file
-  })
 
   private val mavenLocal: Property<File> = objectFactory.property(File::class.java)
 
@@ -43,7 +36,6 @@ abstract class SpigotReobfTask @Inject constructor(
     val obfPath = inFile.resolveSibling(inFile.name.replace(".jar", "-${intermediaryClassifier.get()}.jar"))
 
     // https://www.spigotmc.org/threads/510208/#post-4184317
-    val specialSourceFile = specialSource.get()
     val repo = mavenLocal.get()
     val spigotDir = repo.resolve("org/spigotmc/spigot/$spigotVer/")
     val mappingDir = repo.resolve("org/spigotmc/minecraft-server/$spigotVer/")
@@ -51,27 +43,40 @@ abstract class SpigotReobfTask @Inject constructor(
     // Remap original Mojang-mapped jar to obfuscated intermediary
     val mojangServer = spigotDir.resolve("spigot-$spigotVer-remapped-mojang.jar")
     val mojangMappings = mappingDir.resolve("minecraft-server-$spigotVer-maps-mojang.txt")
-    remapPartial(specialSourceFile, mojangServer, mojangMappings, inFile, obfPath, true)
+    remapPartial(mojangServer, mojangMappings, inFile, obfPath, true)
 
     // Remap obfuscated intermediary jar to Spigot and replace original
     val obfServer = spigotDir.resolve("spigot-$spigotVer-remapped-obf.jar")
     val spigotMappings = mappingDir.resolve("minecraft-server-$spigotVer-maps-spigot.csrg")
-    remapPartial(specialSourceFile, obfServer, spigotMappings, obfPath, archiveFile.get().asFile, false)
+    remapPartial(obfServer, spigotMappings, obfPath, archiveFile.get().asFile, false)
   }
 
-  private fun remapPartial(specialSourceFile: File, serverJar: File, mapping: File, input: File, output: File, reverse: Boolean) {
-    // May need a direct dependency on SpecialSource later to customize behavior.
-    val exec = execActionFactory.newJavaExecAction()
-    exec.classpath(specialSourceFile, serverJar)
-    exec.mainClass.value("net.md_5.specialsource.SpecialSource")
-    exec.args(
-      "--live",
-      "-i", input.path,
-      "-o", output.path,
-      "-m", "$mapping",
-      if (reverse) "--reverse" else ""
-    )
-    exec.execute().rethrowFailure()
+  private fun remapPartial(server: File, mapping: File, input: File, output: File, reverse: Boolean) {
+    val jarMapping = JarMapping()
+    jarMapping.loadMappings(mapping.path, reverse, false, null, null)
+
+    val inheritance = JointProvider()
+    jarMapping.setFallbackInheritanceProvider(inheritance)
+
+    // Equivalent of --live with server jar on classpath.
+    val serverJar = Jar.init(server)
+    inheritance.add(JarProvider(serverJar))
+
+    val inputJar = Jar.init(input)
+    inheritance.add(JarProvider(inputJar))
+
+    // Remap reflective access.
+    val reflectionMapping = ReflectionJarMapping()
+    reflectionMapping.loadMappings(mapping.path, reverse, false, null, null)
+    val inheritanceMap = InheritanceMap()
+    inheritanceMap.generate(inheritance, reflectionMapping.classes.values)
+    val preprocessor = RemapperProcessor(inheritanceMap, reflectionMapping, null)
+
+    val remapper = JarRemapper(preprocessor, jarMapping, null)
+    remapper.remapJar(inputJar, output)
+
+    serverJar.close()
+    inputJar.close()
   }
 
   @Internal
