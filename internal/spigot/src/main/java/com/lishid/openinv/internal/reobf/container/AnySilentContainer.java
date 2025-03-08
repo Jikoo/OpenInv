@@ -45,10 +45,10 @@ public class AnySilentContainer extends AnySilentContainerBase {
     this.lang = lang;
     try {
       try {
-        this.serverPlayerGameModeGameType = ServerPlayerGameMode.class.getDeclaredField("b");
+        this.serverPlayerGameModeGameType = ServerPlayerGameMode.class.getDeclaredField("gameModeForPlayer");
         this.serverPlayerGameModeGameType.setAccessible(true);
       } catch (NoSuchFieldException e) {
-        logger.warning("The mapping of ServerPlayerGameMode#gameModeForPlayer has changed!");
+        logger.warning("The field ServerPlayerGameMode#gameModeForPlayer is no longer present!");
         logger.warning("Please report this at https://github.com/Jikoo/OpenInv/issues");
         logger.warning("Attempting to fall through using reflection. Please verify that SilentContainer does not fail.");
         // N.B. gameModeForPlayer is (for now) declared before previousGameModeForPlayer so silent shouldn't break.
