@@ -1,9 +1,9 @@
 package com.github.jikoo.openinv
 
-import com.github.jikoo.openinv.specialsource.ReflectionPreprocessor
 import net.md_5.specialsource.Jar
 import net.md_5.specialsource.JarMapping
 import net.md_5.specialsource.JarRemapper
+import net.md_5.specialsource.RemapperProcessor
 import net.md_5.specialsource.provider.JarProvider
 import net.md_5.specialsource.provider.JointProvider
 import org.gradle.api.file.RegularFileProperty
@@ -68,10 +68,10 @@ abstract class SpigotReobfTask: org.gradle.api.tasks.bundling.Jar() {
     inheritance.add(JarProvider(inputJar))
 
     // Remap reflective access.
-    val preprocessor = ReflectionPreprocessor(jarMapping)
+    val preprocessor = RemapperProcessor(null, jarMapping, null)
 
     val remapper = JarRemapper(preprocessor, jarMapping, null)
-    remapper.remapJar(inputJar, output)
+    remapper.remapJar(inputJar, output, emptySet())
 
     serverJar.close()
     inputJar.close()
