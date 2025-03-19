@@ -8,6 +8,7 @@ publishing {
     create<MavenPublication>("jitpack") {
       groupId = "com.github.Jikoo.OpenInv"
       artifactId = "openinvapi"
+      from(components["java"])
     }
   }
 }
