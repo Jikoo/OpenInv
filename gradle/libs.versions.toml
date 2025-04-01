@@ -1,5 +1,5 @@
 [versions]
-spigotapi = "1.21.4-R0.1-SNAPSHOT"
+spigotapi = "1.21.5-R0.1-SNAPSHOT"
 specialsource = "1.11.5"
 planarwrappers = "3.3.0"
 annotations = "26.0.2"
