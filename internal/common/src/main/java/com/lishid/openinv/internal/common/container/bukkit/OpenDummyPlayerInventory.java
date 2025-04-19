@@ -22,12 +22,12 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public @NotNull ItemStack[] getArmorContents() {
+  public @NotNull ItemStack @NotNull [] getArmorContents() {
     return new ItemStack[4];
   }
 
   @Override
-  public @NotNull ItemStack[] getExtraContents() {
+  public @NotNull ItemStack @NotNull [] getExtraContents() {
     return new ItemStack[4];
   }
 
@@ -57,17 +57,17 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public @Nullable ItemStack getItem(@NotNull EquipmentSlot slot) {
-    return null;
+  public @NotNull ItemStack getItem(@NotNull EquipmentSlot slot) {
+    return new ItemStack(Material.AIR);
   }
 
   @Override
-  public void setArmorContents(@Nullable ItemStack[] items) {
+  public void setArmorContents(ItemStack @NotNull [] items) {
 
   }
 
   @Override
-  public void setExtraContents(@Nullable ItemStack[] items) {
+  public void setExtraContents(ItemStack @NotNull [] items) {
 
   }
 

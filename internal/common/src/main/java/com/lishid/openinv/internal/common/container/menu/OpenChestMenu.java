@@ -6,8 +6,7 @@ import com.lishid.openinv.internal.InternalOwned;
 import com.lishid.openinv.internal.common.container.bukkit.OpenDummyInventory;
 import com.lishid.openinv.internal.common.container.slot.SlotPlaceholder;
 import com.lishid.openinv.internal.common.container.slot.SlotViewOnly;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.network.HashedStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +18,7 @@ import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.inventory.ContainerSynchronizer;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.RemoteSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
@@ -47,12 +47,10 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   protected final int topSize;
   private CraftInventoryView<OpenChestMenu<T>, Inventory> bukkitEntity;
   // Syncher fields
-  private @Nullable ContainerSynchronizer synchronizer;
-  private final List<DataSlot> dataSlots = new ArrayList<>();
-  private final IntList remoteDataSlots = new IntArrayList();
-  private final List<ContainerListener> containerListeners = new ArrayList<>();
-  private ItemStack remoteCarried = ItemStack.EMPTY;
-  private boolean suppressRemoteUpdates;
+  protected @Nullable ContainerSynchronizer synchronizer;
+  protected final List<ContainerListener> containerListeners = new ArrayList<>();
+  private RemoteSlot remoteCarried = RemoteSlot.PLACEHOLDER;
+  protected boolean suppressRemoteUpdates;
 
   protected OpenChestMenu(
       @NotNull MenuType<ChestMenu> type,
@@ -304,7 +302,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     slot.index = this.slots.size();
     this.slots.add(slot);
     this.lastSlots.add(ItemStack.EMPTY);
-    this.remoteSlots.add(ItemStack.EMPTY);
+    this.remoteSlots.add(this.synchronizer != null ? this.synchronizer.createSlot() : RemoteSlot.PLACEHOLDER);
     return slot;
   }
 
@@ -333,32 +331,38 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   @Override
   public void setSynchronizer(@NotNull ContainerSynchronizer containerSynchronizer) {
     this.synchronizer = containerSynchronizer;
+    this.remoteCarried = synchronizer.createSlot();
+    this.remoteSlots.replaceAll(slot -> synchronizer.createSlot());
     this.sendAllDataToRemote();
   }
 
   @Override
   public void sendAllDataToRemote() {
+    List<ItemStack> contentsCopy = new ArrayList<>();
     for (int index = 0; index < slots.size(); ++index) {
       Slot slot = slots.get(index);
-      this.remoteSlots.set(index, (slot instanceof SlotPlaceholder placeholder ? placeholder.getOrDefault() : slot.getItem()).copy());
+      ItemStack itemStack = slot instanceof SlotPlaceholder placeholder ? placeholder.getOrDefault() : slot.getItem();
+      contentsCopy.add(itemStack);
+      this.remoteSlots.get(index).force(itemStack);
     }
 
-    remoteCarried = getCarried().copy();
+    remoteCarried.force(getCarried());
 
     for (int index = 0; index < this.dataSlots.size(); ++index) {
       this.remoteDataSlots.set(index, this.dataSlots.get(index).get());
     }
 
     if (this.synchronizer != null) {
-      this.synchronizer.sendInitialData(this, this.remoteSlots, this.remoteCarried, this.remoteDataSlots.toIntArray());
+      this.synchronizer.sendInitialData(this, contentsCopy, this.getCarried().copy(), this.remoteDataSlots.toIntArray());
     }
   }
 
   @Override
   public void broadcastCarriedItem() {
-    this.remoteCarried = this.getCarried().copy();
+    ItemStack carried = this.getCarried();
+    this.remoteCarried.force(carried);
     if (this.synchronizer != null) {
-      this.synchronizer.sendCarriedChange(this, this.remoteCarried);
+      this.synchronizer.sendCarriedChange(this, carried.copy());
     }
   }
 
@@ -427,12 +431,11 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
 
   private void synchronizeSlotToRemote(int i, ItemStack itemStack, Supplier<ItemStack> supplier) {
     if (!this.suppressRemoteUpdates) {
-      ItemStack itemStack1 = this.remoteSlots.get(i);
-      if (!ItemStack.matches(itemStack1, itemStack)) {
-        ItemStack itemstack2 = supplier.get();
-        this.remoteSlots.set(i, itemstack2);
+      RemoteSlot slot = this.remoteSlots.get(i);
+      if (!slot.matches(itemStack)) {
+        slot.force(itemStack);
         if (this.synchronizer != null) {
-          this.synchronizer.sendSlotChange(this, i, itemstack2);
+          this.synchronizer.sendSlotChange(this, i, supplier.get());
         }
       }
     }
@@ -451,17 +454,20 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   private void synchronizeCarriedToRemote() {
-    if (!this.suppressRemoteUpdates && !ItemStack.matches(this.getCarried(), this.remoteCarried)) {
-      this.remoteCarried = this.getCarried().copy();
-      if (this.synchronizer != null) {
-        this.synchronizer.sendCarriedChange(this, this.remoteCarried);
+    if (!this.suppressRemoteUpdates) {
+      ItemStack carried = this.getCarried();
+      if (!this.remoteCarried.matches(carried)) {
+        this.remoteCarried.force(carried);
+        if (this.synchronizer != null) {
+          this.synchronizer.sendCarriedChange(this, carried.copy());
+        }
       }
     }
   }
 
   @Override
-  public void setRemoteCarried(ItemStack itemstack) {
-    this.remoteCarried = itemstack.copy();
+  public void setRemoteCarried(@NotNull HashedStack stack) {
+    this.remoteCarried.receive(stack);
   }
 
   @Override

@@ -1,4 +1,4 @@
-package com.lishid.openinv.internal.common.container.slot;
+package com.lishid.openinv.internal.paper1_21_4.container.slot;
 
 import com.lishid.openinv.internal.common.player.OpenPlayer;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
@@ -17,13 +17,13 @@ public class ContentOffHand extends ContentEquipment {
 
   private ServerPlayer holder;
 
-  public ContentOffHand(ServerPlayer holder) {
-    super(holder, EquipmentSlot.OFFHAND);
+  public ContentOffHand(ServerPlayer holder, int localIndex) {
+    super(holder, localIndex, EquipmentSlot.OFFHAND);
   }
 
   @Override
   public void setHolder(@NotNull ServerPlayer holder) {
-    super.setHolder(holder);
+    this.items = holder.getInventory().offhand;
     this.holder = holder;
   }
 

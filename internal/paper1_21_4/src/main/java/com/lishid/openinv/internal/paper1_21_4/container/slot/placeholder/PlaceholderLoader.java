@@ -1,25 +1,24 @@
-package com.lishid.openinv.internal.common.container.slot.placeholder;
+package com.lishid.openinv.internal.paper1_21_4.container.slot.placeholder;
 
+import com.lishid.openinv.internal.common.container.slot.placeholder.PlaceholderLoaderBase;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.DyedItemColor;
-import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 
 public class PlaceholderLoader extends PlaceholderLoaderBase {
 
   private static final CustomModelData DEFAULT_CUSTOM_MODEL_DATA = new CustomModelData(List.of(), List.of(), List.of("openinv:custom"), List.of());
-  private static final TooltipDisplay HIDE_TOOLTIP = new TooltipDisplay(true, new LinkedHashSet<>());
 
   @Override
   protected @NotNull CompoundTag parseTag(@NotNull String itemText) throws Exception {
-    return TagParser.parseCompoundFully(itemText);
+    return TagParser.parseTag(itemText);
   }
 
   @Override
@@ -29,12 +28,12 @@ public class PlaceholderLoader extends PlaceholderLoaderBase {
 
   @Override
   protected void hideTooltip(@NotNull ItemStack itemStack) {
-    itemStack.set(DataComponents.TOOLTIP_DISPLAY, HIDE_TOOLTIP);
+    itemStack.set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE);
   }
 
   @Override
   protected DyedItemColor getDye(int rgb) {
-    return new DyedItemColor(0xC8C8C8);
+    return new DyedItemColor(0xC8C8C8, false);
   }
 
 }

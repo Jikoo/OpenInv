@@ -10,9 +10,9 @@ plugins {
 apply<SpigotSetup>()
 apply<SpigotReobf>()
 
-val spigotVer = "1.21.4-R0.1-SNAPSHOT"
+val spigotVer = "1.21.5-R0.1-SNAPSHOT"
 // Used by common adapter to relocate Craftbukkit classes to a versioned package.
-rootProject.extra["craftbukkitPackage"] = "v1_21_R3"
+rootProject.extra["craftbukkitPackage"] = "v1_21_R4"
 
 configurations.all {
   resolutionStrategy.capabilitiesResolution.withCapability("org.spigotmc:spigot-api") {

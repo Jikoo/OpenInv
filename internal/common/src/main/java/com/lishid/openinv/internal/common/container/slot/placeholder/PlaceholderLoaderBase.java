@@ -5,9 +5,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Unit;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -63,7 +61,7 @@ public abstract class PlaceholderLoaderBase {
     Placeholders.BLOCKED_GAME_TYPE.put(GameType.SPECTATOR, parse(section, "blocked.spectator", Placeholders.BLOCKED_GAME_TYPE.get(GameType.SPECTATOR)));
   }
 
-  private static @NotNull ItemStack parse(
+  private @NotNull ItemStack parse(
       @Nullable ConfigurationSection section,
       @NotNull String path,
       @NotNull ItemStack defaultStack) throws Exception {
@@ -77,12 +75,18 @@ public abstract class PlaceholderLoaderBase {
       return defaultStack;
     }
 
-    CompoundTag compoundTag = TagParser.parseTag(itemText);
+    CompoundTag compoundTag = parseTag(itemText);
     Optional<ItemStack> parsed = ItemStack.parse(CraftRegistry.getMinecraftRegistry(), compoundTag);
     return parsed.filter(itemStack -> !itemStack.isEmpty()).orElse(defaultStack);
   }
 
-  protected abstract void addModelData(ItemStack itemStack);
+  protected abstract @NotNull CompoundTag parseTag(@NotNull String itemText) throws Exception;
+
+  protected abstract void addModelData(@NotNull ItemStack itemStack);
+
+  protected abstract void hideTooltip(@NotNull ItemStack itemStack);
+
+  protected abstract DyedItemColor getDye(int rgb);
 
   protected @NotNull ItemStack defaultCraftingOutput() {
     // Crafting table: "Crafting"
@@ -106,7 +110,7 @@ public abstract class PlaceholderLoaderBase {
             new BannerPatternLayers.Layer(bannerPatterns.wrapAsHolder(downRight), DyeColor.WHITE),
             new BannerPatternLayers.Layer(bannerPatterns.wrapAsHolder(border), DyeColor.GRAY))));
     addModelData(itemStack);
-    itemStack.set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE);
+    hideTooltip(itemStack);
     return itemStack;
   }
 
@@ -122,9 +126,9 @@ public abstract class PlaceholderLoaderBase {
   protected @NotNull ItemStack getEmptyArmor(@NotNull ItemLike item) {
     // Inventory-background-grey-ish leather armor with no tooltip
     ItemStack itemStack = new ItemStack(item);
-    DyedItemColor color = new DyedItemColor(0xC8C8C8, false);
+    DyedItemColor color = getDye(0xC8C8C8);
     itemStack.set(DataComponents.DYED_COLOR, color);
-    itemStack.set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE);
+    hideTooltip(itemStack);
     addModelData(itemStack);
     return itemStack;
   }
@@ -147,7 +151,7 @@ public abstract class PlaceholderLoaderBase {
             new BannerPatternLayers.Layer(bannerPatterns.wrapAsHolder(bottomLeft), DyeColor.MAGENTA),
             new BannerPatternLayers.Layer(bannerPatterns.wrapAsHolder(topRight), DyeColor.BLACK),
             new BannerPatternLayers.Layer(bannerPatterns.wrapAsHolder(bottomRight), DyeColor.BLACK))));
-    itemStack.set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE);
+    hideTooltip(itemStack);
     addModelData(itemStack);
     return itemStack;
   }
@@ -155,7 +159,7 @@ public abstract class PlaceholderLoaderBase {
   protected @NotNull ItemStack defaultNotSlot() {
     // White pane with no tooltip
     ItemStack itemStack = new ItemStack(Items.WHITE_STAINED_GLASS_PANE);
-    itemStack.set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE);
+    hideTooltip(itemStack);
     addModelData(itemStack);
     return itemStack;
   }

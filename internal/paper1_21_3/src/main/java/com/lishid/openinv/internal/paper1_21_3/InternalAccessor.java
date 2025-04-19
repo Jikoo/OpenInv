@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class InternalAccessor extends com.lishid.openinv.internal.common.InternalAccessor {
+public class InternalAccessor extends com.lishid.openinv.internal.paper1_21_4.InternalAccessor {
 
   public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
     super(logger, lang);

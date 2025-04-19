@@ -64,7 +64,7 @@ public class InternalAccessor {
     }
 
     private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
-        Version maxSupported = Version.of(1, 21, 4);
+        Version maxSupported = Version.of(1, 21, 5);
         Version minSupported = Version.of(1, 21, 1);
 
         // Ensure version is in supported range.
@@ -84,9 +84,13 @@ public class InternalAccessor {
         }
 
         // Paper or a Paper fork, can use Mojang-mapped internals.
-        if (BukkitVersions.MINECRAFT.equals(maxSupported)) { // 1.21.4
+        if (BukkitVersions.MINECRAFT.equals(maxSupported)) { // 1.21.5
             return new com.lishid.openinv.internal.common.InternalAccessor(logger, lang);
-        } else if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21, 3))) {
+        }
+        if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 4))) { // 1.21.4
+            return new com.lishid.openinv.internal.paper1_21_4.InternalAccessor(logger, lang);
+        }
+        if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21, 3))) {
             // 1.21.1-1.21.2 placeholder format
             return new com.lishid.openinv.internal.paper1_21_1.InternalAccessor(logger, lang);
         }

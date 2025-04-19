@@ -34,13 +34,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 public class PlayerManager implements com.lishid.openinv.internal.PlayerManager {
 
   protected final @NotNull Logger logger;
-  private @Nullable Field bukkitEntity;
+  protected @Nullable Field bukkitEntity;
 
   public PlayerManager(@NotNull Logger logger) {
     this.logger = logger;
@@ -154,23 +155,28 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     return true;
   }
 
-  private void parseWorld(@NotNull ServerPlayer player, @NotNull CompoundTag loadedData) {
+  protected void parseWorld(@NotNull ServerPlayer player, @NotNull CompoundTag loadedData) {
     // See PlayerList#placeNewPlayer
     World bukkitWorld;
-    if (loadedData.contains("WorldUUIDMost") && loadedData.contains("WorldUUIDLeast")) {
+    Optional<Long> msbs = loadedData.getLong("WorldUUIDMost");
+    Optional<Long> lsbs = loadedData.getLong("WorldUUIDLeast");
+    if (msbs.isPresent() && lsbs.isPresent()) {
       // Modern Bukkit world.
-      bukkitWorld = Bukkit.getServer().getWorld(new UUID(loadedData.getLong("WorldUUIDMost"), loadedData.getLong("WorldUUIDLeast")));
-    } else if (loadedData.contains("world", net.minecraft.nbt.Tag.TAG_STRING)) {
-      // Legacy Bukkit world.
-      bukkitWorld = Bukkit.getServer().getWorld(loadedData.getString("world"));
+      bukkitWorld = Bukkit.getServer().getWorld(new UUID(msbs.get(), lsbs.get()));
     } else {
-      // Vanilla player data.
-      DimensionType.parseLegacy(new Dynamic<>(NbtOps.INSTANCE, loadedData.get("Dimension")))
-          .resultOrPartial(logger::warning)
-          .map(player.server::getLevel)
-          // If ServerLevel exists, set, otherwise move to spawn.
-          .ifPresentOrElse(player::setServerLevel, () -> spawnInDefaultWorld(player));
-      return;
+      Optional<String> worldName = loadedData.getString("world");
+      if (worldName.isPresent()) {
+        // Legacy Bukkit world.
+        bukkitWorld = Bukkit.getServer().getWorld(worldName.get());
+      } else {
+        // Vanilla player data.
+        DimensionType.parseLegacy(new Dynamic<>(NbtOps.INSTANCE, loadedData.get("Dimension")))
+            .resultOrPartial(logger::warning)
+            .map(player.server::getLevel)
+            // If ServerLevel exists, set, otherwise move to spawn.
+            .ifPresentOrElse(player::setServerLevel, () -> spawnInDefaultWorld(player));
+        return;
+      }
     }
     if (bukkitWorld == null) {
       spawnInDefaultWorld(player);
@@ -179,9 +185,11 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     player.setServerLevel(((CraftWorld) bukkitWorld).getHandle());
   }
 
-  private void spawnInDefaultWorld(ServerPlayer player) {
+  protected void spawnInDefaultWorld(ServerPlayer player) {
     ServerLevel level = player.server.getLevel(Level.OVERWORLD);
     if (level != null) {
+      // Adjust player to default spawn (in keeping with Paper handling) when world not found.
+      player.snapTo(player.adjustSpawnLocation(level, level.getSharedSpawnPos()).getBottomCenter(), level.getSharedSpawnAngle(), 0.0F);
       player.spawnIn(level);
     } else {
       logger.warning("Tried to load player with invalid world when no fallback was available!");

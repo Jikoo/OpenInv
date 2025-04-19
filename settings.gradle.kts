@@ -19,6 +19,7 @@ if (!java.lang.Boolean.getBoolean("jitpack")) {
 
   val internals = listOf(
     "common",
+    "paper1_21_4",
     "paper1_21_3",
     "paper1_21_1",
     "spigot"

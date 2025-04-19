@@ -1,10 +1,10 @@
-package com.lishid.openinv.internal.common.container.slot;
+package com.lishid.openinv.internal.paper1_21_4.container.slot;
 
+import com.lishid.openinv.internal.common.container.slot.ContentList;
+import com.lishid.openinv.internal.common.container.slot.SlotPlaceholder;
 import com.lishid.openinv.internal.common.container.slot.placeholder.Placeholders;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -14,14 +14,13 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A slot for equipment that displays placeholders if empty.
  */
-public class ContentEquipment implements Content {
+public class ContentEquipment extends ContentList {
 
-  private EntityEquipment equipment;
   private final ItemStack placeholder;
   private final EquipmentSlot equipmentSlot;
 
-  public ContentEquipment(ServerPlayer holder, EquipmentSlot equipmentSlot) {
-    setHolder(holder);
+  public ContentEquipment(ServerPlayer holder, int index, EquipmentSlot equipmentSlot) {
+    super(holder, index, InventoryType.SlotType.ARMOR);
     placeholder = switch (equipmentSlot) {
       case HEAD -> Placeholders.emptyHelmet;
       case CHEST -> Placeholders.emptyChestplate;
@@ -34,41 +33,12 @@ public class ContentEquipment implements Content {
 
   @Override
   public void setHolder(@NotNull ServerPlayer holder) {
-    this.equipment = holder.getInventory().equipment;
-  }
-
-  @Override
-  public ItemStack get() {
-    return equipment.get(equipmentSlot);
-  }
-
-  @Override
-  public ItemStack remove() {
-    return equipment.set(equipmentSlot, ItemStack.EMPTY);
-  }
-
-  @Override
-  public ItemStack removePartial(int amount) {
-    ItemStack current = get();
-    if (!current.isEmpty() && amount > 0) {
-      return current.split(amount);
-    }
-    return ItemStack.EMPTY;
-  }
-
-  @Override
-  public void set(ItemStack itemStack) {
-    equipment.set(equipmentSlot, itemStack);
+    this.items = holder.getInventory().armor;
   }
 
   @Override
   public Slot asSlot(Container container, int slot, int x, int y) {
     return new SlotEquipment(container, slot, x, y);
-  }
-
-  @Override
-  public InventoryType.SlotType getSlotType() {
-    return InventoryType.SlotType.ARMOR;
   }
 
   public class SlotEquipment extends SlotPlaceholder {
