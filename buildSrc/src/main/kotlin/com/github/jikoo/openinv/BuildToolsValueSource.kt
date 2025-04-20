@@ -4,7 +4,6 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.process.ExecOperations
 import java.io.File
 import java.net.URI
@@ -15,9 +14,6 @@ abstract class BuildToolsValueSource: ValueSource<File, BuildToolsValueSource.Pa
 
   @get:Inject
   abstract val exec: ExecOperations
-
-  @get:Inject
-  abstract val javaToolchainService: JavaToolchainService
 
   interface Parameters: ValueSourceParameters {
     val mavenLocal: Property<File>
