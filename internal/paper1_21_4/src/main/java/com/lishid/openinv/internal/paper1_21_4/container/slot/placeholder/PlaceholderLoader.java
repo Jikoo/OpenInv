@@ -33,7 +33,7 @@ public class PlaceholderLoader extends PlaceholderLoaderBase {
 
   @Override
   protected DyedItemColor getDye(int rgb) {
-    return new DyedItemColor(0xC8C8C8, false);
+    return new DyedItemColor(rgb, false);
   }
 
 }
