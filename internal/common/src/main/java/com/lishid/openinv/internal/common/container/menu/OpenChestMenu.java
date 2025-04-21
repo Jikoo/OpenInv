@@ -6,6 +6,8 @@ import com.lishid.openinv.internal.InternalOwned;
 import com.lishid.openinv.internal.common.container.bukkit.OpenDummyInventory;
 import com.lishid.openinv.internal.common.container.slot.SlotPlaceholder;
 import com.lishid.openinv.internal.common.container.slot.SlotViewOnly;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.HashedStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -48,6 +50,8 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   private CraftInventoryView<OpenChestMenu<T>, Inventory> bukkitEntity;
   // Syncher fields
   protected @Nullable ContainerSynchronizer synchronizer;
+  protected final List<DataSlot> dataSlots = new ArrayList<>();
+  protected final IntList remoteDataSlots = new IntArrayList();
   protected final List<ContainerListener> containerListeners = new ArrayList<>();
   private RemoteSlot remoteCarried = RemoteSlot.PLACEHOLDER;
   protected boolean suppressRemoteUpdates;

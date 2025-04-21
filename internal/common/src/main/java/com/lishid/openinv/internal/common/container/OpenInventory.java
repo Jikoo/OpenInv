@@ -16,6 +16,7 @@ import com.lishid.openinv.internal.common.container.slot.ContentViewOnly;
 import com.lishid.openinv.internal.common.container.slot.SlotViewOnly;
 import com.lishid.openinv.internal.common.container.slot.placeholder.Placeholders;
 import com.lishid.openinv.internal.common.player.PlayerManager;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -38,7 +39,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public class OpenInventory implements Container, InternalOwned<ServerPlayer>, ISpecialPlayerInventory {
 
@@ -67,7 +70,7 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
     // If inventory is expected size, we can arrange slots to be pretty.
     Inventory ownerInv = owner.getInventory();
     if (ownerInv.getNonEquipmentItems().size() == 36
-        && Inventory.EQUIPMENT_SLOTS_SORTED_BY_INDEX.length == 5
+        && Inventory.EQUIPMENT_SLOT_MAPPING.size() == 5
         && owner.inventoryMenu.getCraftSlots().getContainerSize() == 4) {
       // Armor slots: Bottom left.
       addArmor(36);
@@ -120,17 +123,22 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
   }
 
   private int addArmor(int startIndex) {
-    // Armor slots go bottom to top; boots are slot 0 and helmet is slot 3.
+    // Armor slots go bottom to top; boots are first and helmet is last.
     // Since we have to display horizontally due to space restrictions,
     // making the left side the "top" is more user-friendly.
+    EquipmentSlot[] sorted = Inventory.EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet()
+        .stream()
+        .sorted(Comparator.comparingInt(Int2ObjectMap.Entry::getIntKey))
+        .map(Map.Entry::getValue)
+        .toArray(EquipmentSlot[]::new);
     int localIndex = 0;
-    for (int i = Inventory.EQUIPMENT_SLOTS_SORTED_BY_INDEX.length - 1; i >= 0; --i) {
+    for (int i = sorted.length - 1; i >= 0; --i) {
       // Skip off-hand, handled separately.
-      if (Inventory.EQUIPMENT_SLOTS_SORTED_BY_INDEX[i] == EquipmentSlot.OFFHAND) {
+      if (sorted[i] == EquipmentSlot.OFFHAND) {
         continue;
       }
 
-      slots.set(startIndex + localIndex, new ContentEquipment(owner, Inventory.EQUIPMENT_SLOTS_SORTED_BY_INDEX[i]));
+      slots.set(startIndex + localIndex, new ContentEquipment(owner, sorted[i]));
       ++localIndex;
     }
 
@@ -138,15 +146,8 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
   }
 
   private int addOffHand(int startIndex) {
-    int index = Inventory.EQUIPMENT_SLOTS_SORTED_BY_INDEX.length - 1;
-    for (; index >= 0; --index) {
-      if (Inventory.EQUIPMENT_SLOTS_SORTED_BY_INDEX[index] == EquipmentSlot.OFFHAND) {
-        break;
-      }
-    }
-
     // No off-hand?
-    if (index < 0) {
+    if (!Inventory.EQUIPMENT_SLOT_MAPPING.containsValue(EquipmentSlot.OFFHAND)) {
       return startIndex;
     }
 
