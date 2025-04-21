@@ -39,7 +39,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
       size = ((int) Math.ceil(size / 9.0)) * 9;
     }
 
-    return getChestMenuType(size);
+    return com.lishid.openinv.internal.common.container.menu.OpenChestMenu.getChestMenuType(size);
   }
 
   @Override
@@ -99,7 +99,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
   }
 
   @Override
-  protected @NotNull CraftInventoryView<com.lishid.openinv.internal.common.container.menu.OpenChestMenu<OpenInventory>, Inventory> createBukkitEntity() {
+  protected @NotNull CraftInventoryView<OpenChestMenu<OpenInventory>, Inventory> createBukkitEntity() {
     org.bukkit.inventory.Inventory bukkitInventory;
     if (viewOnly) {
       bukkitInventory = new OpenDummyPlayerInventory(container);

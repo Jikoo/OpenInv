@@ -14,7 +14,13 @@ public class OpenEnderChestMenu extends OpenChestMenu<OpenEnderChest> {
       @NotNull ServerPlayer viewer,
       int containerId,
       boolean viewOnly) {
-    super(getChestMenuType(enderChest.getContainerSize()), containerId, enderChest, viewer, viewOnly);
+    super(
+        com.lishid.openinv.internal.common.container.menu.OpenChestMenu.getChestMenuType(enderChest.getContainerSize()),
+        containerId,
+        enderChest,
+        viewer,
+        viewOnly
+    );
   }
 
   @Override
