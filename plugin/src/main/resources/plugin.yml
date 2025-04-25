@@ -125,7 +125,6 @@ commands:
     description: Search and list containers with a specific material.
     permission: openinv.search.container
     usage: /<command> <Material> [ChunkRadius] - ChunkRadius is optional, the length that will be searched for matching items. Default 5
-
   clearinv:
     description: Clears a player's inventory
     permission: openinv.clear

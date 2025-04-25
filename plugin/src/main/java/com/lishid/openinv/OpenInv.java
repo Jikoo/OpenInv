@@ -40,7 +40,6 @@ import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.setting.PlayerToggle;
 import com.lishid.openinv.util.setting.PlayerToggles;
 import me.nahu.scheduler.wrapper.FoliaWrappedJavaPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -50,7 +49,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
