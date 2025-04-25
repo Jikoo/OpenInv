@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class OpenInventory extends com.lishid.openinv.internal.common.container.OpenInventory {
+public class OpenInventory extends com.lishid.openinv.internal.paper1_21_4.container.OpenInventory {
 
   public OpenInventory(@NotNull Player bukkitPlayer) {
     super(bukkitPlayer);
