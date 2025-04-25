@@ -61,11 +61,10 @@ public class ClearInvCommand implements TabExecutor {
 
         final String targetName = args[0];
 
-        //absolute mess copy-pasted from `OpenInvCommand`
         new WrappedRunnable() {
             @Override
             public void run() {
-                OfflinePlayer offlinePlayer = playerLoader.match(targetName);
+                OfflinePlayer offlinePlayer = playerLoader.matchExact(targetName);
                 if (offlinePlayer == null || (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline())) {
                     lang.sendMessage(sender, "messages.error.invalidPlayer");
                     return;

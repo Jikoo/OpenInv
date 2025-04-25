@@ -93,7 +93,7 @@ public class PlayerLoader implements Listener {
     return player;
   }
 
-  public @Nullable OfflinePlayer match(@NotNull String name) {
+  public @Nullable OfflinePlayer matchExact(@NotNull String name) {
     // Warn if called on the main thread - if we resort to searching offline players, this may take several seconds.
     if (Bukkit.getServer().isPrimaryThread()) {
       logger.warning("Call to PlayerSearchCache#matchPlayer made on the main thread!");
@@ -140,6 +140,16 @@ public class PlayerLoader implements Listener {
 
     if (player.hasPlayedBefore()) {
       lookupCache.put(name, player.getPlayerProfile());
+      return player;
+    }
+
+    return null;
+  }
+
+  public @Nullable OfflinePlayer match(@NotNull String name) {
+    OfflinePlayer player = this.matchExact(name);
+
+    if (player != null) {
       return player;
     }
 
