@@ -45,6 +45,7 @@ public class OpenPlayer extends CraftPlayer {
       "Passengers",
       // ServerPlayer#addAdditionalSaveData(CompoundTag)
       // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
+      // As of 1.21.5 only ender_pearls tag still needs to be reset. Rest are for backwards compatibility.
       "warden_spawn_tracker",
       "enteredNetherPosition",
       "SpawnX",
@@ -59,13 +60,18 @@ public class OpenPlayer extends CraftPlayer {
       "ShoulderEntityLeft",
       "ShoulderEntityRight",
       "LastDeathLocation",
-      "current_explosion_impact_pos",
+      "current_explosion_impact_pos", // Unnecessary in 1.21.5
       // LivingEntity#addAdditionalSaveData(CompoundTag)
       "active_effects",
       "SleepingX",
       "SleepingY",
       "SleepingZ",
-      "Brain"
+      "Brain",
+      "last_hurt_by_player",
+      "last_hurt_by_player_memory_time",
+      "last_hurt_by_mob",
+      "ticks_since_last_hurt_by_mob",
+      "equipment"
   );
 
   private final PlayerManager manager;
@@ -122,7 +128,7 @@ public class OpenPlayer extends CraftPlayer {
     oldData = oldData.copy();
 
     // Remove vanilla/server data that is not written every time.
-    oldData.keySet().removeIf(key -> RESET_TAGS.contains(key) || key.startsWith("Bukkit"));
+    oldData.keySet().removeIf(key -> RESET_TAGS.contains(key) || key.startsWith("Bukkit") || key.startsWith("Paper"));
 
     return oldData;
   }
