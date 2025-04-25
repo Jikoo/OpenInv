@@ -128,7 +128,8 @@ public class ClearInvCommand implements TabExecutor {
             lang.sendMessage(
                     sender,
                     "messages.error.permissionCrossWorld",
-                    new Replacement("%target%", onlineTarget.getDisplayName()));
+                    new Replacement("%target%", onlineTarget.getDisplayName())
+            );
             return;
         }
 
@@ -144,6 +145,11 @@ public class ClearInvCommand implements TabExecutor {
 
         // Clear the inventory
         inv.getBukkitInventory().clear();
+        lang.sendMessage(
+                sender,
+                "messages.info.inventoryCleared",
+                new Replacement("%target%", onlineTarget.getDisplayName())
+        );
     }
 
     @Override
