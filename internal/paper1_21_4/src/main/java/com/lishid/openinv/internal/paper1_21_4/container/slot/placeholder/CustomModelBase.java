@@ -10,11 +10,13 @@ import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.DyedItemColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+public class CustomModelBase extends PlaceholderLoaderBase {
 
-public class PlaceholderLoader extends PlaceholderLoaderBase {
+  private final @NotNull CustomModelData defaultCustomModelData;
 
-  private static final CustomModelData DEFAULT_CUSTOM_MODEL_DATA = new CustomModelData(List.of(), List.of(), List.of("openinv:custom"), List.of());
+  public CustomModelBase(@NotNull CustomModelData defaultCustomModelData) {
+    this.defaultCustomModelData = defaultCustomModelData;
+  }
 
   @Override
   protected @NotNull CompoundTag parseTag(@NotNull String itemText) throws Exception {
@@ -23,7 +25,7 @@ public class PlaceholderLoader extends PlaceholderLoaderBase {
 
   @Override
   protected void addModelData(@NotNull ItemStack itemStack) {
-    itemStack.set(DataComponents.CUSTOM_MODEL_DATA, DEFAULT_CUSTOM_MODEL_DATA);
+    itemStack.set(DataComponents.CUSTOM_MODEL_DATA, defaultCustomModelData);
   }
 
   @Override

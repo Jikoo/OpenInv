@@ -8,7 +8,7 @@ import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.common.container.AnySilentContainer;
 import com.lishid.openinv.internal.paper1_21_4.container.OpenEnderChest;
 import com.lishid.openinv.internal.paper1_21_4.container.OpenInventory;
-import com.lishid.openinv.internal.paper1_21_4.container.slot.placeholder.PlaceholderLoader;
+import com.lishid.openinv.internal.paper1_21_4.container.slot.placeholder.CustomModelPlaceholderLoader;
 import com.lishid.openinv.internal.paper1_21_4.player.PlayerManager;
 import com.lishid.openinv.util.lang.LanguageManager;
 import net.minecraft.world.Container;
@@ -71,7 +71,7 @@ public class InternalAccessor implements Accessor {
     ConfigurationSection placeholders = config.getConfigurationSection("placeholders");
     try {
       // Reset placeholders to defaults and try to load configuration.
-      new PlaceholderLoader().load(placeholders);
+      new CustomModelPlaceholderLoader().load(placeholders);
     } catch (Exception e) {
       logger.log(Level.WARNING, "Caught exception loading placeholder overrides!", e);
     }
