@@ -45,7 +45,9 @@ public enum Permissions {
     CONTAINER_ANY("container.any"),
     CONTAINER_SILENT("container.silent"),
     SEARCH_INVENTORY("search.inventory"),
-    SEARCH_CONTAINER("search.container");
+    SEARCH_CONTAINER("search.container"),
+
+    INVENTORY_CLEAR("clear");
 
     private final String permission;
 

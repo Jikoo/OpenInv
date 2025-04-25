@@ -16,6 +16,7 @@
 
 package com.lishid.openinv;
 
+import com.lishid.openinv.command.ClearInvCommand;
 import com.lishid.openinv.command.ContainerSettingCommand;
 import com.lishid.openinv.command.OpenInvCommand;
 import com.lishid.openinv.command.SearchContainerCommand;
@@ -39,6 +40,7 @@ import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.setting.PlayerToggle;
 import com.lishid.openinv.util.setting.PlayerToggles;
 import me.nahu.scheduler.wrapper.FoliaWrappedJavaPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -153,6 +155,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
         this.setCommandExecutor(new SearchContainerCommand(this, languageManager), "searchcontainer");
         this.setCommandExecutor(new SearchInvCommand(languageManager), "searchinv", "searchender");
         this.setCommandExecutor(new SearchEnchantCommand(languageManager), "searchenchant");
+        this.setCommandExecutor(new ClearInvCommand(this, config, inventoryManager, languageManager, playerLoader), "clearinv");
 
         ContainerSettingCommand settingCommand = new ContainerSettingCommand(languageManager);
         for (PlayerToggle toggle : PlayerToggles.get()) {
