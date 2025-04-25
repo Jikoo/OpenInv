@@ -128,7 +128,7 @@ public class OpenPlayer extends CraftPlayer {
     oldData = oldData.copy();
 
     // Remove vanilla/server data that is not written every time.
-    oldData.keySet().removeIf(key -> RESET_TAGS.contains(key) || key.startsWith("Bukkit") || key.startsWith("Paper"));
+    oldData.keySet().removeIf(key -> RESET_TAGS.contains(key) || key.startsWith("Bukkit") || key.startsWith("Paper") && key.length() > 5);
 
     return oldData;
   }
