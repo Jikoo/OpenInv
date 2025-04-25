@@ -3,7 +3,9 @@ package com.lishid.openinv.internal.paper1_21_4.player;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -42,6 +44,18 @@ public class PlayerManager extends com.lishid.openinv.internal.common.player.Pla
       return;
     }
     player.setServerLevel(((CraftWorld) bukkitWorld).getHandle());
+  }
+
+  @Override
+  protected void spawnInDefaultWorld(ServerPlayer player) {
+    ServerLevel level = player.server.getLevel(Level.OVERWORLD);
+    if (level != null) {
+      // Adjust player to default spawn (in keeping with Paper handling) when world not found.
+      player.moveTo(player.adjustSpawnLocation(level, level.getSharedSpawnPos()).getBottomCenter(), level.getSharedSpawnAngle(), 0.0F);
+      player.spawnIn(level);
+    } else {
+      logger.warning("Tried to load player with invalid world when no fallback was available!");
+    }
   }
 
   protected void injectPlayer(ServerPlayer player) throws IllegalAccessException {
