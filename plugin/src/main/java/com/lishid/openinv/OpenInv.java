@@ -16,6 +16,7 @@
 
 package com.lishid.openinv;
 
+import com.lishid.openinv.command.ClearInvCommand;
 import com.lishid.openinv.command.ContainerSettingCommand;
 import com.lishid.openinv.command.OpenInvCommand;
 import com.lishid.openinv.command.SearchContainerCommand;
@@ -48,7 +49,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,6 +153,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
         this.setCommandExecutor(new SearchContainerCommand(this, languageManager), "searchcontainer");
         this.setCommandExecutor(new SearchInvCommand(languageManager), "searchinv", "searchender");
         this.setCommandExecutor(new SearchEnchantCommand(languageManager), "searchenchant");
+        this.setCommandExecutor(new ClearInvCommand(this, config, inventoryManager, languageManager, playerLoader), "clearinv");
 
         ContainerSettingCommand settingCommand = new ContainerSettingCommand(languageManager);
         for (PlayerToggle toggle : PlayerToggles.get()) {
