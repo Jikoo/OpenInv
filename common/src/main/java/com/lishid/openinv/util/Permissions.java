@@ -36,6 +36,9 @@ public enum Permissions {
     ENDERCHEST_EDIT_SELF("enderchest.edit.self"),
     ENDERCHEST_EDIT_OTHER("enderchest.edit.other"),
 
+    CLEAR_SELF("clear.self"),
+    CLEAR_OTHER("clear.other"),
+
     ACCESS_CROSSWORLD("access.crossworld"),
     ACCESS_OFFLINE("access.offline"),
     ACCESS_ONLINE("access.online"),
@@ -45,9 +48,7 @@ public enum Permissions {
     CONTAINER_ANY("container.any"),
     CONTAINER_SILENT("container.silent"),
     SEARCH_INVENTORY("search.inventory"),
-    SEARCH_CONTAINER("search.container"),
-
-    CLEAR("clear");
+    SEARCH_CONTAINER("search.container");
 
     private final String permission;
 

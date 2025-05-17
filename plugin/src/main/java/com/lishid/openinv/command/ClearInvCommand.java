@@ -34,7 +34,7 @@ public class ClearInvCommand extends PlayerLookupCommand {
 
     @Override
     protected boolean isAccessInventory(@NotNull Command command) {
-        return false;
+        return command.getName().equals("clearinv");
     }
 
     @Override
@@ -59,7 +59,10 @@ public class ClearInvCommand extends PlayerLookupCommand {
 
     @Override
     protected boolean deniedCommand(@NotNull CommandSender sender, @NotNull Player onlineTarget, boolean accessInv) {
-        return !Permissions.CLEAR.hasPermission(sender);
+        if (onlineTarget.equals(sender)) {
+            return !Permissions.CLEAR_SELF.hasPermission(sender);
+        }
+        return !Permissions.CLEAR_OTHER.hasPermission(sender);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class ClearInvCommand extends PlayerLookupCommand {
         // Create the inventory
         final ISpecialInventory inv;
         try {
-            inv = manager.getInventory(onlineTarget);
+            inv = accessInv ? manager.getInventory(onlineTarget) : manager.getEnderChest(onlineTarget);
         } catch (Exception e) {
             lang.sendMessage(sender, "messages.error.commandException");
             plugin.getLogger().log(Level.WARNING, "Unable to create ISpecialInventory", e);

@@ -153,7 +153,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
         this.setCommandExecutor(new SearchContainerCommand(this, languageManager), "searchcontainer");
         this.setCommandExecutor(new SearchInvCommand(languageManager), "searchinv", "searchender");
         this.setCommandExecutor(new SearchEnchantCommand(languageManager), "searchenchant");
-        this.setCommandExecutor(new ClearInvCommand(this, config, inventoryManager, languageManager, playerLoader), "clearinv");
+        this.setCommandExecutor(new ClearInvCommand(this, config, inventoryManager, languageManager, playerLoader), "clearinv", "clearender");
 
         ContainerSettingCommand settingCommand = new ContainerSettingCommand(languageManager);
         for (PlayerToggle toggle : PlayerToggles.get()) {
