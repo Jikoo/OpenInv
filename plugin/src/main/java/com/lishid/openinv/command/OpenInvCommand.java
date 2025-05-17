@@ -18,114 +18,83 @@ package com.lishid.openinv.command;
 
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.util.AccessEqualMode;
 import com.lishid.openinv.util.InventoryManager;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.PlayerLoader;
-import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.config.Config;
 import com.lishid.openinv.util.lang.LanguageManager;
-import com.lishid.openinv.util.lang.Replacement;
-import me.nahu.scheduler.wrapper.runnable.WrappedRunnable;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 
-public class OpenInvCommand implements TabExecutor {
+public class OpenInvCommand extends PlayerLookupCommand {
 
-    private final @NotNull OpenInv plugin;
-    private final @NotNull Config config;
     private final @NotNull InventoryManager manager;
-    private final @NotNull LanguageManager lang;
-    private final @NotNull PlayerLoader playerLoader;
-    private final HashMap<Player, String> openInvHistory = new HashMap<>();
-    private final HashMap<Player, String> openEnderHistory = new HashMap<>();
+    private final Map<Player, String> openInvHistory = new WeakHashMap<>();
+    private final Map<Player, String> openEnderHistory = new WeakHashMap<>();
 
     public OpenInvCommand(
-        @NotNull OpenInv plugin,
-        @NotNull Config config,
-        @NotNull InventoryManager manager,
-        @NotNull LanguageManager lang,
-        @NotNull PlayerLoader playerLoader) {
-        this.plugin = plugin;
-        this.config = config;
+            @NotNull OpenInv plugin,
+            @NotNull Config config,
+            @NotNull InventoryManager manager,
+            @NotNull LanguageManager lang,
+            @NotNull PlayerLoader playerLoader
+    ) {
+        super(plugin, lang, config, playerLoader);
         this.manager = manager;
-        this.lang = lang;
-        this.playerLoader = playerLoader;
     }
 
     @Override
-    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
-        boolean openInv = command.getName().equals("openinv");
-
-        if (openInv && args.length > 0 && (args[0].equalsIgnoreCase("help") || args[0].equals("?"))) {
-            this.showHelp(sender);
-            return true;
-        }
-
-        if (!(sender instanceof Player player)) {
-            lang.sendMessage(sender, "messages.error.consoleUnsupported");
-            return true;
-        }
-
-        String noArgValue;
-        if (config.doesNoArgsOpenSelf()) {
-            noArgValue = player.getUniqueId().toString();
-        } else {
-            // History management
-            noArgValue = (openInv ? this.openInvHistory : this.openEnderHistory).get(player);
-
-            if (noArgValue == null || noArgValue.isEmpty()) {
-                noArgValue = player.getUniqueId().toString();
-                (openInv ? this.openInvHistory : this.openEnderHistory).put(player, noArgValue);
-            }
-        }
-
-        final String name;
-
-        if (args.length < 1) {
-            name = noArgValue;
-        } else {
-            name = args[0];
-        }
-
-        new WrappedRunnable() {
-            @Override
-            public void run() {
-                final OfflinePlayer offlinePlayer = playerLoader.match(name);
-
-                if (offlinePlayer == null || (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline())) {
-                    lang.sendMessage(player, "messages.error.invalidPlayer");
-                    return;
-                }
-
-                new WrappedRunnable() {
-                    @Override
-                    public void run() {
-                        if (!player.isOnline()) {
-                            return;
-                        }
-                        OpenInvCommand.this.openInventory(player, offlinePlayer, openInv);
-                    }
-                }.runTask(OpenInvCommand.this.plugin);
-
-            }
-        }.runTaskAsynchronously(this.plugin);
-
-        return true;
+    protected boolean isAccessInventory(@NotNull Command command) {
+        return command.getName().equals("openinv");
     }
 
-    private void showHelp(final CommandSender sender) {
+    @Override
+    protected @Nullable String getTargetIdentifer(
+            @NotNull CommandSender sender,
+            @Nullable String argument,
+            boolean accessInv
+    ) {
+        // /openinv help
+        if (accessInv && argument != null && (argument.equalsIgnoreCase("help") || argument.equals("?"))) {
+            this.showHelp(sender);
+            return null;
+        }
+
+        // Command is player-only.
+        if (!(sender instanceof Player player)) {
+            lang.sendMessage(sender, "messages.error.consoleUnsupported");
+            return null;
+        }
+
+        // Use fallthrough for no name provided.
+        if (argument == null) {
+            if (config.doesNoArgsOpenSelf()) {
+                return player.getUniqueId().toString();
+            }
+            return (accessInv ? this.openInvHistory : this.openEnderHistory)
+                .computeIfAbsent(player, localPlayer -> localPlayer.getUniqueId().toString());
+        }
+
+        if (!config.doesNoArgsOpenSelf()) {
+            // History management
+            (accessInv ? this.openInvHistory : this.openEnderHistory).put(player, argument);
+        }
+
+        return argument;
+    }
+
+    private void showHelp(@NotNull CommandSender sender) {
         // Get registered commands
         for (String commandName : plugin.getDescription().getCommands().keySet()) {
             PluginCommand command = plugin.getCommand(commandName);
@@ -153,80 +122,48 @@ public class OpenInvCommand implements TabExecutor {
         }
     }
 
-    private void openInventory(final Player player, final OfflinePlayer target, boolean openinv) {
-        Player onlineTarget;
-        boolean online = target.isOnline();
+    @Override
+    protected @Nullable OfflinePlayer getTarget(@NotNull String identifier) {
+        return playerLoader.match(identifier);
+    }
 
-        if (!online) {
-            if (!config.isOfflineDisabled() && Permissions.ACCESS_OFFLINE.hasPermission(player)) {
-                // Try loading the player's data
-                onlineTarget = playerLoader.load(target);
-            } else {
-                lang.sendMessage(player, "messages.error.permissionPlayerOffline");
-                return;
-            }
-        } else {
-            if (Permissions.ACCESS_ONLINE.hasPermission(player)) {
-                onlineTarget = target.getPlayer();
-            } else {
-                lang.sendMessage(player, "messages.error.permissionPlayerOnline");
-                return;
-            }
-        }
-
-        if (onlineTarget == null) {
-            lang.sendMessage(player, "messages.error.invalidPlayer");
-            return;
-        }
-
-        // Permissions checks
-        if (onlineTarget.equals(player)) {
+    @Override
+    protected boolean deniedCommand(@NotNull CommandSender sender, @NotNull Player onlineTarget, boolean accessInv) {
+        if (onlineTarget.equals(sender)) {
             // Permission for opening own inventory.
-            if (!(openinv ? Permissions.INVENTORY_OPEN_SELF : Permissions.ENDERCHEST_OPEN_SELF).hasPermission(player)) {
-                lang.sendMessage(player, "messages.error.permissionOpenSelf");
-                return;
+            if (!(accessInv ? Permissions.INVENTORY_OPEN_SELF : Permissions.ENDERCHEST_OPEN_SELF).hasPermission(sender)) {
+                lang.sendMessage(sender, "messages.error.permissionOpenSelf");
+                return true;
 
             }
         } else {
             // Permission for opening others' inventories.
-            if (!(openinv ? Permissions.INVENTORY_OPEN_OTHER : Permissions.ENDERCHEST_OPEN_OTHER).hasPermission(player)) {
-                lang.sendMessage(player, "messages.error.permissionOpenOther");
-                return;
-            }
-
-            // Protected check
-            for (int level = 4; level > 0; --level) {
-                String permission = "openinv.access.level." + level;
-                if (onlineTarget.hasPermission(permission)
-                        && (!player.hasPermission(permission) || config.getAccessEqualMode() == AccessEqualMode.DENY)) {
-                    lang.sendMessage(
-                        player,
-                        "messages.error.permissionExempt",
-                        new Replacement("%target%", onlineTarget.getDisplayName()));
-                    return;
-                }
-            }
-
-            // Crossworld check
-            if (!Permissions.ACCESS_CROSSWORLD.hasPermission(player)
-                    && !onlineTarget.getWorld().equals(player.getWorld())) {
-                lang.sendMessage(
-                        player,
-                        "messages.error.permissionCrossWorld",
-                        new Replacement("%target%", onlineTarget.getDisplayName()));
-                return;
+            if (!(accessInv ? Permissions.INVENTORY_OPEN_OTHER : Permissions.ENDERCHEST_OPEN_OTHER).hasPermission(sender)) {
+                lang.sendMessage(sender, "messages.error.permissionOpenOther");
+                return true;
             }
         }
 
+        return false;
+    }
+
+    @Override
+    protected void handle(
+            @NotNull CommandSender sender,
+            @NotNull Player target,
+            boolean accessInv,
+            @NotNull String @NotNull [] args
+    ) {
+        Player player = (Player) sender;
         if (!config.doesNoArgsOpenSelf()) {
             // Record the target
-            (openinv ? this.openInvHistory : this.openEnderHistory).put(player, target.getUniqueId().toString());
+            (accessInv ? this.openInvHistory : this.openEnderHistory).put(player, target.getUniqueId().toString());
         }
 
         // Create the inventory
         final ISpecialInventory inv;
         try {
-            inv = openinv ? manager.getInventory(onlineTarget) : manager.getEnderChest(onlineTarget);
+            inv = accessInv ? manager.getInventory(target) : manager.getEnderChest(target);
         } catch (Exception e) {
             lang.sendMessage(player, "messages.error.commandException");
             plugin.getLogger().log(Level.WARNING, "Unable to create ISpecialInventory", e);
@@ -235,15 +172,6 @@ public class OpenInvCommand implements TabExecutor {
 
         // Open the inventory
         plugin.openInventory(player, inv);
-    }
-
-    @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!command.testPermissionSilent(sender) || args.length != 1) {
-            return Collections.emptyList();
-        }
-
-        return TabCompleter.completeOnlinePlayer(sender, args[0]);
     }
 
 }
