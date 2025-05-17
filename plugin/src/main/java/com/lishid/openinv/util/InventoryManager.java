@@ -20,7 +20,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -107,6 +106,10 @@ public class InventoryManager implements Listener {
   public void unload(@NotNull UUID uuid) {
     inventories.computeIfPresent(uuid, this::remove);
     enderChests.computeIfPresent(uuid, this::remove);
+  }
+
+  public void save(@NotNull UUID uuid) {
+    consumeLoaded(uuid, inventory -> {});
   }
 
   @Keep

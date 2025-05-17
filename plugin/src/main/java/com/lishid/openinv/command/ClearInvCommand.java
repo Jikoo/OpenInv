@@ -84,6 +84,7 @@ public class ClearInvCommand extends PlayerLookupCommand {
 
         // Clear the inventory
         inv.getBukkitInventory().clear();
+        manager.save(onlineTarget.getUniqueId());
         lang.sendMessage(
                 sender,
                 "messages.info.inventoryCleared",
