@@ -19,8 +19,8 @@ package com.lishid.openinv.command;
 import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
+import com.lishid.openinv.util.SearchHelper;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.command.Command;
@@ -29,7 +29,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -137,30 +136,33 @@ public class SearchEnchantCommand implements TabExecutor {
   }
 
   private boolean containsEnchantment(Inventory inventory, @Nullable Enchantment enchant, int minLevel) {
-    for (ItemStack item : inventory.getContents()) {
-      if (item == null || item.getType() == Material.AIR) {
-        continue;
-      }
-      if (enchant != null) {
-        if (item.containsEnchantment(enchant) && item.getEnchantmentLevel(enchant) >= minLevel) {
-          return true;
-        }
-      } else {
-        if (!item.hasItemMeta()) {
-          continue;
-        }
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.hasEnchants()) {
-          continue;
-        }
-        for (int enchLevel : meta.getEnchants().values()) {
-          if (enchLevel >= minLevel) {
-            return true;
+    return SearchHelper.findMatch(
+        inventory,
+        itemStack -> {
+          // Ensure meta is available and has enchantments.
+          if (!itemStack.hasItemMeta()) {
+            return false;
           }
+          ItemMeta meta = itemStack.getItemMeta();
+          if (meta == null || !meta.hasEnchants()) {
+            return false;
+          }
+
+          // If enchantment is provided, use it.
+          if (enchant != null) {
+            return meta.getEnchantLevel(enchant) >= minLevel;
+          }
+
+          // Otherwise, check all enchantment levels.
+          for (int enchLevel : meta.getEnchants().values()) {
+            if (enchLevel >= minLevel) {
+              return true;
+            }
+          }
+
+          return false;
         }
-      }
-    }
-    return false;
+    );
   }
 
   @Override

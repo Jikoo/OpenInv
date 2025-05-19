@@ -19,6 +19,7 @@ package com.lishid.openinv.command;
 import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
+import com.lishid.openinv.util.SearchHelper;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -105,7 +106,7 @@ public class SearchContainerCommand implements TabExecutor {
           if (!(tileEntity instanceof InventoryHolder holder)) {
             continue;
           }
-          if (!holder.getInventory().contains(material)) {
+          if (!SearchHelper.findMatch(holder.getInventory(), itemStack -> itemStack.getType() == material)) {
             continue;
           }
           locations.append(holder.getInventory().getType().name().toLowerCase(Locale.ENGLISH)).append(" (")

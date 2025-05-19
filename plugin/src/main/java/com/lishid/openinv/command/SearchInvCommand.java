@@ -19,6 +19,7 @@ package com.lishid.openinv.command;
 import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
+import com.lishid.openinv.util.SearchHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -26,11 +27,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchInvCommand implements TabExecutor {
 
@@ -82,15 +83,9 @@ public class SearchInvCommand implements TabExecutor {
     boolean searchInv = command.getName().equals("searchinv");
     for (Player player : Bukkit.getServer().getOnlinePlayers()) {
       Inventory inventory = searchInv ? player.getInventory() : player.getEnderChest();
-      int total = 0;
-      for (ItemStack itemStack : inventory.getContents()) {
-        if (itemStack != null && itemStack.getType() == material) {
-          total += itemStack.getAmount();
-          if (total >= count) {
-            players.append(player.getName()).append(", ");
-            break;
-          }
-        }
+      if (findMatch(inventory, material, count)) {
+        players.append(player.getName()).append(", ");
+        break;
       }
     }
 
@@ -113,6 +108,19 @@ public class SearchInvCommand implements TabExecutor {
         new Replacement("%detail%", players.toString())
     );
     return true;
+  }
+
+  private boolean findMatch(@NotNull Inventory inventory, @NotNull Material material, int count) {
+    AtomicInteger total = new AtomicInteger();
+    return SearchHelper.findMatch(
+        inventory,
+        itemStack -> {
+          if (itemStack.getType() == material && itemStack.getAmount() > 0) {
+            return total.addAndGet(itemStack.getAmount()) >= count;
+          }
+          return false;
+        }
+    );
   }
 
   @Override
