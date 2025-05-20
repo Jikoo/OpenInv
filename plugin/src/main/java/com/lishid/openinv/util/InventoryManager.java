@@ -126,10 +126,7 @@ public class InventoryManager implements Listener {
   private void onPlayerQuit(@NotNull PlayerQuitEvent event) {
     consumeLoaded(
         event.getPlayer().getUniqueId(),
-        inventory -> {
-          inventory.setPlayerOffline();
-          checkViewerAccess(inventory, false);
-        }
+        inventory -> checkViewerAccess(inventory, false)
     );
   }
 

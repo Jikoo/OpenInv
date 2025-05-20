@@ -50,8 +50,11 @@ public interface ISpecialInventory {
 
   /**
    * Mark the owner of the inventory offline.
+   *
+   * @deprecated No longer used by implementations.
    */
-  void setPlayerOffline();
+  @Deprecated(forRemoval = true, since = "5.1.11")
+  default void setPlayerOffline() {}
 
   /**
    * Get whether the inventory is being viewed by any users.

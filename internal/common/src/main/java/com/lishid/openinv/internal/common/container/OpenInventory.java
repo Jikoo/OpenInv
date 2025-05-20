@@ -249,10 +249,6 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
   }
 
   @Override
-  public void setPlayerOffline() {
-  }
-
-  @Override
   public boolean isInUse() {
     return !transaction.isEmpty();
   }
