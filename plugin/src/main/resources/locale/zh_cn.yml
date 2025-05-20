@@ -26,6 +26,3 @@ messages:
       matches: '找到放有 %target% 的储物箱 ： %detail%'
     'on': '开启'
     'off': '关闭'
-container:
-  player: '%player% 的物品栏'
-  enderchest: '%player% 的末影箱' 

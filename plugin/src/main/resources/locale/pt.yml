@@ -25,6 +25,3 @@ messages:
       matches: 'Recipientes contendo %target%: %detail%'
     'on': 'ligado'
     'off': 'desligado'
-container:
-  player: 'Inventario de %player%'
-  enderchest: 'Bau de Ender de %player%'

@@ -25,6 +25,3 @@ messages:
       matches: 'Container hat %target%: %detail%'
     'on': 'an'
     'off': 'aus'
-container:
-  player: '%player%''s Inventar'
-  enderchest: '%player%''s Endertruhe'

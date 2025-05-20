@@ -25,7 +25,3 @@ messages:
       matches: 'Contenedores con %target%: %detail%'
     'on': 'activado'
     'off': 'desactivado'
-container:
-  player: 'Inventario de %player%'
-  enderchest: 'Cofre de Ender de %player%'
-  
