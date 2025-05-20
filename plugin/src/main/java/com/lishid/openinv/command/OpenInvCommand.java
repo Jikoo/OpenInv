@@ -62,6 +62,7 @@ public class OpenInvCommand extends PlayerLookupCommand {
   @Override
   protected @Nullable String getTargetIdentifer(
       @NotNull CommandSender sender,
+      @NotNull Command command,
       @Nullable String argument,
       boolean accessInv
   ) {

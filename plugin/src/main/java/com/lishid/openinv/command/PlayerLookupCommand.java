@@ -54,7 +54,7 @@ public abstract class PlayerLookupCommand implements TabExecutor {
     boolean accessInv = isAccessInventory(command);
 
     // Get target identifier from parameters.
-    String targetId = getTargetIdentifer(sender, args.length > 0 ? args[0] : null, accessInv);
+    String targetId = getTargetIdentifer(sender, command, args.length > 0 ? args[0] : null, accessInv);
     if (targetId == null) {
       return true;
     }
@@ -90,7 +90,7 @@ public abstract class PlayerLookupCommand implements TabExecutor {
       }
     }.runTaskAsynchronously(this.plugin);
 
-    return false;
+    return true;
   }
 
   /**
@@ -114,6 +114,7 @@ public abstract class PlayerLookupCommand implements TabExecutor {
    */
   protected abstract @Nullable String getTargetIdentifer(
       @NotNull CommandSender sender,
+      @NotNull Command command,
       @Nullable String argument,
       boolean accessInv
   );

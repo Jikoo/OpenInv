@@ -40,15 +40,22 @@ public class ClearInvCommand extends PlayerLookupCommand {
   @Override
   protected @Nullable String getTargetIdentifer(
       @NotNull CommandSender sender,
+      @NotNull Command command,
       @Nullable String argument,
       boolean accessInv
   ) {
+    // If argument is provided, use it.
     if (argument != null) {
       return argument;
     }
+
+    // For players, default to self.
     if (sender instanceof Player player) {
       return player.getUniqueId().toString();
     }
+
+    // For console, argument is required. Send usage.
+    sender.sendMessage(command.getUsage());
     return null;
   }
 
@@ -87,7 +94,7 @@ public class ClearInvCommand extends PlayerLookupCommand {
     manager.save(onlineTarget.getUniqueId());
     lang.sendMessage(
         sender,
-        "messages.info.inventoryCleared",
+        accessInv ? "messages.info.clear.inventory" : "messages.info.clear.enderchest",
         new Replacement("%target%", onlineTarget.getDisplayName())
     );
   }
