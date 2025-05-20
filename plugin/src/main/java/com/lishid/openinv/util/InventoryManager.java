@@ -1,7 +1,5 @@
 package com.lishid.openinv.util;
 
-import com.github.jikoo.planarwrappers.util.version.BukkitVersions;
-import com.github.jikoo.planarwrappers.util.version.Version;
 import com.google.errorprone.annotations.Keep;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.event.OpenEvents;
@@ -19,7 +17,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -218,15 +215,6 @@ public class InventoryManager implements Listener {
 
     // Copy viewers so we don't modify the list we're iterating over when closing inventories.
     List<HumanEntity> viewers = new ArrayList<>(inventory.getBukkitInventory().getViewers());
-    // Legacy: Owner is always a viewer of own inventory.
-    if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21))) {
-      if (inventory instanceof ISpecialPlayerInventory) {
-        Inventory active = owner.getOpenInventory().getTopInventory();
-        if (!active.equals(inventory.getBukkitInventory())) {
-          viewers.remove(owner);
-        }
-      }
-    }
 
     for (HumanEntity viewer : viewers) {
       if (alwaysDenied
