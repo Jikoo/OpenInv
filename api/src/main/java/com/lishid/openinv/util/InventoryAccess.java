@@ -90,7 +90,6 @@ public final class InventoryAccess {
 
   @RestrictedApi(
       explanation = "Not part of the API.",
-      link = "",
       allowedOnPath = ".*/com/lishid/openinv/util/InternalAccessor.java"
   )
   @ApiStatus.Internal

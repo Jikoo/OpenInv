@@ -26,7 +26,6 @@ public class OpenPlayerSaveEvent extends PlayerSaveEvent {
    */
   @RestrictedApi(
       explanation = "Constructor is not considered part of the API and may be subject to change.",
-      link = "",
       allowedOnPath = ".*/com/lishid/openinv/event/OpenEvents.java"
   )
   @ApiStatus.Internal
