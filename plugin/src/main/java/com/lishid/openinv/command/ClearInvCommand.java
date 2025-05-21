@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.logging.Level;
 
 public class ClearInvCommand extends PlayerLookupCommand {
@@ -44,6 +45,17 @@ public class ClearInvCommand extends PlayerLookupCommand {
       @Nullable String argument,
       boolean accessInv
   ) {
+    if (!Permissions.CLEAR_OTHER.hasPermission(sender)) {
+      // If the sender does not have permissions to clear others, use self.
+      if (sender instanceof Player player) {
+        return player.getUniqueId().toString();
+      }
+
+      // Console can't target itself. Send error.
+      lang.sendMessage(sender, "messages.error.permissionOpenOther");
+      return null;
+    }
+
     // If argument is provided, use it.
     if (argument != null) {
       return argument;
@@ -97,6 +109,20 @@ public class ClearInvCommand extends PlayerLookupCommand {
         accessInv ? "messages.info.clear.inventory" : "messages.info.clear.enderchest",
         new Replacement("%target%", onlineTarget.getDisplayName())
     );
+  }
+
+  @Override
+  public List<String> onTabComplete(
+      @NotNull CommandSender sender,
+      @NotNull Command command,
+      @NotNull String label,
+      @NotNull String[] args
+  ) {
+    if (!Permissions.CLEAR_OTHER.hasPermission(sender)) {
+      return List.of();
+    }
+
+    return super.onTabComplete(sender, command, label, args);
   }
 
 }
