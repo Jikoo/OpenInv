@@ -15,5 +15,6 @@
       "model": "item/white_stained_glass_pane"
     },
     "property": "custom_model_data"
-  }
+  },
+  "oversized_in_gui": true
 }
