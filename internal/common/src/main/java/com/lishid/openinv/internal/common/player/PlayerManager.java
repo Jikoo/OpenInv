@@ -208,8 +208,17 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
       if (nmsPlayer.getBukkitEntity() instanceof BaseOpenPlayer openPlayer) {
         return openPlayer;
       }
-      // TODO
-      injectPlayer(nmsPlayer.getServer(), nmsPlayer);
+      MinecraftServer server = nmsPlayer.getServer();
+      if (server == null) {
+        if (!(Bukkit.getServer() instanceof CraftServer craftServer)) {
+          logger.warning(() ->
+              "Unable to inject ServerPlayer, certain player data may be lost when saving! Server is not a CraftServer: "
+                  + Bukkit.getServer().getClass().getName());
+          return player;
+        }
+        server = craftServer.getServer();
+      }
+      injectPlayer(server, nmsPlayer);
       return nmsPlayer.getBukkitEntity();
     } catch (IllegalAccessException e) {
       logger.log(
