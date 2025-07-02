@@ -27,6 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
@@ -92,7 +93,7 @@ public class AnySilentContainer extends AnySilentContainerBase {
 
     ServerPlayer player = PlayerManager.getHandle(bukkitPlayer);
 
-    final net.minecraft.world.level.Level level = player.level();
+    final net.minecraft.world.level.Level level = ((Entity) player).level();
     final BlockPos blockPos = new BlockPos(bukkitBlock.getX(), bukkitBlock.getY(), bukkitBlock.getZ());
     final BlockEntity blockEntity = level.getBlockEntity(blockPos);
 
