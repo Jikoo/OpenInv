@@ -15,5 +15,6 @@
       "model": "minecraft:block/crafting_table"
     },
     "property": "minecraft:custom_model_data"
-  }
+  },
+  "oversized_in_gui": true
 }

@@ -3,6 +3,7 @@ package com.lishid.openinv.internal.paper1_21_4.player;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class PlayerManager extends com.lishid.openinv.internal.common.player.PlayerManager {
+public class PlayerManager extends com.lishid.openinv.internal.paper1_21_5.player.PlayerManager {
 
   public PlayerManager(@NotNull Logger logger) {
     super(logger);
@@ -37,19 +38,19 @@ public class PlayerManager extends com.lishid.openinv.internal.common.player.Pla
           .resultOrPartial(logger::warning)
           .map(player.server::getLevel)
           // If ServerLevel exists, set, otherwise move to spawn.
-          .ifPresentOrElse(player::setServerLevel, () -> spawnInDefaultWorld(player));
+          .ifPresentOrElse(player::setServerLevel, () -> spawnInDefaultWorld(player.server, player));
       return;
     }
     if (bukkitWorld == null) {
-      spawnInDefaultWorld(player);
+      spawnInDefaultWorld(player.server, player);
       return;
     }
     player.setServerLevel(((CraftWorld) bukkitWorld).getHandle());
   }
 
   @Override
-  protected void spawnInDefaultWorld(ServerPlayer player) {
-    ServerLevel level = player.server.getLevel(Level.OVERWORLD);
+  protected void spawnInDefaultWorld(@NotNull MinecraftServer server, @NotNull ServerPlayer player) {
+    ServerLevel level = server.getLevel(Level.OVERWORLD);
     if (level != null) {
       // Adjust player to default spawn (in keeping with Paper handling) when world not found.
       player.moveTo(player.adjustSpawnLocation(level, level.getSharedSpawnPos()).getBottomCenter(), level.getSharedSpawnAngle(), 0.0F);
@@ -60,7 +61,7 @@ public class PlayerManager extends com.lishid.openinv.internal.common.player.Pla
   }
 
   @Override
-  protected void injectPlayer(ServerPlayer player) throws IllegalAccessException {
+  protected void injectPlayer(@NotNull MinecraftServer server, @NotNull ServerPlayer player) throws IllegalAccessException {
     if (bukkitEntity == null) {
       return;
     }

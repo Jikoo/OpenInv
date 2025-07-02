@@ -3,8 +3,8 @@ package com.lishid.openinv.internal.reobf.player;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.reobf.container.OpenEnderChest;
 import com.lishid.openinv.internal.reobf.container.OpenInventory;
+import com.lishid.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.MinecraftServer;
@@ -12,16 +12,18 @@ import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ParticleStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.craftbukkit.v1_21_R4.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R4.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_21_R4.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_21_R5.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R5.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R5.event.CraftEventFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +70,11 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
 
   @Override
   public @Nullable Player loadPlayer(@NotNull final OfflinePlayer offline) {
-    MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+    if (!(Bukkit.getServer() instanceof CraftServer craftServer)) {
+      return null;
+    }
+
+    MinecraftServer server = craftServer.getServer();
     ServerLevel worldServer = server.getLevel(Level.OVERWORLD);
 
     if (worldServer == null) {
@@ -130,19 +136,20 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
 
   boolean loadData(@NotNull ServerPlayer player) {
     // See CraftPlayer#loadData
-    CompoundTag loadedData = player.server.getPlayerList().playerIo.load(player).orElse(null);
 
-    if (loadedData == null) {
-      // Exceptions with loading are logged by Mojang.
-      return false;
+    try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), new JulLoggerAdapter(logger))) {
+      ValueInput loadedData = player.server.getPlayerList().playerIo.load(player, scopedCollector).orElse(null);
+
+      if (loadedData == null) {
+        // Exceptions with loading are logged.
+        return false;
+      }
+
+      // Read basic data into the player.
+      player.load(loadedData);
+      // Game type settings are loaded separately.
+      player.loadGameTypes(loadedData);
     }
-
-    // Read basic data into the player.
-    player.load(loadedData);
-    // Also read "extra" data.
-    player.readAdditionalSaveData(loadedData);
-    // Game type settings are also loaded separately.
-    player.loadGameTypes(loadedData);
 
     return true;
   }

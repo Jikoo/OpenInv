@@ -1,10 +1,12 @@
 package com.lishid.openinv.internal.common.container.slot.placeholder;
 
+import com.mojang.serialization.DataResult;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 public abstract class PlaceholderLoaderBase {
 
@@ -51,7 +52,7 @@ public abstract class PlaceholderLoaderBase {
     Placeholders.BLOCKED_GAME_TYPE.put(GameType.SPECTATOR, parse(section, "blocked.spectator", Placeholders.BLOCKED_GAME_TYPE.get(GameType.SPECTATOR)));
   }
 
-  private @NotNull ItemStack parse(
+  protected @NotNull ItemStack parse(
       @Nullable ConfigurationSection section,
       @NotNull String path,
       @NotNull ItemStack defaultStack
@@ -67,8 +68,14 @@ public abstract class PlaceholderLoaderBase {
     }
 
     CompoundTag compoundTag = parseTag(itemText);
-    Optional<ItemStack> parsed = ItemStack.parse(CraftRegistry.getMinecraftRegistry(), compoundTag);
-    return parsed.filter(itemStack -> !itemStack.isEmpty()).orElse(defaultStack);
+    DataResult<ItemStack> parsed = ItemStack.CODEC.parse(CraftRegistry.getMinecraftRegistry().createSerializationContext(NbtOps.INSTANCE), compoundTag);
+    ItemStack itemStack;
+    try {
+      itemStack = parsed.getOrThrow();
+    } catch (Exception e) {
+      itemStack = null;
+    }
+    return itemStack == null ? defaultStack : itemStack;
   }
 
   protected abstract @NotNull CompoundTag parseTag(@NotNull String itemText) throws Exception;

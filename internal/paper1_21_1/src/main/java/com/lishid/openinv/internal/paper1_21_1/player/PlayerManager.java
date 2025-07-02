@@ -43,7 +43,7 @@ public class PlayerManager extends com.lishid.openinv.internal.paper1_21_4.playe
     ServerPlayer entity = new ServerPlayer(server, worldServer, profile, dummyInfo);
 
     try {
-      injectPlayer(entity);
+      injectPlayer(server, entity);
     } catch (IllegalAccessException e) {
       logger.log(
           java.util.logging.Level.WARNING,

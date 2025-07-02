@@ -70,8 +70,8 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
     // If inventory is expected size, we can arrange slots to be pretty.
     Inventory ownerInv = owner.getInventory();
     if (ownerInv.getNonEquipmentItems().size() == 36
-        && Inventory.EQUIPMENT_SLOT_MAPPING.size() == 5
-        && owner.inventoryMenu.getCraftSlots().getContainerSize() == 4) {
+        && owner.inventoryMenu.getCraftSlots().getContainerSize() == 4
+        && (Inventory.EQUIPMENT_SLOT_MAPPING.size() == 5 || Inventory.EQUIPMENT_SLOT_MAPPING.size() == 7)) {
       // Armor slots: Bottom left.
       addArmor(36);
       // Off-hand: Below chestplate.
@@ -136,8 +136,8 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
         .toArray(EquipmentSlot[]::new);
     int localIndex = 0;
     for (int i = sorted.length - 1; i >= 0; --i) {
-      // Skip off-hand, handled separately.
-      if (sorted[i] == EquipmentSlot.OFFHAND) {
+      // Skip off-hand, handled separately. Also skip non-player slots.
+      if (sorted[i].getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
         continue;
       }
 

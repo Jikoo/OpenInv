@@ -8,6 +8,7 @@ shadow = "8.3.8"
 folia-scheduler-wrapper = "v0.0.3"
 errorprone-core = "2.39.0"
 errorprone-gradle = "4.2.0"
+slf4j = "2.0.17"
 
 [libraries]
 spigotapi = { module = "org.spigotmc:spigot-api", version.ref = "spigotapi" }
@@ -17,6 +18,7 @@ annotations = { module = "org.jetbrains:annotations", version.ref = "annotations
 folia-scheduler-wrapper = { module = "com.github.NahuLD.folia-scheduler-wrapper:folia-scheduler-wrapper", version.ref = "folia-scheduler-wrapper" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
 errorprone-gradle = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorprone-gradle" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 [plugins]
 paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }

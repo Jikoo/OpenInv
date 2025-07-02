@@ -1,28 +1,21 @@
-package com.lishid.openinv.internal.common.player;
+package com.lishid.openinv.internal.paper1_21_5.player;
 
 import com.lishid.openinv.event.OpenEvents;
+import com.lishid.openinv.internal.common.player.BaseOpenPlayer;
 import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.PlayerDataStorage;
-import net.minecraft.world.level.storage.TagValueOutput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.bukkit.craftbukkit.CraftServer;
-import org.slf4j.Logger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class OpenPlayer extends BaseOpenPlayer {
 
-  protected OpenPlayer(
-      CraftServer server,
-      ServerPlayer entity,
-      PlayerManager manager
-  ) {
+  protected OpenPlayer(CraftServer server, ServerPlayer entity, PlayerManager manager) {
     super(server, entity, manager);
   }
 
@@ -33,18 +26,14 @@ public class OpenPlayer extends BaseOpenPlayer {
     }
 
     ServerPlayer player = this.getHandle();
-    Logger logger = LogUtils.getLogger();
     // See net.minecraft.world.level.storage.PlayerDataStorage#save(EntityHuman)
-    try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), logger)) {
-      PlayerDataStorage worldNBTStorage = server.getServer().getPlayerList().playerIo;
+    try {
+      PlayerDataStorage worldNBTStorage = player.server.getPlayerList().playerIo;
 
-      CompoundTag oldData = isOnline()
-          ? null
-          : worldNBTStorage.load(player.getName().getString(), player.getStringUUID(), scopedCollector).orElse(null);
+      CompoundTag oldData = isOnline() ? null : worldNBTStorage.load(player.getName().getString(), player.getStringUUID()).orElse(null);
       CompoundTag playerData = getWritableTag(oldData);
 
-      ValueOutput valueOutput = TagValueOutput.createWrappingWithContext(scopedCollector, player.registryAccess(), playerData);
-      player.saveWithoutId(valueOutput);
+      playerData = player.saveWithoutId(playerData);
 
       if (oldData != null) {
         // Revert certain special data values when offline.
