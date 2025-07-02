@@ -92,4 +92,15 @@ public class PlayerManager extends com.lishid.openinv.internal.common.player.Pla
     }
   }
 
+  @Override
+  protected void injectPlayer(@NotNull MinecraftServer server, @NotNull ServerPlayer player) throws IllegalAccessException {
+    if (bukkitEntity == null) {
+      return;
+    }
+
+    bukkitEntity.setAccessible(true);
+
+    bukkitEntity.set(player, new OpenPlayer(player.server.server, player, this));
+  }
+
 }

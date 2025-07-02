@@ -205,7 +205,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
   public @NotNull Player inject(@NotNull Player player) {
     try {
       ServerPlayer nmsPlayer = getHandle(player);
-      if (nmsPlayer.getBukkitEntity() instanceof OpenPlayer openPlayer) {
+      if (nmsPlayer.getBukkitEntity() instanceof BaseOpenPlayer openPlayer) {
         return openPlayer;
       }
       // TODO
@@ -228,7 +228,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
   ) {
     ServerPlayer player = getHandle(bukkitPlayer);
 
-    if (!OpenPlayer.isConnected(player.connection)) {
+    if (!BaseOpenPlayer.isConnected(player.connection)) {
       return null;
     }
 
