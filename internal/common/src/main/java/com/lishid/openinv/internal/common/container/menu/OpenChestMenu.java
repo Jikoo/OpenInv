@@ -365,6 +365,18 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
+  public void forceSlot(@NotNull Container container, int slot) {
+    int slotsIndex = this.findSlot(container, slot).orElse(-1);
+    if (slotsIndex != -1) {
+      ItemStack item = this.slots.get(slotsIndex).getItem();
+      this.remoteSlots.get(slotsIndex).force(item);
+      if (this.synchronizer != null) {
+        this.synchronizer.sendSlotChange(this, slotsIndex, item.copy());
+      }
+    }
+  }
+
+  @Override
   public void broadcastCarriedItem() {
     ItemStack carried = this.getCarried();
     this.remoteCarried.force(carried);
@@ -424,7 +436,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     }
   }
 
-  private void triggerSlotListeners(int index, ItemStack itemStack, Supplier<ItemStack> supplier) {
+  public void triggerSlotListeners(int index, @NotNull ItemStack itemStack, @NotNull Supplier<ItemStack> supplier) {
     ItemStack itemStack1 = this.lastSlots.get(index);
     if (!ItemStack.matches(itemStack1, itemStack)) {
       ItemStack itemStack2 = supplier.get();
@@ -436,7 +448,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     }
   }
 
-  private void synchronizeSlotToRemote(int i, ItemStack itemStack, Supplier<ItemStack> supplier) {
+  public void synchronizeSlotToRemote(int i, @NotNull ItemStack itemStack, @NotNull Supplier<ItemStack> supplier) {
     if (!this.suppressRemoteUpdates) {
       RemoteSlot slot = this.remoteSlots.get(i);
       if (!slot.matches(itemStack)) {
