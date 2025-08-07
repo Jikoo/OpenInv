@@ -436,6 +436,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     }
   }
 
+  @Override
   public void triggerSlotListeners(int index, @NotNull ItemStack itemStack, @NotNull Supplier<ItemStack> supplier) {
     ItemStack itemStack1 = this.lastSlots.get(index);
     if (!ItemStack.matches(itemStack1, itemStack)) {
@@ -448,6 +449,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     }
   }
 
+  @Override
   public void synchronizeSlotToRemote(int i, @NotNull ItemStack itemStack, @NotNull Supplier<ItemStack> supplier) {
     if (!this.suppressRemoteUpdates) {
       RemoteSlot slot = this.remoteSlots.get(i);
