@@ -237,10 +237,16 @@ public class LanguageManager {
   }
 
   public @Nullable String getValue(@NotNull String key, @Nullable String locale) {
-    String value = getOrLoadLocale(locale == null ? defaultLocale : locale.toLowerCase(Locale.ENGLISH)).getString(key);
+    locale = (locale != null) ? locale.toLowerCase(Locale.ENGLISH) : defaultLocale;
+    
+    String value = getOrLoadLocale(locale).getString(key);
     if (value == null || value.isBlank()) {
       return null;
     }
+    
+    // Processing the basic placeholders:
+    String prefix = getOrLoadLocale(locale).getString("messages.prefix");
+    value = value.replace("%prefix%", (prefix != null) ? prefix : "");
 
     value = ChatColor.translateAlternateColorCodes('&', value);
 
