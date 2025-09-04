@@ -1,5 +1,5 @@
 messages:
-  prefix: '&8[&9Open&fInv&8]&f'
+  prefix: '&8[&9OpenInv&8]&f'
   error:
     consoleUnsupported: '%prefix% Voce nao consegue usar esse comando pelo console.'
     lootNotGenerated: '%prefix% &cPilhagem nao gerada! Por favor desabilite &b/silentcontainer&c.'

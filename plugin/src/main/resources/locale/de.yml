@@ -1,5 +1,5 @@
 messages:
-  prefix: '&8[&9Open&fInv&8]&f'
+  prefix: '&8[&9OpenInv&8]&f'
   error:
     consoleUnsupported: '%prefix% Du kannst diesen Befehl nicht von der Konsole ausführen.'
     lootNotGenerated: '%prefix% &cBeute noch nicht erstellt! Bitte schalte &b/silentcontainer&c aus.'

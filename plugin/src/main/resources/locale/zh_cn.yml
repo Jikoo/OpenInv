@@ -1,6 +1,6 @@
 # Translated into Chinese Simplified by Flandre_tw
 messages:
-  prefix: '&8[&9Open&fInv&8]&f'
+  prefix: '&8[&9OpenInv&8]&f'
   error:
     consoleUnsupported: '%prefix% 该命令无法在后台执行。'
     lootNotGenerated: '%prefix% &c奖励箱尚未生成 ！ 请关闭 &b/silentcontainer&c。'
