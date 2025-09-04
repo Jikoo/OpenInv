@@ -1,28 +1,29 @@
 # Translated into Chinese Traditional by Flandre_tw
 messages:
+  prefix: '&8[&9Open&fInv&8]&f'
   error:
-    consoleUnsupported: 該指令無法在控制台執行。
-    lootNotGenerated: '&c獎勵箱尚未生成 ！ 請關閉 &b/silentcontainer&c。'
-    invalidMaterial: '&c無效的物品 ： "%target%"'
-    invalidNumber: '&c無效的數字 ： "%target%"'
-    invalidPlayer: '&c玩家不存在 ！'
-    permissionOpenSelf: '&c你無法開啟自己的物品欄。'
-    permissionEnderAll: '&c你無法開啟其他玩家的終界箱。'
-    permissionExempt: '&c%target% 的物品欄受到保護。'
-    permissionCrossWorld: '&c%target% 不在你所在的世界。'
-    permissionPlayerOnline: '&c你無法開啟線上玩家的物品欄。'
-    permissionPlayerOffline: '&c你無法開啟離線玩家的物品欄。'
-    commandException: '&c發生錯誤，請查看控制台。'
+    consoleUnsupported: '%prefix% 該指令無法在控制台執行。'
+    lootNotGenerated: '%prefix% &c獎勵箱尚未生成 ！ 請關閉 &b/silentcontainer&c。'
+    invalidMaterial: '%prefix% &c無效的物品 ： "%target%"'
+    invalidNumber: '%prefix% &c無效的數字 ： "%target%"'
+    invalidPlayer: '%prefix% &c玩家不存在 ！'
+    permissionOpenSelf: '%prefix% &c你無法開啟自己的物品欄。'
+    permissionEnderAll: '%prefix% &c你無法開啟其他玩家的終界箱。'
+    permissionExempt: '%prefix% &c%target% 的物品欄受到保護。'
+    permissionCrossWorld: '%prefix% &c%target% 不在你所在的世界。'
+    permissionPlayerOnline: '%prefix% &c你無法開啟線上玩家的物品欄。'
+    permissionPlayerOffline: '%prefix% &c你無法開啟離線玩家的物品欄。'
+    commandException: '%prefix% &c發生錯誤，請查看控制台。'
   info:
     containerBlocked: 你正在開啟受阻擋的儲物箱。
     containerBlockedSilent: 你正在悄悄開啟受阻擋的儲物箱。
     containerSilent: 你正在悄悄開啟儲物箱。
-    settingState: '%setting% ： %state%'
+    settingState: '%prefix% %setting% ： %state%'
     player:
-      noMatches: 找不到持有 %target% 的玩家。
-      matches: '找到持有 %target% 的玩家 ： %detail%'
+      noMatches: '%prefix% 找不到持有 %target% 的玩家。'
+      matches: '%prefix% 找到持有 %target% 的玩家 ： %detail%'
     container:
-      noMatches: 找不到放有 %target% 的儲物箱。
-      matches: '找到放有 %target% 的儲物箱 ： %detail%'
+      noMatches: '%prefix% 找不到放有 %target% 的儲物箱。'
+      matches: '%prefix% 找到放有 %target% 的儲物箱 ： %detail%'
     'on': '開啟'
     'off': '關閉'
