@@ -21,6 +21,7 @@ dependencies {
   implementation(project(":openinvapi"))
   implementation(project(":openinvcommon"))
   implementation(project(":openinvadaptercommon"))
+  implementation(project(":openinvadapterpaper1_21_8"))
   implementation(project(":openinvadapterpaper1_21_5"))
   implementation(project(":openinvadapterpaper1_21_4"))
 

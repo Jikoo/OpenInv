@@ -20,6 +20,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -209,13 +210,13 @@ public class OpenInventory implements Container, InternalOwned<ServerPlayer>, IS
       component.append(
           Component.translatableWithFallback("openinv.container.inventory.self", "")
               .withStyle(style -> style
-                  .withFont(ResourceLocation.parse("openinv:font/inventory"))
+                  .withFont(new FontDescription.Resource(ResourceLocation.parse("openinv:font/inventory")))
                   .withColor(ChatFormatting.WHITE)));
     } else {
       component.append(
           Component.translatableWithFallback("openinv.container.inventory.other", "")
               .withStyle(style -> style
-                  .withFont(ResourceLocation.parse("openinv:font/inventory"))
+                  .withFont(new FontDescription.Resource(ResourceLocation.parse("openinv:font/inventory")))
                   .withColor(ChatFormatting.WHITE)));
     }
     // Normal title: "Inventory - OwnerName"

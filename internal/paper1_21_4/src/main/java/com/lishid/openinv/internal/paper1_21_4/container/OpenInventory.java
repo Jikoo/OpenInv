@@ -23,7 +23,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class OpenInventory extends com.lishid.openinv.internal.common.container.OpenInventory {
+public class OpenInventory extends com.lishid.openinv.internal.paper1_21_8.container.OpenInventory {
 
   public OpenInventory(@NotNull org.bukkit.entity.Player bukkitPlayer) {
     super(bukkitPlayer);

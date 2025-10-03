@@ -6,6 +6,7 @@ import com.lishid.openinv.internal.common.container.OpenInventory;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
 import io.papermc.paper.adventure.PaperAdventure;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.MinecraftServer;
@@ -18,6 +19,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.ValueInput;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -143,26 +146,30 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     // See CraftPlayer#loadData
 
     try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), new JulLoggerAdapter(logger))) {
-      ValueInput loadedData = server.getPlayerList().playerIo.load(player, scopedCollector).orElse(null);
+      CompoundTag loadedData = server.getPlayerList().playerIo.load(player.nameAndId()).orElse(null);
 
       if (loadedData == null) {
         // Exceptions with loading are logged.
         return false;
       }
 
+      ValueInput valueInput = TagValueInput.create(scopedCollector, player.registryAccess(), loadedData);
+
       // Read basic data into the player.
-      player.load(loadedData);
-      // Game type settings are loaded separately.
-      player.loadGameTypes(loadedData);
+      player.load(valueInput);
 
       // World is not loaded by ServerPlayer#load(CompoundTag) on Paper.
-      parseWorld(server, player, loadedData);
+      parseWorld(server, player, valueInput);
     }
 
     return true;
   }
 
-  private void parseWorld(@NotNull MinecraftServer server, @NotNull ServerPlayer player, @NotNull ValueInput loadedData) {
+  protected void parseWorld(
+      @NotNull MinecraftServer server,
+      @NotNull ServerPlayer player,
+      @NotNull ValueInput loadedData
+  ) {
     // See PlayerList#placeNewPlayer
     World bukkitWorld;
     Optional<Long> msbs = loadedData.getLong("WorldUUIDMost");
@@ -184,7 +191,8 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     ServerLevel level = server.getLevel(Level.OVERWORLD);
     if (level != null) {
       // Adjust player to default spawn (in keeping with Paper handling) when world not found.
-      player.snapTo(player.adjustSpawnLocation(level, level.getSharedSpawnPos()).getBottomCenter(), level.getSharedSpawnAngle(), 0.0F);
+      LevelData.RespawnData respawnData = level.levelData.getRespawnData();
+      player.snapTo(player.adjustSpawnLocation(level, respawnData.pos()).getBottomCenter(), respawnData.yaw(), 0.0F);
       player.spawnIn(level);
     } else {
       logger.warning("Tried to load player with invalid world when no fallback was available!");
@@ -208,16 +216,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
       if (nmsPlayer.getBukkitEntity() instanceof BaseOpenPlayer openPlayer) {
         return openPlayer;
       }
-      MinecraftServer server = nmsPlayer.getServer();
-      if (server == null) {
-        if (!(Bukkit.getServer() instanceof CraftServer craftServer)) {
-          logger.warning(() ->
-              "Unable to inject ServerPlayer, certain player data may be lost when saving! Server is not a CraftServer: "
-                  + Bukkit.getServer().getClass().getName());
-          return player;
-        }
-        server = craftServer.getServer();
-      }
+      MinecraftServer server = nmsPlayer.level().getServer();
       injectPlayer(server, nmsPlayer);
       return nmsPlayer.getBukkitEntity();
     } catch (IllegalAccessException e) {
