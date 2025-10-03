@@ -21,7 +21,6 @@ dependencies {
   implementation(project(":openinvapi"))
   implementation(project(":openinvcommon"))
   implementation(project(":openinvadaptercommon"))
-  implementation(project(":openinvadapterpaper1_21_8"))
 
-  paperweight.paperDevBundle("1.21.5-R0.1-SNAPSHOT")
+  paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
 }

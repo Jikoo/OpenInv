@@ -5,6 +5,7 @@ import com.lishid.openinv.internal.reobf.container.OpenEnderChest;
 import com.lishid.openinv.internal.reobf.container.OpenInventory;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.MinecraftServer;
@@ -17,13 +18,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.ValueInput;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.craftbukkit.v1_21_R5.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R5.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_21_R5.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_21_R6.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R6.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R6.event.CraftEventFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
@@ -138,17 +140,17 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     // See CraftPlayer#loadData
 
     try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), new JulLoggerAdapter(logger))) {
-      ValueInput loadedData = player.server.getPlayerList().playerIo.load(player, scopedCollector).orElse(null);
+      CompoundTag loadedData = player.server.getPlayerList().playerIo.load(player.nameAndId()).orElse(null);
 
       if (loadedData == null) {
         // Exceptions with loading are logged.
         return false;
       }
 
+      ValueInput valueInput = TagValueInput.create(scopedCollector, player.registryAccess(), loadedData);
+
       // Read basic data into the player.
-      player.load(loadedData);
-      // Game type settings are loaded separately.
-      player.loadGameTypes(loadedData);
+      player.load(valueInput);
     }
 
     return true;
