@@ -10,7 +10,7 @@ plugins {
 apply<SpigotSetup>()
 apply<SpigotReobf>()
 
-val spigotVer = "1.21.9-R0.1-SNAPSHOT"
+val spigotVer = "1.21.10-R0.1-SNAPSHOT"
 // Used by common adapter to relocate Craftbukkit classes to a versioned package.
 rootProject.extra["craftbukkitPackage"] = "v1_21_R6"
 

@@ -64,7 +64,7 @@ public class InternalAccessor {
   }
 
   private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
-    Version maxSupported = Version.of(1, 21, 9);
+    Version maxSupported = Version.of(1, 21, 10);
     Version minSupported = Version.of(1, 21, 1);
 
     // Ensure version is in supported range.
@@ -84,7 +84,8 @@ public class InternalAccessor {
     }
 
     // Paper or a Paper fork, can use Mojang-mapped internals.
-    if (BukkitVersions.MINECRAFT.equals(maxSupported)) { // 1.21.9
+    if (BukkitVersions.MINECRAFT.lessThanOrEqual(maxSupported)
+        && BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 9))) { // 1.21.9, 1.21.10
       return new com.lishid.openinv.internal.common.InternalAccessor(logger, lang);
     }
     if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 8))
@@ -179,7 +180,7 @@ public class InternalAccessor {
     if (!PAPER) {
       return getSpigotReleaseLink();
     }
-    // Paper 1.21.1-1.21.7
+    // Paper 1.21.1+
     return "https://github.com/Jikoo/OpenInv/releases";
   }
 
@@ -198,6 +199,12 @@ public class InternalAccessor {
     }
     if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 6))) {
       return "Unsupported; upgrade to 1.21.7: https://github.com/Jikoo/OpenInv/releases";
+    }
+    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 8))) {
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.13";
+    }
+    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 9))) {
+      return "Unsupported; upgrade to 1.21.10: https://github.com/Jikoo/OpenInv/releases";
     }
 
     return "https://github.com/Jikoo/OpenInv/releases";
