@@ -18,7 +18,8 @@ import java.util.Set;
 public abstract class BaseOpenPlayer extends CraftPlayer {
 
   /**
-   * List of tags to always reset when saving.
+   * List of tags to always reset when saving. These are items that do not get written
+   * if unset or empty, resulting in older values not being clobbered appropriately.
    *
    * @see net.minecraft.world.entity.Entity#saveWithoutId(ValueOutput)
    * @see net.minecraft.server.level.ServerPlayer#addAdditionalSaveData(ValueOutput)
@@ -36,6 +37,7 @@ public abstract class BaseOpenPlayer extends CraftPlayer {
       "TicksFrozen",
       "HasVisualFire",
       "Tags",
+      "data",
       "Passengers",
       // ServerPlayer#addAdditionalSaveData(CompoundTag)
       // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
@@ -51,9 +53,9 @@ public abstract class BaseOpenPlayer extends CraftPlayer {
       "SpawnDimension",
       "raid_omen_position",
       "ender_pearls",
-      // Player#addAdditionalSaveData(CompoundTag)
       "ShoulderEntityLeft",
       "ShoulderEntityRight",
+      // Player#addAdditionalSaveData(CompoundTag)
       "LastDeathLocation",
       "current_explosion_impact_pos",
       // LivingEntity#addAdditionalSaveData(CompoundTag)
