@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.PlayerDataStorage;
-import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.bukkit.craftbukkit.v1_21_R6.CraftServer;
@@ -107,17 +106,9 @@ public class OpenPlayer extends CraftPlayer {
     try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), logger)) {
       PlayerDataStorage worldNBTStorage = server.getServer().getPlayerList().playerIo;
 
-      CompoundTag oldDataInput = isOnline()
+      CompoundTag oldData = isOnline()
           ? null
           : worldNBTStorage.load(player.nameAndId()).orElse(null);
-      // Grab CompoundTag out of TagValueInput - we can't iterate over the fields via TagValueInput.
-      CompoundTag oldData = null;
-      if (oldDataInput != null) {
-        Field tagValueInputInput = TagValueInput.class.getDeclaredField("input");
-        tagValueInputInput.setAccessible(true);
-        oldData = (CompoundTag) tagValueInputInput.get(oldDataInput);
-      }
-
       CompoundTag playerData = getWritableTag(oldData);
 
       ValueOutput valueOutput = TagValueOutput.createWithContext(scopedCollector, player.registryAccess());
@@ -142,6 +133,7 @@ public class OpenPlayer extends CraftPlayer {
       Path backupFile = playerDataDir.resolve(player.getStringUUID() + ".dat_old");
       Util.safeReplaceFile(dataFile, tempFile, backupFile);
     } catch (Exception e) {
+      e.printStackTrace();
       LogUtils.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
     }
   }
