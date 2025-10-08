@@ -11,12 +11,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.PlayerDataStorage;
-import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
-import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.bukkit.craftbukkit.v1_21_R5.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R5.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R6.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R6.entity.CraftPlayer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -108,17 +106,9 @@ public class OpenPlayer extends CraftPlayer {
     try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), logger)) {
       PlayerDataStorage worldNBTStorage = server.getServer().getPlayerList().playerIo;
 
-      ValueInput oldDataInput = isOnline()
+      CompoundTag oldData = isOnline()
           ? null
-          : worldNBTStorage.load(player.getName().getString(), player.getStringUUID(), scopedCollector, player.registryAccess()).orElse(null);
-      // Grab CompoundTag out of TagValueInput - we can't iterate over the fields via TagValueInput.
-      CompoundTag oldData = null;
-      if (oldDataInput != null) {
-        Field tagValueInputInput = TagValueInput.class.getDeclaredField("input");
-        tagValueInputInput.setAccessible(true);
-        oldData = (CompoundTag) tagValueInputInput.get(oldDataInput);
-      }
-
+          : worldNBTStorage.load(player.nameAndId()).orElse(null);
       CompoundTag playerData = getWritableTag(oldData);
 
       ValueOutput valueOutput = TagValueOutput.createWithContext(scopedCollector, player.registryAccess());

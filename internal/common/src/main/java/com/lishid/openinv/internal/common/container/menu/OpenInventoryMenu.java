@@ -1,7 +1,7 @@
 package com.lishid.openinv.internal.common.container.menu;
 
 import com.google.common.base.Preconditions;
-import com.lishid.openinv.internal.common.container.OpenInventory;
+import com.lishid.openinv.internal.common.container.BaseOpenInventory;
 import com.lishid.openinv.internal.common.container.bukkit.OpenDummyPlayerInventory;
 import com.lishid.openinv.internal.common.container.bukkit.OpenPlayerInventorySelf;
 import com.lishid.openinv.internal.common.container.slot.ContentDrop;
@@ -23,15 +23,15 @@ import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
+public class OpenInventoryMenu extends OpenChestMenu<BaseOpenInventory> {
 
   private int offset;
 
-  public OpenInventoryMenu(OpenInventory inventory, ServerPlayer viewer, int i, boolean viewOnly) {
+  public OpenInventoryMenu(BaseOpenInventory inventory, ServerPlayer viewer, int i, boolean viewOnly) {
     super(getMenuType(inventory, viewer), i, inventory, viewer, viewOnly);
   }
 
-  private static MenuType<ChestMenu> getMenuType(OpenInventory inventory, ServerPlayer viewer) {
+  private static MenuType<ChestMenu> getMenuType(BaseOpenInventory inventory, ServerPlayer viewer) {
     int size = inventory.getContainerSize();
     // Disallow duplicate access to own main inventory contents.
     if (inventory.getOwnerHandle().equals(viewer)) {
@@ -99,7 +99,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
   }
 
   @Override
-  protected @NotNull CraftInventoryView<OpenChestMenu<OpenInventory>, Inventory> createBukkitEntity() {
+  protected @NotNull CraftInventoryView<OpenChestMenu<BaseOpenInventory>, Inventory> createBukkitEntity() {
     org.bukkit.inventory.Inventory bukkitInventory;
     if (viewOnly) {
       bukkitInventory = new OpenDummyPlayerInventory(container);

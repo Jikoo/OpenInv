@@ -1,6 +1,7 @@
-package com.lishid.openinv.internal.common.player;
+package com.lishid.openinv.internal.paper1_21_8.player;
 
 import com.lishid.openinv.event.OpenEvents;
+import com.lishid.openinv.internal.common.player.BaseOpenPlayer;
 import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
@@ -40,7 +41,7 @@ public class OpenPlayer extends BaseOpenPlayer {
 
       CompoundTag oldData = isOnline()
           ? null
-          : worldNBTStorage.load(player.nameAndId()).orElse(null);
+          : worldNBTStorage.load(player.getName().getString(), player.getStringUUID(), scopedCollector).orElse(null);
       CompoundTag playerData = getWritableTag(oldData);
 
       ValueOutput valueOutput = TagValueOutput.createWrappingWithContext(scopedCollector, player.registryAccess(), playerData);
