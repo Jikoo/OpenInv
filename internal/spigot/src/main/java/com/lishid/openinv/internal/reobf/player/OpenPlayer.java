@@ -133,7 +133,6 @@ public class OpenPlayer extends CraftPlayer {
       Path backupFile = playerDataDir.resolve(player.getStringUUID() + ".dat_old");
       Util.safeReplaceFile(dataFile, tempFile, backupFile);
     } catch (Exception e) {
-      e.printStackTrace();
       LogUtils.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
     }
   }

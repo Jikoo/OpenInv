@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.common.container.bukkit;
 
-import com.lishid.openinv.internal.common.container.OpenInventory;
+import com.lishid.openinv.internal.common.container.BaseOpenInventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +8,7 @@ public class OpenPlayerInventorySelf extends OpenPlayerInventory {
 
   private final int offset;
 
-  public OpenPlayerInventorySelf(@NotNull OpenInventory inventory, int offset) {
+  public OpenPlayerInventorySelf(@NotNull BaseOpenInventory inventory, int offset) {
     super(inventory);
     this.offset = offset;
   }

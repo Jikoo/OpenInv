@@ -1,6 +1,7 @@
 package com.lishid.openinv.internal.common.player;
 
 import com.lishid.openinv.internal.ISpecialInventory;
+import com.lishid.openinv.internal.common.container.BaseOpenInventory;
 import com.lishid.openinv.internal.common.container.OpenEnderChest;
 import com.lishid.openinv.internal.common.container.OpenInventory;
 import com.lishid.openinv.util.JulLoggerAdapter;
@@ -243,7 +244,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     // See net.minecraft.server.level.ServerPlayer#openMenu(MenuProvider)
     AbstractContainerMenu menu;
     Component title;
-    if (inventory instanceof OpenInventory playerInv) {
+    if (inventory instanceof BaseOpenInventory playerInv) {
       menu = playerInv.createMenu(player, player.nextContainerCounter(), viewOnly);
       title = playerInv.getTitle(player);
     } else if (inventory instanceof OpenEnderChest enderChest) {

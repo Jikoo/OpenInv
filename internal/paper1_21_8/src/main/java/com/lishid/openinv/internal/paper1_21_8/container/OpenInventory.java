@@ -1,5 +1,6 @@
 package com.lishid.openinv.internal.paper1_21_8.container;
 
+import com.lishid.openinv.internal.common.container.BaseOpenInventory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -9,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class OpenInventory extends com.lishid.openinv.internal.common.container.OpenInventory {
+public class OpenInventory extends BaseOpenInventory {
 
   public OpenInventory(@NotNull Player bukkitPlayer) {
     super(bukkitPlayer);
