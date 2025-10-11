@@ -1,7 +1,7 @@
 package com.lishid.openinv.internal.reobf.container.bukkit;
 
 import com.google.common.base.Preconditions;
-import com.lishid.openinv.internal.reobf.container.OpenInventory;
+import com.lishid.openinv.internal.reobf.container.BaseOpenInventory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import org.bukkit.craftbukkit.v1_21_R6.inventory.CraftInventory;
@@ -15,13 +15,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class OpenPlayerInventory extends CraftInventory implements PlayerInventory {
 
-  public OpenPlayerInventory(@NotNull OpenInventory inventory) {
+  public OpenPlayerInventory(@NotNull BaseOpenInventory inventory) {
     super(inventory);
   }
 
   @Override
-  public @NotNull OpenInventory getInventory() {
-    return (OpenInventory) super.getInventory();
+  public @NotNull BaseOpenInventory getInventory() {
+    return (BaseOpenInventory) super.getInventory();
   }
 
   @Override
