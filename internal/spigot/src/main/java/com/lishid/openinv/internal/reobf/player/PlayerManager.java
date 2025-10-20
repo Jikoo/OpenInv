@@ -3,6 +3,7 @@ package com.lishid.openinv.internal.reobf.player;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.reobf.container.OpenEnderChest;
 import com.lishid.openinv.internal.reobf.container.OpenInventory;
+import com.lishid.openinv.internal.reobf.container.menu.OpenChestMenu;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
@@ -197,14 +198,14 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     }
 
     // See net.minecraft.server.level.ServerPlayer#openMenu(MenuProvider)
-    AbstractContainerMenu menu;
+    OpenChestMenu<?> menu;
     Component title;
     if (inventory instanceof OpenInventory playerInv) {
       menu = playerInv.createMenu(player, player.nextContainerCounter(), viewOnly);
-      title = playerInv.getTitle(player);
+      title = playerInv.getTitle(player, menu);
     } else if (inventory instanceof OpenEnderChest enderChest) {
       menu = enderChest.createMenu(player, player.nextContainerCounter(), viewOnly);
-      title = enderChest.getTitle();
+      title = enderChest.getTitle(menu);
     } else {
       return null;
     }
@@ -219,18 +220,18 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     // resulting in a title change but no other state modifications (like cursor position).
     menu.setTitle(title);
 
-    menu = CraftEventFactory.callInventoryOpenEvent(player, menu, false);
+    AbstractContainerMenu opened = CraftEventFactory.callInventoryOpenEvent(player, menu, false);
 
     // Menu is null if event is cancelled.
-    if (menu == null) {
+    if (opened == null) {
       return null;
     }
 
-    player.containerMenu = menu;
-    player.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), menu.getTitle()));
-    player.initMenu(menu);
+    player.containerMenu = opened;
+    player.connection.send(new ClientboundOpenScreenPacket(opened.containerId, opened.getType(), opened.getTitle()));
+    player.initMenu(opened);
 
-    return menu.getBukkitView();
+    return opened.getBukkitView();
   }
 
 }

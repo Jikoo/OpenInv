@@ -2,16 +2,17 @@ package com.lishid.openinv.internal.common.container;
 
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.InternalOwned;
+import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.common.container.menu.OpenEnderChestMenu;
 import com.lishid.openinv.internal.common.player.PlayerManager;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedItemContents;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.StackedContentsCompatible;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Location;
@@ -177,13 +178,20 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
     }
   }
 
-  public Component getTitle() {
-    return Component.translatableWithFallback("openinv.container.enderchest.prefix", "", owner.getName())
+  public Component getTitle(@Nullable OpenChestMenu<?> menu) {
+    MutableComponent component;
+    if (menu != null && menu.isViewOnly()) {
+      component = Component.translatableWithFallback("openinv.container.enderchest.viewonly", "[RO] ");
+    } else {
+      component = Component.translatableWithFallback("openinv.container.enderchest.editable", "");
+    }
+    return component
+        .append(Component.translatableWithFallback("openinv.container.enderchest.prefix", "", owner.getName()))
         .append(Component.translatable("container.enderchest"))
         .append(Component.translatableWithFallback("openinv.container.enderchest.suffix", " - %s", owner.getName()));
   }
 
-  public @Nullable AbstractContainerMenu createMenu(Player player, int i, boolean viewOnly) {
+  public @Nullable OpenChestMenu<?> createMenu(Player player, int i, boolean viewOnly) {
     if (player instanceof ServerPlayer serverPlayer) {
       return new OpenEnderChestMenu(this, serverPlayer, i, viewOnly);
     }

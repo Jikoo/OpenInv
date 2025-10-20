@@ -1,5 +1,6 @@
 package com.lishid.openinv.internal.paper1_21_4.container;
 
+import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.common.container.slot.ContentCrafting;
 import com.lishid.openinv.internal.common.container.slot.ContentCursor;
 import com.lishid.openinv.internal.common.container.slot.ContentDrop;
@@ -16,7 +17,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
@@ -181,7 +181,7 @@ public class OpenInventory extends com.lishid.openinv.internal.paper1_21_8.conta
   }
 
   @Override
-  public @Nullable AbstractContainerMenu createMenu(Player player, int i, boolean viewOnly) {
+  public @Nullable OpenChestMenu<?> createMenu(Player player, int i, boolean viewOnly) {
     if (player instanceof ServerPlayer serverPlayer) {
       return new OpenInventoryMenu(this, serverPlayer, i, viewOnly);
     }

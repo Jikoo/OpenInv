@@ -1,6 +1,7 @@
 package com.lishid.openinv.internal.paper1_21_8.container;
 
 import com.lishid.openinv.internal.common.container.BaseOpenInventory;
+import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -17,7 +18,7 @@ public class OpenInventory extends BaseOpenInventory {
   }
 
   @Override
-  public @NotNull Component getTitle(@Nullable ServerPlayer viewer) {
+  public @NotNull Component getTitle(@Nullable ServerPlayer viewer, @Nullable OpenChestMenu<?> menu) {
     MutableComponent component = Component.empty();
     // Prefix for use with custom bitmap image fonts.
     if (owner.equals(viewer)) {
@@ -32,6 +33,11 @@ public class OpenInventory extends BaseOpenInventory {
               .withStyle(style -> style
                   .withFont(ResourceLocation.parse("openinv:font/inventory"))
                   .withColor(ChatFormatting.WHITE)));
+    }
+    if (menu != null && menu.isViewOnly()) {
+      component.append(Component.translatableWithFallback("openinv.container.inventory.viewonly", "[RO] "));
+    } else {
+      component.append(Component.translatableWithFallback("openinv.container.inventory.editable", ""));
     }
     // Normal title: "Inventory - OwnerName"
     component.append(Component.translatableWithFallback("openinv.container.inventory.prefix", "", owner.getName()))

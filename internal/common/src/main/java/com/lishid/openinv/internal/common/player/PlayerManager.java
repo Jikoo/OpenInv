@@ -3,7 +3,7 @@ package com.lishid.openinv.internal.common.player;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.common.container.BaseOpenInventory;
 import com.lishid.openinv.internal.common.container.OpenEnderChest;
-import com.lishid.openinv.internal.common.container.OpenInventory;
+import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
 import io.papermc.paper.adventure.PaperAdventure;
@@ -242,14 +242,14 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     }
 
     // See net.minecraft.server.level.ServerPlayer#openMenu(MenuProvider)
-    AbstractContainerMenu menu;
+    OpenChestMenu<?> menu;
     Component title;
     if (inventory instanceof BaseOpenInventory playerInv) {
       menu = playerInv.createMenu(player, player.nextContainerCounter(), viewOnly);
-      title = playerInv.getTitle(player);
+      title = playerInv.getTitle(player, menu);
     } else if (inventory instanceof OpenEnderChest enderChest) {
       menu = enderChest.createMenu(player, player.nextContainerCounter(), viewOnly);
-      title = enderChest.getTitle();
+      title = enderChest.getTitle(menu);
     } else {
       return null;
     }
@@ -265,10 +265,10 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     menu.setTitle(title);
 
     var pair = CraftEventFactory.callInventoryOpenEventWithTitle(player, menu);
-    menu = pair.getSecond();
+    AbstractContainerMenu opened = pair.getSecond();
 
     // Menu is null if event is cancelled.
-    if (menu == null) {
+    if (opened == null) {
       return null;
     }
 
@@ -277,11 +277,11 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
       title = PaperAdventure.asVanilla(newTitle);
     }
 
-    player.containerMenu = menu;
-    player.connection.send(new ClientboundOpenScreenPacket(menu.containerId, menu.getType(), title));
-    player.initMenu(menu);
+    player.containerMenu = opened;
+    player.connection.send(new ClientboundOpenScreenPacket(opened.containerId, opened.getType(), title));
+    player.initMenu(opened);
 
-    return menu.getBukkitView();
+    return opened.getBukkitView();
   }
 
 }
