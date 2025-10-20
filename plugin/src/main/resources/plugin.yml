@@ -66,6 +66,9 @@ permissions:
           openinv.access.level.2: false
           openinv.access.level.3: false
           openinv.access.level.4: false
+          openinv.access.equal.edit: false
+          openinv.access.equal.view: false
+          openinv.access.equal.deny: false
       # Spectate features
       openinv.spectate:
         children:
