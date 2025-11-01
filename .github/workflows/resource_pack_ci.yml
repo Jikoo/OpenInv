@@ -17,7 +17,7 @@ jobs:
 
       - name: Build resource pack
         id: upload-resource-pack
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: openinv-legibility-pack
           path: ./resource-pack/openinv-legibility-pack/
