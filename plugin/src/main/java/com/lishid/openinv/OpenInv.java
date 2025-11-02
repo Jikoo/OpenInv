@@ -244,6 +244,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   }
 
   @Override
+  @Deprecated(forRemoval = true)
   public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
     Permissions edit = null;
     HumanEntity target = inventory.getPlayer();
@@ -295,6 +296,11 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
       break;
     }
 
+    return openInventory(player, inventory, viewOnly);
+  }
+
+  @Override
+  public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly) {
     return this.accessor.openInventory(player, inventory, viewOnly);
   }
 

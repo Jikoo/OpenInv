@@ -87,10 +87,11 @@ public class ClearInvCommand extends PlayerLookupCommand {
   @Override
   protected void handle(
       @NotNull CommandSender sender,
-      @NotNull Player onlineTarget,
+      @NotNull PlayerAccess playerAccess,
       boolean accessInv,
       @NotNull String @NotNull [] args
   ) {
+    Player onlineTarget = playerAccess.player();
     // Create the inventory
     final ISpecialInventory inv;
     try {

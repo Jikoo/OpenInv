@@ -139,13 +139,20 @@ public interface IOpenInv {
   ) throws InstantiationException;
 
   /**
+   * @deprecated Use {@link #openInventory(Player, ISpecialInventory, boolean)}
+   */
+  @Deprecated(forRemoval = true, since = "5.2.0")
+  @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory);
+
+  /**
    * Open an {@link ISpecialInventory} for a {@link Player}.
    *
    * @param player the viewer
    * @param inventory the inventory to open
+   * @param viewOnly whether the inventory should be view-only
    * @return the resulting {@link InventoryView}
    */
-  @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory);
+  @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly);
 
   /**
    * Check if a {@link Player} is currently loaded by OpenInv.
