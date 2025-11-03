@@ -7,7 +7,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class OpenEnderChestMenu extends OpenChestMenu<OpenEnderChest> {
+public class OpenEnderChestMenu extends OpenSyncMenu<OpenEnderChest> {
 
   public OpenEnderChestMenu(
       @NotNull OpenEnderChest enderChest,

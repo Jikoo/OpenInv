@@ -79,7 +79,7 @@ public abstract class PlayerLookupCommand implements TabExecutor {
             }
 
             // Perform access checks and load target if necessary.
-            Player onlineTarget = access(sender, target, accessInv);
+            PlayerAccess onlineTarget = access(sender, target, accessInv);
 
             if (onlineTarget != null) {
               handle(sender, onlineTarget, accessInv, args);
@@ -135,7 +135,11 @@ public abstract class PlayerLookupCommand implements TabExecutor {
    * @param invPerms {@code true} to use inventory permissions, {@code false} for ender chest
    * @return the {@link Player} loaded or {@code null} if target is not accessible
    */
-  protected @Nullable Player access(@NotNull CommandSender sender, @NotNull OfflinePlayer target, boolean invPerms) {
+  protected @Nullable PlayerAccess access(
+      @NotNull CommandSender sender,
+      @NotNull OfflinePlayer target,
+      boolean invPerms
+  ) {
     // Attempt to load online player dependent on permissions and configuration.
     Player onlineTarget = accessAsPlayer(sender, target);
 
@@ -144,11 +148,11 @@ public abstract class PlayerLookupCommand implements TabExecutor {
     }
 
     // Permissions checks.
-    if (deniedCommand(sender, onlineTarget, invPerms) || deniedAccess(sender, onlineTarget)) {
+    if (deniedCommand(sender, onlineTarget, invPerms)) {
       return null;
     }
 
-    return onlineTarget;
+    return accessGeneralized(sender, onlineTarget, invPerms);
   }
 
   /**
@@ -203,30 +207,21 @@ public abstract class PlayerLookupCommand implements TabExecutor {
   );
 
   /**
-   * Check for a lack of generalized permissions for accessing the target.
+   * Check for generalized permissions for accessing the target.
    * By default, this is access levels and cross-world restrictions.
    *
    * @param sender the {@link CommandSender} attempting access
    * @param onlineTarget the {@link Player} being targeted by the command
-   * @return {@code true} if the sender does not have access to the target
+   * @param invPerms {@code true} to use inventory permissions, {@code false} for ender chest
+   * @return a {@link PlayerAccess} containing the accessed player and view mode, or {@code null} if denied
    */
-  protected boolean deniedAccess(@NotNull CommandSender sender, @NotNull Player onlineTarget) {
+  protected @Nullable PlayerAccess accessGeneralized(
+      @NotNull CommandSender sender,
+      @NotNull Player onlineTarget,
+      boolean invPerms
+  ) {
     if (sender.equals(onlineTarget)) {
-      return false;
-    }
-
-    // Protected check
-    for (int level = 4; level > 0; --level) {
-      String permission = "openinv.access.level." + level;
-      if (onlineTarget.hasPermission(permission)
-          && (!sender.hasPermission(permission) || config.getAccessEqualMode() == AccessEqualMode.DENY)) {
-        lang.sendMessage(
-            sender,
-            "messages.error.permissionExempt",
-            new Replacement("%target%", onlineTarget.getDisplayName())
-        );
-        return true;
-      }
+      return null;
     }
 
     // Crossworld check
@@ -238,10 +233,64 @@ public abstract class PlayerLookupCommand implements TabExecutor {
           "messages.error.permissionCrossWorld",
           new Replacement("%target%", onlineTarget.getDisplayName())
       );
-      return true;
+      return null;
     }
 
-    return false;
+    boolean ownContainer = sender.equals(onlineTarget);
+    Permissions edit;
+    if (invPerms) {
+      edit = ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER;
+    } else {
+      edit = ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_EDIT_OTHER;
+    }
+
+    boolean viewOnly = !edit.hasPermission(sender);
+
+    if (ownContainer || (viewOnly && config.getAccessEqualMode() != AccessEqualMode.DENY)) {
+      return new PlayerAccess(onlineTarget, viewOnly);
+    }
+
+    AccessEqualMode accessMode;
+    if (Permissions.ACCESS_EQUAL_EDIT.hasPermission(sender)) {
+      accessMode = AccessEqualMode.ALLOW;
+    } else if (Permissions.ACCESS_EQUAL_VIEW.hasPermission(sender)) {
+      accessMode = AccessEqualMode.VIEW;
+    } else if (Permissions.ACCESS_EQUAL_DENY.hasPermission(sender)) {
+      accessMode = AccessEqualMode.DENY;
+    } else {
+      accessMode = config.getAccessEqualMode();
+    }
+
+    for (int level = 4; level > 0; --level) {
+      String permission = "openinv.access.level." + level;
+      // If the target doesn't have this access level...
+      if (!onlineTarget.hasPermission(permission)) {
+        // If the viewer does have the access level, all good.
+        if (sender.hasPermission(permission)) {
+          break;
+        }
+        // Otherwise check next access level.
+        continue;
+      }
+
+      // If the viewer doesn't have an equal access level or equal access is a denial, deny.
+      if (!sender.hasPermission(permission) || accessMode == AccessEqualMode.DENY) {
+        lang.sendMessage(
+            sender,
+            "messages.error.permissionExempt",
+            new Replacement("%target%", onlineTarget.getDisplayName())
+        );
+        return null;
+      }
+
+      // Since this is a tie, setting decides view state.
+      if (accessMode == AccessEqualMode.VIEW) {
+        viewOnly = true;
+      }
+      break;
+    }
+
+    return new PlayerAccess(onlineTarget, viewOnly);
   }
 
   /**
@@ -254,7 +303,7 @@ public abstract class PlayerLookupCommand implements TabExecutor {
    */
   protected abstract void handle(
       @NotNull CommandSender sender,
-      @NotNull Player target,
+      @NotNull PlayerAccess target,
       boolean accessInv,
       @NotNull String @NotNull [] args
   );
@@ -272,5 +321,7 @@ public abstract class PlayerLookupCommand implements TabExecutor {
 
     return TabCompleter.completeOnlinePlayer(sender, args[0]);
   }
+
+  protected record PlayerAccess(Player player, boolean viewOnly) {}
 
 }

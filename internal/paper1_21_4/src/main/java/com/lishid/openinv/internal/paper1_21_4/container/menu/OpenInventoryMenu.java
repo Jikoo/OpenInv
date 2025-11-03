@@ -2,6 +2,7 @@ package com.lishid.openinv.internal.paper1_21_4.container.menu;
 
 import com.google.common.base.Preconditions;
 import com.lishid.openinv.internal.common.container.bukkit.OpenDummyPlayerInventory;
+import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.common.container.slot.ContentDrop;
 import com.lishid.openinv.internal.common.container.slot.SlotViewOnly;
 import com.lishid.openinv.internal.paper1_21_4.container.OpenInventory;
@@ -23,7 +24,7 @@ import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
+public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
 
   private int offset;
 
@@ -39,7 +40,7 @@ public class OpenInventoryMenu extends OpenChestMenu<OpenInventory> {
       size = ((int) Math.ceil(size / 9.0)) * 9;
     }
 
-    return com.lishid.openinv.internal.common.container.menu.OpenChestMenu.getChestMenuType(size);
+    return OpenChestMenu.getChestMenuType(size);
   }
 
   @Override

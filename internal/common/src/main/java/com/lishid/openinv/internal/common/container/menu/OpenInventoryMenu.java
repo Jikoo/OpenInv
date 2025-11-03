@@ -23,7 +23,7 @@ import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class OpenInventoryMenu extends OpenChestMenu<BaseOpenInventory> {
+public class OpenInventoryMenu extends OpenSyncMenu<BaseOpenInventory> {
 
   private int offset;
 

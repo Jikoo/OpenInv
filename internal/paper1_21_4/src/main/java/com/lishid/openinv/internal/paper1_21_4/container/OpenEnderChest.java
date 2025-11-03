@@ -14,7 +14,7 @@ public class OpenEnderChest extends com.lishid.openinv.internal.common.container
   }
 
   @Override
-  public @Nullable AbstractContainerMenu createMenu(
+  public @Nullable OpenEnderChestMenu createMenu(
       net.minecraft.world.entity.player.Player player,
       int i,
       boolean viewOnly

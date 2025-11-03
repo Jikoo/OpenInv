@@ -3,6 +3,7 @@ package com.lishid.openinv.internal.common.container;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.InternalOwned;
 import com.lishid.openinv.internal.common.container.bukkit.OpenPlayerInventory;
+import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.common.container.menu.OpenInventoryMenu;
 import com.lishid.openinv.internal.common.container.slot.Content;
 import com.lishid.openinv.internal.common.container.slot.ContentCrafting;
@@ -24,7 +25,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Location;
@@ -199,7 +199,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
     return slots.get(index).getSlotType();
   }
 
-  public abstract Component getTitle(ServerPlayer player);
+  public abstract Component getTitle(ServerPlayer player, @Nullable OpenChestMenu<?> menu);
 
   @Override
   public ServerPlayer getOwnerHandle() {
@@ -325,7 +325,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
     owner.containerMenu.setCarried(ItemStack.EMPTY);
   }
 
-  public @Nullable AbstractContainerMenu createMenu(Player player, int i, boolean viewOnly) {
+  public @Nullable OpenChestMenu<?> createMenu(Player player, int i, boolean viewOnly) {
     if (player instanceof ServerPlayer serverPlayer) {
       return new OpenInventoryMenu(this, serverPlayer, i, viewOnly);
     }

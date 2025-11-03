@@ -244,6 +244,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   }
 
   @Override
+  @Deprecated(forRemoval = true)
   public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
     Permissions edit = null;
     HumanEntity target = inventory.getPlayer();
@@ -260,6 +261,17 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
       return this.accessor.openInventory(player, inventory, viewOnly);
     }
 
+    AccessEqualMode accessMode;
+    if (Permissions.ACCESS_EQUAL_EDIT.hasPermission(player)) {
+      accessMode = AccessEqualMode.ALLOW;
+    } else if (Permissions.ACCESS_EQUAL_VIEW.hasPermission(player)) {
+      accessMode = AccessEqualMode.VIEW;
+    } else if (Permissions.ACCESS_EQUAL_DENY.hasPermission(player)) {
+      accessMode = AccessEqualMode.DENY;
+    } else {
+      accessMode = config.getAccessEqualMode();
+    }
+
     for (int level = 4; level > 0; --level) {
       String permission = "openinv.access.level." + level;
       // If the target doesn't have this access level...
@@ -273,17 +285,22 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
       }
 
       // If the viewer doesn't have an equal access level or equal access is a denial, deny.
-      if (!player.hasPermission(permission) || config.getAccessEqualMode() == AccessEqualMode.DENY) {
+      if (!player.hasPermission(permission) || accessMode == AccessEqualMode.DENY) {
         return null;
       }
 
       // Since this is a tie, setting decides view state.
-      if (config.getAccessEqualMode() == AccessEqualMode.VIEW) {
+      if (accessMode == AccessEqualMode.VIEW) {
         viewOnly = true;
       }
       break;
     }
 
+    return openInventory(player, inventory, viewOnly);
+  }
+
+  @Override
+  public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly) {
     return this.accessor.openInventory(player, inventory, viewOnly);
   }
 

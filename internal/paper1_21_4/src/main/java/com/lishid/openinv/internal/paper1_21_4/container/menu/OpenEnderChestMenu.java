@@ -1,13 +1,14 @@
 package com.lishid.openinv.internal.paper1_21_4.container.menu;
 
 import com.lishid.openinv.internal.common.container.OpenEnderChest;
+import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class OpenEnderChestMenu extends OpenChestMenu<OpenEnderChest> {
+public class OpenEnderChestMenu extends OpenSyncMenu<OpenEnderChest> {
 
   public OpenEnderChestMenu(
       @NotNull OpenEnderChest enderChest,
@@ -16,7 +17,7 @@ public class OpenEnderChestMenu extends OpenChestMenu<OpenEnderChest> {
       boolean viewOnly
   ) {
     super(
-        com.lishid.openinv.internal.common.container.menu.OpenChestMenu.getChestMenuType(enderChest.getContainerSize()),
+        OpenChestMenu.getChestMenuType(enderChest.getContainerSize()),
         containerId,
         enderChest,
         viewer,

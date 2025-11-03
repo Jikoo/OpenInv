@@ -151,11 +151,12 @@ public class OpenInvCommand extends PlayerLookupCommand {
   @Override
   protected void handle(
       @NotNull CommandSender sender,
-      @NotNull Player target,
+      @NotNull PlayerAccess playerAccess,
       boolean accessInv,
       @NotNull String @NotNull [] args
   ) {
     Player player = (Player) sender;
+    Player target = playerAccess.player();
     if (!config.doesNoArgsOpenSelf()) {
       // Record the target
       (accessInv ? this.openInvHistory : this.openEnderHistory).put(player, target.getUniqueId().toString());
@@ -172,7 +173,7 @@ public class OpenInvCommand extends PlayerLookupCommand {
     }
 
     // Open the inventory
-    plugin.openInventory(player, inv);
+    plugin.openInventory(player, inv, playerAccess.viewOnly());
   }
 
 }
