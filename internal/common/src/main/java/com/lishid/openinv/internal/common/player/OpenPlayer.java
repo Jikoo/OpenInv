@@ -2,7 +2,6 @@ package com.lishid.openinv.internal.common.player;
 
 import com.lishid.openinv.event.OpenEvents;
 import com.mojang.logging.LogUtils;
-import net.minecraft.util.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,7 +13,6 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
