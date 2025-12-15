@@ -2,7 +2,7 @@ package com.lishid.openinv.internal.common.player;
 
 import com.lishid.openinv.event.OpenEvents;
 import com.mojang.logging.LogUtils;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,8 +11,10 @@ import net.minecraft.world.level.storage.PlayerDataStorage;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.bukkit.craftbukkit.CraftServer;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -56,10 +58,18 @@ public class OpenPlayer extends BaseOpenPlayer {
       NbtIo.writeCompressed(playerData, tempFile);
       Path dataFile = playerDataDir.resolve(player.getStringUUID() + ".dat");
       Path backupFile = playerDataDir.resolve(player.getStringUUID() + ".dat_old");
-      Util.safeReplaceFile(dataFile, tempFile, backupFile);
+      safeReplaceFile(dataFile, tempFile, backupFile);
     } catch (Exception e) {
       LogUtils.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
     }
+  }
+
+  protected void safeReplaceFile(
+      @NotNull Path dataFile,
+      @NotNull Path tempFile,
+      @NotNull Path backupFile
+  ) {
+    net.minecraft.util.Util.safeReplaceFile(dataFile, tempFile, backupFile);
   }
 
 }
