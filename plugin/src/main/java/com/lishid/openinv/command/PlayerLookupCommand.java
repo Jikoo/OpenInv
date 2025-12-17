@@ -220,8 +220,20 @@ public abstract class PlayerLookupCommand implements TabExecutor {
       @NotNull Player onlineTarget,
       boolean invPerms
   ) {
-    if (sender.equals(onlineTarget)) {
-      return null;
+
+    boolean ownContainer = sender.equals(onlineTarget);
+    Permissions edit;
+    if (invPerms) {
+      edit = ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER;
+    } else {
+      edit = ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_EDIT_OTHER;
+    }
+
+    boolean viewOnly = !edit.hasPermission(sender);
+
+    if (ownContainer) {
+      // Skip other access checks for self.
+      return new PlayerAccess(onlineTarget, viewOnly);
     }
 
     // Crossworld check
@@ -236,30 +248,7 @@ public abstract class PlayerLookupCommand implements TabExecutor {
       return null;
     }
 
-    boolean ownContainer = sender.equals(onlineTarget);
-    Permissions edit;
-    if (invPerms) {
-      edit = ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER;
-    } else {
-      edit = ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_EDIT_OTHER;
-    }
-
-    boolean viewOnly = !edit.hasPermission(sender);
-
-    if (ownContainer || (viewOnly && config.getAccessEqualMode() != AccessEqualMode.DENY)) {
-      return new PlayerAccess(onlineTarget, viewOnly);
-    }
-
-    AccessEqualMode accessMode;
-    if (Permissions.ACCESS_EQUAL_EDIT.hasPermission(sender)) {
-      accessMode = AccessEqualMode.ALLOW;
-    } else if (Permissions.ACCESS_EQUAL_VIEW.hasPermission(sender)) {
-      accessMode = AccessEqualMode.VIEW;
-    } else if (Permissions.ACCESS_EQUAL_DENY.hasPermission(sender)) {
-      accessMode = AccessEqualMode.DENY;
-    } else {
-      accessMode = config.getAccessEqualMode();
-    }
+    AccessEqualMode accessMode = AccessEqualMode.getByPerm(sender, config);
 
     for (int level = 4; level > 0; --level) {
       String permission = "openinv.access.level." + level;

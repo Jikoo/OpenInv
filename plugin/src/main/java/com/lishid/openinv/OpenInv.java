@@ -257,20 +257,11 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
 
     boolean viewOnly = edit != null && !edit.hasPermission(player);
 
-    if (ownContainer || (viewOnly && config.getAccessEqualMode() != AccessEqualMode.DENY)) {
+    if (ownContainer) {
       return this.accessor.openInventory(player, inventory, viewOnly);
     }
 
-    AccessEqualMode accessMode;
-    if (Permissions.ACCESS_EQUAL_EDIT.hasPermission(player)) {
-      accessMode = AccessEqualMode.ALLOW;
-    } else if (Permissions.ACCESS_EQUAL_VIEW.hasPermission(player)) {
-      accessMode = AccessEqualMode.VIEW;
-    } else if (Permissions.ACCESS_EQUAL_DENY.hasPermission(player)) {
-      accessMode = AccessEqualMode.DENY;
-    } else {
-      accessMode = config.getAccessEqualMode();
-    }
+    AccessEqualMode accessMode = AccessEqualMode.getByPerm(player, config);
 
     for (int level = 4; level > 0; --level) {
       String permission = "openinv.access.level." + level;

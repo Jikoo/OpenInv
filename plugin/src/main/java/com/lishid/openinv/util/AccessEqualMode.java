@@ -1,5 +1,7 @@
 package com.lishid.openinv.util;
 
+import com.lishid.openinv.util.config.Config;
+import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +20,19 @@ public enum AccessEqualMode {
       case "allow", "true" -> ALLOW;
       default -> VIEW;
     };
+  }
+
+  public static @NotNull AccessEqualMode getByPerm(@NotNull Permissible permissible, @NotNull Config config) {
+    if (Permissions.ACCESS_EQUAL_EDIT.hasPermission(permissible)) {
+      return AccessEqualMode.ALLOW;
+    }
+    if (Permissions.ACCESS_EQUAL_VIEW.hasPermission(permissible)) {
+      return AccessEqualMode.VIEW;
+    }
+    if (Permissions.ACCESS_EQUAL_DENY.hasPermission(permissible)) {
+      return AccessEqualMode.DENY;
+    }
+    return config.getAccessEqualMode();
   }
 
 }
