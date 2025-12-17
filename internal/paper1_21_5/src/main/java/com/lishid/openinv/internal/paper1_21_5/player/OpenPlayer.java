@@ -1,16 +1,13 @@
 package com.lishid.openinv.internal.paper1_21_5.player;
 
-import com.lishid.openinv.event.OpenEvents;
 import com.lishid.openinv.internal.common.player.BaseOpenPlayer;
 import com.mojang.logging.LogUtils;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import org.bukkit.craftbukkit.CraftServer;
+import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class OpenPlayer extends BaseOpenPlayer {
@@ -20,12 +17,7 @@ public class OpenPlayer extends BaseOpenPlayer {
   }
 
   @Override
-  public void saveData() {
-    if (OpenEvents.saveCancelled(this)) {
-      return;
-    }
-
-    ServerPlayer player = this.getHandle();
+  protected void trySave(ServerPlayer player) {
     // See net.minecraft.world.level.storage.PlayerDataStorage#save(EntityHuman)
     try {
       PlayerDataStorage worldNBTStorage = player.server.getPlayerList().playerIo;
@@ -35,20 +27,20 @@ public class OpenPlayer extends BaseOpenPlayer {
 
       playerData = player.saveWithoutId(playerData);
 
-      if (oldData != null) {
-        // Revert certain special data values when offline.
-        revertSpecialValues(playerData, oldData);
-      }
-
-      Path playerDataDir = worldNBTStorage.getPlayerDir().toPath();
-      Path tempFile = Files.createTempFile(playerDataDir, player.getStringUUID() + "-", ".dat");
-      NbtIo.writeCompressed(playerData, tempFile);
-      Path dataFile = playerDataDir.resolve(player.getStringUUID() + ".dat");
-      Path backupFile = playerDataDir.resolve(player.getStringUUID() + ".dat_old");
-      Util.safeReplaceFile(dataFile, tempFile, backupFile);
+      saveSafe(player, oldData, playerData, worldNBTStorage);
     } catch (Exception e) {
       LogUtils.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
     }
+  }
+
+  @Override
+  protected void safeReplaceFile(@NotNull Path dataFile, @NotNull Path tempFile, @NotNull Path backupFile) {
+    net.minecraft.Util.safeReplaceFile(dataFile, tempFile, backupFile);
+  }
+
+  @Override
+  protected void remove(@NotNull CompoundTag tag, @NotNull String key) {
+    tag.remove(key);
   }
 
 }
