@@ -248,16 +248,7 @@ public abstract class PlayerLookupCommand implements TabExecutor {
       return null;
     }
 
-    AccessEqualMode accessMode;
-    if (Permissions.ACCESS_EQUAL_EDIT.hasPermission(sender)) {
-      accessMode = AccessEqualMode.ALLOW;
-    } else if (Permissions.ACCESS_EQUAL_VIEW.hasPermission(sender)) {
-      accessMode = AccessEqualMode.VIEW;
-    } else if (Permissions.ACCESS_EQUAL_DENY.hasPermission(sender)) {
-      accessMode = AccessEqualMode.DENY;
-    } else {
-      accessMode = config.getAccessEqualMode();
-    }
+    AccessEqualMode accessMode = AccessEqualMode.getByPerm(sender, config);
 
     for (int level = 4; level > 0; --level) {
       String permission = "openinv.access.level." + level;
