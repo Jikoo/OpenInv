@@ -21,7 +21,7 @@ public abstract class BaseOpenPlayer extends CraftPlayer {
    * List of tags to always reset when saving. These are items that do not get written
    * if unset or empty, resulting in older values not being clobbered appropriately.
    *
-   * @see net.minecraft.world.entity.Entity#saveWithoutId(ValueOutput)
+   * @see net.minecraft.world.entity.Entity#saveWithoutId(ValueOutput, boolean, boolean, boolean)
    * @see net.minecraft.server.level.ServerPlayer#addAdditionalSaveData(ValueOutput)
    * @see net.minecraft.world.entity.player.Player#addAdditionalSaveData(ValueOutput)
    * @see net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(ValueOutput)
@@ -41,8 +41,8 @@ public abstract class BaseOpenPlayer extends CraftPlayer {
       "Passengers",
       // ServerPlayer#addAdditionalSaveData(CompoundTag)
       // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
-      "warden_spawn_tracker",
-      "entered_nether_pos", // Replaces enteredNetherPosition
+      "warden_spawn_tracker", // No longer needed as of 1.21.11
+      "entered_nether_pos", // Replaces enteredNetherPosition as of 1.21.6
       "enteredNetherPosition",
       "respawn", // Replaces SpawnXyz fields as of 1.21.6
       "SpawnX",
