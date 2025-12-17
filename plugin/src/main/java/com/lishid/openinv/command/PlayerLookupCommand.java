@@ -220,8 +220,20 @@ public abstract class PlayerLookupCommand implements TabExecutor {
       @NotNull Player onlineTarget,
       boolean invPerms
   ) {
-    if (sender.equals(onlineTarget)) {
-      return null;
+
+    boolean ownContainer = sender.equals(onlineTarget);
+    Permissions edit;
+    if (invPerms) {
+      edit = ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER;
+    } else {
+      edit = ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_EDIT_OTHER;
+    }
+
+    boolean viewOnly = !edit.hasPermission(sender);
+
+    if (ownContainer) {
+      // Skip other access checks for self.
+      return new PlayerAccess(onlineTarget, viewOnly);
     }
 
     // Crossworld check
@@ -234,20 +246,6 @@ public abstract class PlayerLookupCommand implements TabExecutor {
           new Replacement("%target%", onlineTarget.getDisplayName())
       );
       return null;
-    }
-
-    boolean ownContainer = sender.equals(onlineTarget);
-    Permissions edit;
-    if (invPerms) {
-      edit = ownContainer ? Permissions.INVENTORY_EDIT_SELF : Permissions.INVENTORY_EDIT_OTHER;
-    } else {
-      edit = ownContainer ? Permissions.ENDERCHEST_EDIT_SELF : Permissions.ENDERCHEST_EDIT_OTHER;
-    }
-
-    boolean viewOnly = !edit.hasPermission(sender);
-
-    if (ownContainer || (viewOnly && config.getAccessEqualMode() != AccessEqualMode.DENY)) {
-      return new PlayerAccess(onlineTarget, viewOnly);
     }
 
     AccessEqualMode accessMode;
