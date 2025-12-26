@@ -79,7 +79,7 @@ public class ContainerListener implements Listener {
       return;
     }
 
-    boolean silent = Permissions.CONTAINER_SILENT.hasPermission(player) && PlayerToggles.silent().is(playerId);
+    boolean silent = PlayerToggles.silent().is(playerId);
 
     // If anycontainer or silentcontainer is active
     if (any || silent) {
