@@ -1,18 +1,43 @@
-name: Release to CurseForge
+name: Release to external sites
 
 on:
   release:
     types: [ released ]
 
 jobs:
+  parse_versions:
+    runs-on: ubuntu-latest
+    outputs:
+      paper_versions: ${{ steps.parse_versions.PAPER_VERSIONS }}
+      hangar_versions: ${{ steps.parse_versions.HANGAR_PAPER_VERSIONS }}
+    steps:
+      - id: parse_versions
+        run: |
+          # Find line declaring Paper versions.
+          raw=$(grep "\\*\\*Paper:\\*\\*" <<< "${{ github.event.release.body }}")
+          
+          # Enable extended glob pattern to match 0 or more whitespace characters.
+          shopt -s extglob
+          # Trim Paper versions identifier prefix.
+          raw=${raw##*([[:space:]])'**'Paper:'**'*([[:space:]])}
+          # Replace commas and optional spaces with a newline.
+          raw=${raw//,*([[:space:]])/$'\n'}
+          # Turn extglob back off.
+          shopt -u extglob
+          
+          echo "$raw"
+          printf "PAPER_VERSIONS<<EOF\n%s\nEOF\n" "$raw" >> "$GITHUB_OUTPUT"
+          
+          # Generate JSON for Hangar. GitHub Actions provides jq 1.7 in the 24.04 image.
+          hangar_versions=$(jq -nc --arg versions "$raw" '{"PAPER": $versions | split("\n")}')
+          
+          echo "$hangar_versions"
+          echo "HANGAR_PAPER_VERSIONS=$hangar_versions" >> "$GITHUB_OUTPUT"
+
   curseforge_release:
+    needs: [ parse_versions ]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
       - name: Fetch Github Release Asset
         uses: dsaltares/fetch-gh-release-asset@1.1.2
         with:
@@ -20,18 +45,59 @@ jobs:
           version: ${{ github.event.release.id }}
           file: OpenInv.jar
 
-      - name: Set CurseForge Variables
-        run: . scripts/set_curseforge_env.sh "${{ github.event.release.body }}"
-
       - name: Create CurseForge Release
-        uses: itsmeow/curseforge-upload@v3
+        uses: Kira-NT/mc-publish@v3.3
         with:
-          token: "${{ secrets.CURSEFORGE_TOKEN }}"
-          project_id: 31432
-          game_endpoint: minecraft
-          file_path: ./OpenInv.jar
-          display_name: "${{ github.event.release.name }}"
-          game_versions: "${{ env.CURSEFORGE_MINECRAFT_VERSIONS }}"
-          release_type: release
-          changelog_type: markdown
-          changelog: "${{ github.event.release.body }}"
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          curseforge-id: 31432
+          files: ./OpenInv.jar
+          game-versions: "${{ needs.parse_versions.outputs.paper_versions }}"
+          game-version-filter: releases
+
+  modrinth_release:
+    needs: [ parse_versions ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Github Release Asset
+        uses: dsaltares/fetch-gh-release-asset@1.1.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.release.id }}
+          file: OpenInv.jar
+
+      - name: Create Modrinth Release
+        uses: Kira-NT/mc-publish@v3.3
+        with:
+          modrinth-id: 1UlvXbzL
+          modrinth-featured: false
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: ./OpenInv.jar
+          game-versions: "${{ needs.parse_versions.outputs.paper_versions }}"
+          game-version-filter: releases
+
+  hangar_release:
+    needs: [ parse_versions ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Github Release Asset
+        uses: dsaltares/fetch-gh-release-asset@1.1.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.event.release.id }}
+          file: OpenInv.jar
+
+      - name: Create Hangar Release
+        uses: benwoo1110/hangar-upload-action@v1
+        with:
+          api_token: ${{ secrets.HANGAR_TOKEN }}
+          slug: 'OpenInv'
+          version: ${{ github.event.release.tag_name }}
+          channel: release
+          files: |-
+            [
+              {
+                "path": "./OpenInv.jar",
+                "platforms": ["PAPER"]
+              }
+            ]
+          platform_dependencies: "${{ needs.parse_versions.outputs.hangar_versions }}"
