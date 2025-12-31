@@ -8,8 +8,8 @@ jobs:
   parse_versions:
     runs-on: ubuntu-latest
     outputs:
-      paper_versions: ${{ steps.parse_versions.PAPER_VERSIONS }}
-      hangar_versions: ${{ steps.parse_versions.HANGAR_PAPER_VERSIONS }}
+      paper_versions: ${{ steps.parse_versions.outputs.PAPER_VERSIONS }}
+      hangar_versions: ${{ steps.parse_versions.outputs.HANGAR_PAPER_VERSIONS }}
     steps:
       - id: parse_versions
         run: |
