@@ -76,8 +76,16 @@ permissions:
       # Container features
       openinv.container:
         children:
-          openinv.container.any: true
-          openinv.container.silent: true
+          openinv.container.any:
+            children:
+              openinv.container.any.use: true
+          openinv.container.any.use:
+            default: false
+          openinv.container.silent:
+            children:
+              openinv.container.silent.use: true
+          openinv.container.silent.use:
+            default: false
       # Search functionality
       openinv.search:
         children:
