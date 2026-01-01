@@ -19,6 +19,12 @@ package com.lishid.openinv.util;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * An enum containing all permissions directly checked by OpenInv.
+ *
+ * <p>Note that this is not an exhaustive list! This does not contain
+ * all permissions managed by Bukkit, largely parent nodes.</p>
+ */
 public enum Permissions {
 
   INVENTORY_OPEN_SELF("inventory.open.self"),
