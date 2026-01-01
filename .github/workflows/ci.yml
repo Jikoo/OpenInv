@@ -25,7 +25,7 @@ jobs:
       # We can't use 'maven' prebuilt cache setup because it requires that the project have a pom file.
       # BuildTools installs to Maven local if available, so it's easier to just rely on that.
       - name: Cache Spigot dependency
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.m2/repository/org/spigotmc/
