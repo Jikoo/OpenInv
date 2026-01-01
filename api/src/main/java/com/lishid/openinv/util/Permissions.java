@@ -125,9 +125,4 @@ public enum Permissions {
     return permissible.hasPermission(permission);
   }
 
-  public boolean hasPermission(@NotNull Permissible permissible, @NotNull Permissions parent) {
-    if (permissible.hasPermission(permission)) return true;
-    if (permissible.isPermissionSet(permission) && !permissible.hasPermission(permission)) return false;
-    return permissible.hasPermission(parent.permission);
-  }
 }

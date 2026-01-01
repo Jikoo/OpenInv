@@ -1,5 +1,6 @@
 package com.lishid.openinv.util.setting;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -23,6 +24,15 @@ public interface PlayerToggle {
    * @return true if the setting is enabled
    */
   boolean is(@NotNull UUID uuid);
+
+  /**
+   * Get the state of the toggle for a particular {@link Player},
+   * accounting for permissions required to use the feature.
+   *
+   * @param player the player
+   * @return true if the setting is enabled and the player has the required permissions
+   */
+  boolean is(@NotNull Player player);
 
   /**
    * Set the state of the toggle for a particular player ID.
