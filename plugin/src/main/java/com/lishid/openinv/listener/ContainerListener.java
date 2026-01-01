@@ -72,14 +72,14 @@ public class ContainerListener implements Listener {
 
     Player player = event.getPlayer();
     UUID playerId = player.getUniqueId();
-    boolean any = Permissions.CONTAINER_ANY.hasPermission(player) && PlayerToggles.any().is(playerId);
+    boolean any = Permissions.CONTAINER_ANY_USE.hasPermission(player, Permissions.CONTAINER_ANY) && PlayerToggles.any().is(playerId);
     boolean needsAny = accessor.getAnySilentContainer().isAnyContainerNeeded(event.getClickedBlock());
 
     if (!any && needsAny) {
       return;
     }
 
-    boolean silent = Permissions.CONTAINER_SILENT.hasPermission(player) && PlayerToggles.silent().is(playerId);
+    boolean silent = Permissions.CONTAINER_SILENT_USE.hasPermission(player, Permissions.CONTAINER_SILENT) && PlayerToggles.silent().is(playerId);
 
     // If anycontainer or silentcontainer is active
     if (any || silent) {

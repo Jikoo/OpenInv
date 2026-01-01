@@ -49,7 +49,9 @@ public enum Permissions {
   SPECTATE_CLICK("spectate.click"),
 
   CONTAINER_ANY("container.any"),
+  CONTAINER_ANY_USE("container.any.use"),
   CONTAINER_SILENT("container.silent"),
+  CONTAINER_SILENT_USE("container.silent.use"),
   SEARCH_INVENTORY("search.inventory"),
   SEARCH_CONTAINER("search.container");
 
@@ -63,4 +65,9 @@ public enum Permissions {
     return permissible.hasPermission(permission);
   }
 
+  public boolean hasPermission(@NotNull Permissible permissible, @NotNull Permissions parent) {
+    if (permissible.hasPermission(permission)) return true;
+    if (permissible.isPermissionSet(permission) && !permissible.hasPermission(permission)) return false;
+    return permissible.hasPermission(parent.permission);
+  }
 }
