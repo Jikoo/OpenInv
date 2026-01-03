@@ -96,6 +96,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   @Override
   public void onDisable() {
     inventoryManager.evictAll();
+    playerLoader.getProfileStore().shutdown();
   }
 
   @Override

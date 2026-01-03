@@ -5,13 +5,15 @@ import com.google.common.cache.CacheBuilder;
 import com.google.errorprone.annotations.Keep;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.config.Config;
+import com.lishid.openinv.util.profile.OfflinePlayerProfileStore;
+import com.lishid.openinv.util.profile.Profile;
+import com.lishid.openinv.util.profile.ProfileStore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.profile.PlayerProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +35,8 @@ public class PlayerLoader implements Listener {
   private final @NotNull InventoryManager inventoryManager;
   private final @NotNull InternalAccessor internalAccessor;
   private final @NotNull Logger logger;
-  private final @NotNull Cache<String, PlayerProfile> lookupCache;
+  private final @NotNull Cache<String, Profile> lookupCache;
+  private @NotNull ProfileStore profileStore;
 
   public PlayerLoader(
       @NotNull OpenInv plugin,
@@ -46,8 +49,17 @@ public class PlayerLoader implements Listener {
     this.config = config;
     this.inventoryManager = inventoryManager;
     this.internalAccessor = internalAccessor;
+    this.profileStore = new OfflinePlayerProfileStore();
     this.logger = logger;
     this.lookupCache = CacheBuilder.newBuilder().maximumSize(20).build();
+  }
+
+  public @NotNull ProfileStore getProfileStore() {
+    return profileStore;
+  }
+
+  public void setProfileStore(@NotNull ProfileStore profileStore) {
+    this.profileStore = profileStore;
   }
 
   /**
@@ -123,9 +135,9 @@ public class PlayerLoader implements Listener {
     }
 
     // Cached offline match.
-    PlayerProfile cachedResult = lookupCache.getIfPresent(name);
-    if (cachedResult != null && cachedResult.getUniqueId() != null) {
-      player = Bukkit.getOfflinePlayer(cachedResult.getUniqueId());
+    Profile cachedResult = lookupCache.getIfPresent(name);
+    if (cachedResult != null) {
+      player = Bukkit.getOfflinePlayer(cachedResult.id());
       // Ensure player is an existing player.
       if (player.hasPlayedBefore() || player.isOnline()) {
         return player;
@@ -135,10 +147,15 @@ public class PlayerLoader implements Listener {
     }
 
     // Exact offline match second - ensure offline access works when matchable users are online.
-    player = Bukkit.getServer().getOfflinePlayer(name);
+    Profile profile = profileStore.getProfileExact(name);
+    if (profile == null) {
+      return null;
+    }
+
+    player = Bukkit.getOfflinePlayer(profile.id());
 
     if (player.hasPlayedBefore()) {
-      lookupCache.put(name, player.getPlayerProfile());
+      lookupCache.put(name, profile);
       return player;
     }
 
@@ -161,27 +178,24 @@ public class PlayerLoader implements Listener {
 
     // Finally, inexact offline match.
     float bestMatch = 0;
-    for (OfflinePlayer offline : Bukkit.getServer().getOfflinePlayers()) {
-      if (offline.getName() == null) {
-        // Loaded by UUID only, name has never been looked up.
-        continue;
-      }
-
-      float currentMatch = StringMetric.compareJaroWinkler(name, offline.getName());
-
-      if (currentMatch == 1.0F) {
-        return offline;
-      }
+    Profile bestProfile = null;
+    for (Profile profile : getProfileStore().getProfiles(name)) {
+      float currentMatch = StringMetric.compareJaroWinkler(name, profile.name());
 
       if (currentMatch > bestMatch) {
         bestMatch = currentMatch;
-        player = offline;
+        bestProfile = profile;
+        player = Bukkit.getOfflinePlayer(profile.id());
+      }
+
+      if (currentMatch == 1.0F) {
+        break;
       }
     }
 
     if (player != null) {
       // If a match was found, store it.
-      lookupCache.put(name, player.getPlayerProfile());
+      lookupCache.put(name, bestProfile);
       return player;
     }
 
@@ -208,17 +222,10 @@ public class PlayerLoader implements Listener {
 
     plugin.getScheduler().runTaskLaterAsynchronously(
         () -> {
-          Iterator<Map.Entry<String, PlayerProfile>> iterator = lookupCache.asMap().entrySet().iterator();
+          Iterator<Map.Entry<String, Profile>> iterator = lookupCache.asMap().entrySet().iterator();
           while (iterator.hasNext()) {
-            Map.Entry<String, PlayerProfile> entry = iterator.next();
-            String oldMatch = entry.getValue().getName();
-
-            // Shouldn't be possible - all profiles should be complete.
-            if (oldMatch == null) {
-              iterator.remove();
-              continue;
-            }
-
+            Map.Entry<String, Profile> entry = iterator.next();
+            String oldMatch = entry.getValue().name();
             String lookup = entry.getKey();
             float oldMatchScore = StringMetric.compareJaroWinkler(lookup, oldMatch);
             float newMatchScore = StringMetric.compareJaroWinkler(lookup, name);
