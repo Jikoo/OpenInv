@@ -1,5 +1,7 @@
 package com.lishid.openinv.util.setting;
 
+import com.lishid.openinv.util.Permissions;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -19,8 +21,20 @@ import java.util.UUID;
 public final class PlayerToggles {
 
   private static final Map<String, PlayerToggle> TOGGLES = new HashMap<>();
-  private static final PlayerToggle ANY = add(new MemoryToggle("AnyContainer"));
-  private static final PlayerToggle SILENT = add(new MemoryToggle("SilentContainer"));
+  private static final PlayerToggle ANY = add(new MemoryToggle("AnyContainer") {
+    @Override
+    public boolean is(@NotNull Player player) {
+      return is(player.getUniqueId())
+          && (Permissions.CONTAINER_ANY.hasPermission(player) || Permissions.CONTAINER_ANY_USE.hasPermission(player));
+    }
+  });
+  private static final PlayerToggle SILENT = add(new MemoryToggle("SilentContainer") {
+    @Override
+    public boolean is(@NotNull Player player) {
+      return is(player.getUniqueId())
+          && (Permissions.CONTAINER_SILENT.hasPermission(player) || Permissions.CONTAINER_SILENT_USE.hasPermission(player));
+    }
+  });
 
   /**
    * Get the AnyContainer toggle.
@@ -72,7 +86,7 @@ public final class PlayerToggles {
     throw new IllegalStateException("Cannot create instance of utility class.");
   }
 
-  private static class MemoryToggle implements PlayerToggle {
+  private static abstract class MemoryToggle implements PlayerToggle {
 
     private final @NotNull Set<UUID> enabled;
     private final @NotNull String name;
