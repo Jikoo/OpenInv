@@ -205,9 +205,16 @@ public class PlayerLoader implements Listener {
 
   @Keep
   @EventHandler
+  private void onPlayerJoin(@NotNull PlayerJoinEvent event) {
+    plugin.getScheduler().runTaskLaterAsynchronously(() -> updateMatches(event), 7L);
+  }
+
   private void updateMatches(@NotNull PlayerJoinEvent event) {
+    // Update profile store.
+    profileStore.addProfile(new Profile(event.getPlayer()));
+
     // If player is not new, any cached values are valid.
-    if (event.getPlayer().hasPlayedBefore()) {
+    if (event.getPlayer().hasPlayedBefore() || lookupCache.size() == 0) {
       return;
     }
 
@@ -215,29 +222,19 @@ public class PlayerLoader implements Listener {
     String name = event.getPlayer().getName();
     lookupCache.invalidate(name);
 
-    // If the cache is empty, nothing to do. Don't hit scheduler.
-    if (lookupCache.size() == 0) {
-      return;
+    Iterator<Map.Entry<String, Profile>> iterator = lookupCache.asMap().entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Profile> entry = iterator.next();
+      String oldMatch = entry.getValue().name();
+      String lookup = entry.getKey();
+      float oldMatchScore = StringMetric.compareJaroWinkler(lookup, oldMatch);
+      float newMatchScore = StringMetric.compareJaroWinkler(lookup, name);
+
+      // If new match exceeds old match, delete old match.
+      if (newMatchScore > oldMatchScore) {
+        iterator.remove();
+      }
     }
-
-    plugin.getScheduler().runTaskLaterAsynchronously(
-        () -> {
-          Iterator<Map.Entry<String, Profile>> iterator = lookupCache.asMap().entrySet().iterator();
-          while (iterator.hasNext()) {
-            Map.Entry<String, Profile> entry = iterator.next();
-            String oldMatch = entry.getValue().name();
-            String lookup = entry.getKey();
-            float oldMatchScore = StringMetric.compareJaroWinkler(lookup, oldMatch);
-            float newMatchScore = StringMetric.compareJaroWinkler(lookup, name);
-
-            // If new match exceeds old match, delete old match.
-            if (newMatchScore > oldMatchScore) {
-              iterator.remove();
-            }
-          }
-        },
-        7L
-    );
   }
 
 }
