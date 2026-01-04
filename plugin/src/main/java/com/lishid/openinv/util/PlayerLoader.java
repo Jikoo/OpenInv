@@ -107,7 +107,7 @@ public class PlayerLoader implements Listener {
   public @Nullable OfflinePlayer matchExact(@NotNull String name) {
     // Warn if called on the main thread - if we resort to searching offline players, this may take several seconds.
     if (Bukkit.getServer().isPrimaryThread()) {
-      logger.warning("Call to PlayerSearchCache#matchPlayer made on the main thread!");
+      logger.warning("Call to PlayerLoader#matchExact made on the main thread!");
       logger.warning("This can cause the server to hang, potentially severely.");
       logger.log(Level.WARNING, "Current stack trace", new Throwable("Current stack trace"));
     }
