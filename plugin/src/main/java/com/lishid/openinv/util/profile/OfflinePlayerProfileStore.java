@@ -9,8 +9,15 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 public class OfflinePlayerProfileStore implements ProfileStore {
+
+  private final @NotNull Logger logger;
+
+  public OfflinePlayerProfileStore(@NotNull Logger logger) {
+    this.logger = logger;
+  }
 
   @Override
   public void addProfile(@NotNull Profile profile) {
@@ -24,6 +31,7 @@ public class OfflinePlayerProfileStore implements ProfileStore {
 
   @Override
   public @Nullable Profile getProfileExact(@NotNull String name) {
+    ProfileStore.warnMainThread(logger);
     @SuppressWarnings("deprecation")
     OfflinePlayer offline = Bukkit.getOfflinePlayer(name);
 
@@ -41,6 +49,7 @@ public class OfflinePlayerProfileStore implements ProfileStore {
 
   @Override
   public @NotNull @Unmodifiable Collection<Profile> getProfiles(@NotNull String search) {
+    ProfileStore.warnMainThread(logger);
     return Arrays.stream(Bukkit.getOfflinePlayers())
         .map(player -> {
           String name = player.getName();

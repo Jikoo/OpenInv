@@ -49,7 +49,7 @@ public class PlayerLoader implements Listener {
     this.config = config;
     this.inventoryManager = inventoryManager;
     this.internalAccessor = internalAccessor;
-    this.profileStore = new OfflinePlayerProfileStore();
+    this.profileStore = new OfflinePlayerProfileStore(logger);
     this.logger = logger;
     this.lookupCache = CacheBuilder.newBuilder().maximumSize(20).build();
   }
@@ -105,13 +105,6 @@ public class PlayerLoader implements Listener {
   }
 
   public @Nullable OfflinePlayer matchExact(@NotNull String name) {
-    // Warn if called on the main thread - if we resort to searching offline players, this may take several seconds.
-    if (Bukkit.getServer().isPrimaryThread()) {
-      logger.warning("Call to PlayerLoader#matchExact made on the main thread!");
-      logger.warning("This can cause the server to hang, potentially severely.");
-      logger.log(Level.WARNING, "Current stack trace", new Throwable("Current stack trace"));
-    }
-
     OfflinePlayer player;
 
     try {
