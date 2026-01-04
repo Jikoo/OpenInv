@@ -71,20 +71,18 @@ public class PlayerLoader implements Listener {
    * @throws IllegalStateException if the server version is unsupported
    */
   public @Nullable Player load(@NotNull OfflinePlayer offline) {
-    UUID key = offline.getUniqueId();
-
     Player player = offline.getPlayer();
-    if (player != null) {
-      return player;
-    }
-
-    player = inventoryManager.getLoadedPlayer(key);
     if (player != null) {
       return player;
     }
 
     if (config.isOfflineDisabled() || !internalAccessor.isSupported()) {
       return null;
+    }
+
+    player = inventoryManager.getLoadedPlayer(offline.getUniqueId());
+    if (player != null) {
+      return player;
     }
 
     if (Bukkit.isPrimaryThread()) {
