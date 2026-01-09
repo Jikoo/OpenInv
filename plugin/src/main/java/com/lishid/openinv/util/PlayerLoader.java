@@ -168,30 +168,17 @@ public class PlayerLoader implements Listener {
     }
 
     // Finally, inexact offline match.
-    float bestMatch = 0;
-    Profile bestProfile = null;
-    for (Profile profile : getProfileStore().getProfiles(name)) {
-      float currentMatch = StringMetric.compareJaroWinkler(name, profile.name());
+    Profile profile = getProfileStore().getProfileInexact(name);
 
-      if (currentMatch > bestMatch) {
-        bestMatch = currentMatch;
-        bestProfile = profile;
-        player = Bukkit.getOfflinePlayer(profile.id());
-      }
-
-      if (currentMatch == 1.0F) {
-        break;
-      }
+    if (profile == null) {
+      // No match found.
+      return null;
     }
 
-    if (player != null) {
-      // If a match was found, store it.
-      lookupCache.put(name, bestProfile);
-      return player;
-    }
-
-    // No players have ever joined the server.
-    return null;
+    // Get associated player and store match.
+    player = Bukkit.getOfflinePlayer(profile.id());
+    lookupCache.put(name, profile);
+    return player;
   }
 
   @Keep

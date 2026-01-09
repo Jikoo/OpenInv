@@ -1,14 +1,11 @@
 package com.lishid.openinv.util.profile;
 
+import com.lishid.openinv.util.StringMetric;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 public class OfflinePlayerProfileStore implements ProfileStore {
@@ -48,19 +45,32 @@ public class OfflinePlayerProfileStore implements ProfileStore {
   }
 
   @Override
-  public @NotNull @Unmodifiable Collection<Profile> getProfiles(@NotNull String search) {
+  public @Nullable Profile getProfileInexact(@NotNull String search) {
     ProfileStore.warnMainThread(logger);
-    return Arrays.stream(Bukkit.getOfflinePlayers())
-        .map(player -> {
-          String name = player.getName();
-          if (name == null) {
-            // Discount UUID-only profiles; Direct UUID lookup should already be done.
-            return null;
-          }
-          return new Profile(player.getName(), player.getUniqueId());
-        })
-        .filter(Objects::nonNull)
-        .toList();
+
+    float bestMatch = 0.0F;
+    Profile bestProfile = null;
+    for (OfflinePlayer player : Bukkit.getOnlinePlayers()) {
+      String name = player.getName();
+      if (name == null) {
+        // Discount UUID-only profiles; Direct UUID lookup should already be done.
+        return null;
+      }
+
+      float currentMatch = StringMetric.compareJaroWinkler(name, name);
+
+      if (currentMatch > bestMatch) {
+        bestMatch = currentMatch;
+        bestProfile = new Profile(name, player.getUniqueId());
+      }
+
+      // A score of 1 is an exact match. Don't bother checking the rest.
+      if (currentMatch == 1.0F) {
+        break;
+      }
+    }
+
+    return bestProfile;
   }
 
 }

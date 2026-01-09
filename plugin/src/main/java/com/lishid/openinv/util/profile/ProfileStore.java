@@ -3,9 +3,7 @@ package com.lishid.openinv.util.profile;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +15,7 @@ public interface ProfileStore {
 
   @Nullable Profile getProfileExact(@NotNull String name);
 
-  @NotNull @Unmodifiable Collection<Profile> getProfiles(@NotNull String search);
+  @Nullable Profile getProfileInexact(@NotNull String search);
 
   static void warnMainThread(@NotNull Logger logger) {
     if (!Bukkit.getServer().isPrimaryThread()) {
