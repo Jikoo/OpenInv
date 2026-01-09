@@ -22,6 +22,8 @@ dependencies {
   implementation(project(":openinvadapterspigot", configuration = SpigotReobf.ARTIFACT_CONFIG))
   implementation(libs.planarwrappers)
   implementation(libs.folia.scheduler.wrapper)
+  // TODO move to libs, check versions on Spigot/Paper
+  compileOnly("org.xerial:sqlite-jdbc:3.51.1.0")
 }
 
 tasks.processResources {
