@@ -11,7 +11,11 @@ public interface ProfileStore {
 
   void addProfile(@NotNull Profile profile);
 
-  void shutdown();
+  void setup() throws Exception;
+
+  void shutdown() throws Exception;
+
+  void tryImport() throws Exception;
 
   @Nullable Profile getProfileExact(@NotNull String name);
 

@@ -21,13 +21,10 @@ public abstract class JdbcProfileStore extends BatchProfileStore {
 
   protected final @NotNull Logger logger;
 
-  public JdbcProfileStore(@NotNull WrappedJavaPlugin plugin) throws Exception {
+  public JdbcProfileStore(@NotNull WrappedJavaPlugin plugin) {
     super(plugin);
     this.logger = plugin.getLogger();
-    setup();
   }
-
-  protected abstract void setup() throws Exception;
 
   @Override
   protected void pushBatch(@NotNull Set<Profile> batch) {

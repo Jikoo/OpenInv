@@ -22,8 +22,18 @@ public class OfflinePlayerProfileStore implements ProfileStore {
   }
 
   @Override
+  public void setup() {
+    // No-op.
+  }
+
+  @Override
   public void shutdown() {
     // No-op. Nothing to push.
+  }
+
+  @Override
+  public void tryImport() {
+    // No-op.
   }
 
   @Override
