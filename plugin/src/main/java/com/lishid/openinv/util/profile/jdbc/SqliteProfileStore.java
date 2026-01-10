@@ -102,11 +102,11 @@ public class SqliteProfileStore extends JdbcProfileStore {
           VALUES (?, ?, ?)
         """ + ", (?, ?, ?)".repeat(count - 1) +
         """
-         ON CONFLICT(name) DO UPDATE SET
-           uuid_least=excluded.uuid_least,
-           uuid_most=excluded.uuid_most,
-           last_update=CURRENT_TIMESTAMP
-       """
+          ON CONFLICT(name) DO UPDATE SET
+            uuid_least=excluded.uuid_least,
+            uuid_most=excluded.uuid_most,
+            last_update=CURRENT_TIMESTAMP
+        """
     );
   }
 
