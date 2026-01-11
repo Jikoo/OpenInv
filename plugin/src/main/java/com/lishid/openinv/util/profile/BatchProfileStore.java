@@ -55,7 +55,12 @@ public abstract class BatchProfileStore implements ProfileStore {
 
   @Override
   public void shutdown() {
+    WrappedRunnable wrappedRunnable = insertTask.get();
+    if (wrappedRunnable != null) {
+      wrappedRunnable.cancel();
+    }
     pushBatch();
+    insertTask.set(null);
   }
 
   protected abstract void pushBatch(@NotNull Set<Profile> batch);

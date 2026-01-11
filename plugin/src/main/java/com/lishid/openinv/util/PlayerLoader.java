@@ -8,8 +8,7 @@ import com.lishid.openinv.util.config.Config;
 import com.lishid.openinv.util.profile.OfflinePlayerProfileStore;
 import com.lishid.openinv.util.profile.Profile;
 import com.lishid.openinv.util.profile.ProfileStore;
-import com.lishid.openinv.util.profile.jdbc.JdbcProfileStore;
-import com.lishid.openinv.util.profile.jdbc.SqliteProfileStore;
+import com.lishid.openinv.util.profile.sqlite.SqliteProfileStore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -52,10 +51,10 @@ public class PlayerLoader implements Listener {
     this.inventoryManager = inventoryManager;
     this.internalAccessor = internalAccessor;
     try {
-      JdbcProfileStore jdbcProfileStore = new SqliteProfileStore(plugin);
-      jdbcProfileStore.setup();
-      jdbcProfileStore.tryImport();
-      this.profileStore = jdbcProfileStore;
+      SqliteProfileStore sqliteStore = new SqliteProfileStore(plugin);
+      sqliteStore.setup();
+      sqliteStore.tryImport();
+      this.profileStore = sqliteStore;
     } catch (Exception e) {
       this.profileStore = new OfflinePlayerProfileStore(logger);
     }

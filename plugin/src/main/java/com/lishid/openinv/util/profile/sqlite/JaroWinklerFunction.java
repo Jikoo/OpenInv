@@ -1,11 +1,11 @@
-package com.lishid.openinv.util.profile.jdbc;
+package com.lishid.openinv.util.profile.sqlite;
 
 import com.lishid.openinv.util.StringMetric;
 import org.sqlite.Function;
 
 import java.sql.SQLException;
 
-public class SqliteJaroWinkler extends Function {
+public class JaroWinklerFunction extends Function {
 
   @Override
   protected void xFunc() throws SQLException {
