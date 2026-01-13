@@ -37,11 +37,6 @@ public class SqliteProfileStore extends BatchProfileStore {
     connection = DriverManager.getConnection("jdbc:sqlite:" + plugin.getDataFolder().getAbsolutePath() + "/profiles.db");
 
     try (Statement statement = connection.createStatement()) {
-      // Turn on Write-Ahead Logging.
-      // As we only write one batch at a time, this should be safe.
-      // TODO The only possible lock contention should be at shutdown.
-      statement.executeQuery("PRAGMA journal_mode=WAL").close();
-
       // Create main profile table.
       statement.executeUpdate(
           """
