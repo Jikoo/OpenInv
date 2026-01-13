@@ -67,6 +67,10 @@ public class PlayerLoader implements Listener {
   }
 
   public void setProfileStore(@NotNull ProfileStore profileStore) {
+    plugin.getLogger().log(
+        Level.INFO,
+        () -> "Setting profile store implementation to " + profileStore.getClass().getName()
+    );
     this.profileStore = profileStore;
   }
 

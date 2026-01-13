@@ -70,6 +70,10 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   private PlayerLoader playerLoader;
   private boolean isSpigot = false;
 
+  public PlayerLoader getPlayerLoader() {
+    return playerLoader;
+  }
+
   @Override
   public void reloadConfig() {
     super.reloadConfig();
