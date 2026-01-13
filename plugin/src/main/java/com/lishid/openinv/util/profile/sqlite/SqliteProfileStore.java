@@ -23,6 +23,7 @@ import java.util.logging.Level;
 public class SqliteProfileStore extends BatchProfileStore {
 
   private static final int BATCH_SIZE = 1_000;
+  private static final int MAX_BATCHES = 20;
 
   private Connection connection;
 
@@ -148,6 +149,12 @@ public class SqliteProfileStore extends BatchProfileStore {
           upsert.setLong(startIndex + 3, profile.id().getMostSignificantBits());
         }
         upsert.addBatch();
+
+        // If we're at the maximum number of batches allowed, commit.
+        if ((batchIndex + 1) % MAX_BATCHES == 0) {
+          upsert.executeBatch();
+          connection.commit();
+        }
       }
       upsert.executeBatch();
     }
