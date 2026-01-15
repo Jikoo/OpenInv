@@ -34,8 +34,13 @@ public abstract class BatchProfileStore implements ProfileStore {
         pushBatch();
       }
     })) {
-      // Wait 5 seconds to accumulate other player data to reduce scheduler load on larger servers.
-      insertTask.get().runTaskLaterAsynchronously(plugin, TickTimeUnit.toTicks(5, TimeUnit.SECONDS));
+      try {
+        // Wait 5 seconds to accumulate other player data to reduce scheduler load on larger servers.
+        insertTask.get().runTaskLaterAsynchronously(plugin, TickTimeUnit.toTicks(5, TimeUnit.SECONDS));
+      } catch (IllegalStateException e) {
+        // If scheduling task fails, server is most likely shutting down.
+        insertTask.set(null);
+      }
     }
   }
 
@@ -50,6 +55,11 @@ public abstract class BatchProfileStore implements ProfileStore {
     WrappedRunnable running = insertTask.getAndSet(null);
     if (running != null) {
       running.cancel();
+    }
+
+    // If more profiles have been added, build another batch.
+    if (!pending.isEmpty()) {
+      buildBatch();
     }
   }
 
