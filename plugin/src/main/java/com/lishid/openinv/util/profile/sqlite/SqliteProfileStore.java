@@ -95,7 +95,7 @@ public class SqliteProfileStore extends BatchProfileStore {
         try (PreparedStatement statement = connection.prepareStatement(
             "INSERT INTO openinv_meta(name, value) VALUES ('imported', 1)"
         )) {
-          statement.executeQuery();
+          statement.executeUpdate();
         } catch (SQLException e) {
           plugin.getLogger().log(Level.WARNING, "Exception marking import complete: " + e.getMessage(), e);
         }
@@ -225,7 +225,7 @@ public class SqliteProfileStore extends BatchProfileStore {
           return null;
         }
 
-        UUID uuid = new UUID(resultSet.getLong(2), resultSet.getLong(3));
+        UUID uuid = new UUID(resultSet.getLong(3), resultSet.getLong(2));
         return new Profile(name, uuid);
       }
     } catch (SQLException e) {

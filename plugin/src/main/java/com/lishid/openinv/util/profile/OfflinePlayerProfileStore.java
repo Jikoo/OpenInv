@@ -60,7 +60,7 @@ public class OfflinePlayerProfileStore implements ProfileStore {
 
     float bestMatch = 0.0F;
     Profile bestProfile = null;
-    for (OfflinePlayer player : Bukkit.getOnlinePlayers()) {
+    for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
       String name = player.getName();
       if (name == null) {
         // Discount UUID-only profiles; Direct UUID lookup should already be done.
