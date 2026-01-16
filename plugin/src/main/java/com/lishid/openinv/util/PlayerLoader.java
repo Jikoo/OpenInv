@@ -189,8 +189,12 @@ public class PlayerLoader implements Listener {
 
     // Get associated player and store match.
     player = Bukkit.getOfflinePlayer(profile.id());
-    lookupCache.put(name, profile);
-    return player;
+    if (player.hasPlayedBefore()) {
+      lookupCache.put(name, profile);
+      return player;
+    }
+
+    return null;
   }
 
   @Keep
