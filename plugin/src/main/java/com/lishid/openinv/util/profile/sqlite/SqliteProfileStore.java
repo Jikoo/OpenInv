@@ -90,6 +90,7 @@ public class SqliteProfileStore extends BatchProfileStore {
     }
 
     new OfflinePlayerImporter(this) {
+    new OfflinePlayerImporter(this, BATCH_SIZE) {
       @Override
       public void onComplete() {
         try (PreparedStatement statement = connection.prepareStatement(
