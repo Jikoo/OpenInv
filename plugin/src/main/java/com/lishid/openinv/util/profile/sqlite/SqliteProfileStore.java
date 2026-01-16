@@ -89,7 +89,7 @@ public class SqliteProfileStore extends BatchProfileStore {
       }
     }
 
-    new OfflinePlayerImporter(this) {
+    plugin.getLogger().info("Indexing player names.");
     new OfflinePlayerImporter(this, BATCH_SIZE) {
       @Override
       public void onComplete() {
@@ -97,6 +97,7 @@ public class SqliteProfileStore extends BatchProfileStore {
             "INSERT INTO openinv_meta(name, value) VALUES ('imported', 1)"
         )) {
           statement.executeUpdate();
+          plugin.getLogger().info("Indexed player names successfully.");
         } catch (SQLException e) {
           plugin.getLogger().log(Level.WARNING, "Exception marking import complete: " + e.getMessage(), e);
         }
