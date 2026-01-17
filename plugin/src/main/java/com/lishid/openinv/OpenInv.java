@@ -56,6 +56,7 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * The main class for OpenInv.
@@ -68,6 +69,10 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   private LanguageManager languageManager;
   private PlayerLoader playerLoader;
   private boolean isSpigot = false;
+
+  public PlayerLoader getPlayerLoader() {
+    return playerLoader;
+  }
 
   @Override
   public void reloadConfig() {
@@ -96,6 +101,11 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   @Override
   public void onDisable() {
     inventoryManager.evictAll();
+    try {
+      playerLoader.getProfileStore().shutdown();
+    } catch (Exception e) {
+      getLogger().log(Level.WARNING, "Failed to shut down profile store correctly", e);
+    }
   }
 
   @Override

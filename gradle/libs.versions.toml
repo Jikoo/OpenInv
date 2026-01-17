@@ -9,6 +9,7 @@ folia-scheduler-wrapper = "v0.0.3"
 errorprone-core = "2.45.0"
 errorprone-gradle = "4.2.0"
 slf4j = "2.0.17"
+sqlite-jdbc = "3.49.1.0"
 
 [libraries]
 spigotapi = { module = "org.spigotmc:spigot-api", version.ref = "spigotapi" }
@@ -19,6 +20,7 @@ folia-scheduler-wrapper = { module = "com.github.NahuLD.folia-scheduler-wrapper:
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
 errorprone-gradle = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorprone-gradle" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
 
 [plugins]
 paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }

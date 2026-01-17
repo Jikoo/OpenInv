@@ -5,13 +5,16 @@ import com.google.common.cache.CacheBuilder;
 import com.google.errorprone.annotations.Keep;
 import com.lishid.openinv.OpenInv;
 import com.lishid.openinv.util.config.Config;
+import com.lishid.openinv.util.profile.OfflinePlayerProfileStore;
+import com.lishid.openinv.util.profile.Profile;
+import com.lishid.openinv.util.profile.ProfileStore;
+import com.lishid.openinv.util.profile.sqlite.SqliteProfileStore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.profile.PlayerProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +36,8 @@ public class PlayerLoader implements Listener {
   private final @NotNull InventoryManager inventoryManager;
   private final @NotNull InternalAccessor internalAccessor;
   private final @NotNull Logger logger;
-  private final @NotNull Cache<String, PlayerProfile> lookupCache;
+  private final @NotNull Cache<String, Profile> lookupCache;
+  private @NotNull ProfileStore profileStore;
 
   public PlayerLoader(
       @NotNull OpenInv plugin,
@@ -46,8 +50,28 @@ public class PlayerLoader implements Listener {
     this.config = config;
     this.inventoryManager = inventoryManager;
     this.internalAccessor = internalAccessor;
+    try {
+      SqliteProfileStore sqliteStore = new SqliteProfileStore(plugin);
+      sqliteStore.setup();
+      sqliteStore.tryImport();
+      this.profileStore = sqliteStore;
+    } catch (Exception e) {
+      this.profileStore = new OfflinePlayerProfileStore(logger);
+    }
     this.logger = logger;
     this.lookupCache = CacheBuilder.newBuilder().maximumSize(20).build();
+  }
+
+  public @NotNull ProfileStore getProfileStore() {
+    return profileStore;
+  }
+
+  public void setProfileStore(@NotNull ProfileStore profileStore) {
+    plugin.getLogger().log(
+        Level.INFO,
+        () -> "Setting profile store implementation to " + profileStore.getClass().getName()
+    );
+    this.profileStore = profileStore;
   }
 
   /**
@@ -59,20 +83,18 @@ public class PlayerLoader implements Listener {
    * @throws IllegalStateException if the server version is unsupported
    */
   public @Nullable Player load(@NotNull OfflinePlayer offline) {
-    UUID key = offline.getUniqueId();
-
     Player player = offline.getPlayer();
-    if (player != null) {
-      return player;
-    }
-
-    player = inventoryManager.getLoadedPlayer(key);
     if (player != null) {
       return player;
     }
 
     if (config.isOfflineDisabled() || !internalAccessor.isSupported()) {
       return null;
+    }
+
+    player = inventoryManager.getLoadedPlayer(offline.getUniqueId());
+    if (player != null) {
+      return player;
     }
 
     if (Bukkit.isPrimaryThread()) {
@@ -93,13 +115,6 @@ public class PlayerLoader implements Listener {
   }
 
   public @Nullable OfflinePlayer matchExact(@NotNull String name) {
-    // Warn if called on the main thread - if we resort to searching offline players, this may take several seconds.
-    if (Bukkit.getServer().isPrimaryThread()) {
-      logger.warning("Call to PlayerSearchCache#matchPlayer made on the main thread!");
-      logger.warning("This can cause the server to hang, potentially severely.");
-      logger.log(Level.WARNING, "Current stack trace", new Throwable("Current stack trace"));
-    }
-
     OfflinePlayer player;
 
     try {
@@ -123,9 +138,9 @@ public class PlayerLoader implements Listener {
     }
 
     // Cached offline match.
-    PlayerProfile cachedResult = lookupCache.getIfPresent(name);
-    if (cachedResult != null && cachedResult.getUniqueId() != null) {
-      player = Bukkit.getOfflinePlayer(cachedResult.getUniqueId());
+    Profile cachedResult = lookupCache.getIfPresent(name);
+    if (cachedResult != null) {
+      player = Bukkit.getOfflinePlayer(cachedResult.id());
       // Ensure player is an existing player.
       if (player.hasPlayedBefore() || player.isOnline()) {
         return player;
@@ -135,10 +150,15 @@ public class PlayerLoader implements Listener {
     }
 
     // Exact offline match second - ensure offline access works when matchable users are online.
-    player = Bukkit.getServer().getOfflinePlayer(name);
+    Profile profile = profileStore.getProfileExact(name);
+    if (profile == null) {
+      return null;
+    }
+
+    player = Bukkit.getOfflinePlayer(profile.id());
 
     if (player.hasPlayedBefore()) {
-      lookupCache.put(name, player.getPlayerProfile());
+      lookupCache.put(name, profile);
       return player;
     }
 
@@ -160,40 +180,35 @@ public class PlayerLoader implements Listener {
     }
 
     // Finally, inexact offline match.
-    float bestMatch = 0;
-    for (OfflinePlayer offline : Bukkit.getServer().getOfflinePlayers()) {
-      if (offline.getName() == null) {
-        // Loaded by UUID only, name has never been looked up.
-        continue;
-      }
+    Profile profile = getProfileStore().getProfileInexact(name);
 
-      float currentMatch = StringMetric.compareJaroWinkler(name, offline.getName());
-
-      if (currentMatch == 1.0F) {
-        return offline;
-      }
-
-      if (currentMatch > bestMatch) {
-        bestMatch = currentMatch;
-        player = offline;
-      }
+    if (profile == null) {
+      // No match found.
+      return null;
     }
 
-    if (player != null) {
-      // If a match was found, store it.
-      lookupCache.put(name, player.getPlayerProfile());
+    // Get associated player and store match.
+    player = Bukkit.getOfflinePlayer(profile.id());
+    if (player.hasPlayedBefore()) {
+      lookupCache.put(name, profile);
       return player;
     }
 
-    // No players have ever joined the server.
     return null;
   }
 
   @Keep
   @EventHandler
+  private void onPlayerJoin(@NotNull PlayerJoinEvent event) {
+    plugin.getScheduler().runTaskLaterAsynchronously(() -> updateMatches(event), 7L);
+  }
+
   private void updateMatches(@NotNull PlayerJoinEvent event) {
+    // Update profile store.
+    profileStore.addProfile(new Profile(event.getPlayer()));
+
     // If player is not new, any cached values are valid.
-    if (event.getPlayer().hasPlayedBefore()) {
+    if (event.getPlayer().hasPlayedBefore() || lookupCache.size() == 0) {
       return;
     }
 
@@ -201,36 +216,19 @@ public class PlayerLoader implements Listener {
     String name = event.getPlayer().getName();
     lookupCache.invalidate(name);
 
-    // If the cache is empty, nothing to do. Don't hit scheduler.
-    if (lookupCache.size() == 0) {
-      return;
+    Iterator<Map.Entry<String, Profile>> iterator = lookupCache.asMap().entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Profile> entry = iterator.next();
+      String oldMatch = entry.getValue().name();
+      String lookup = entry.getKey();
+      float oldMatchScore = StringMetric.compareJaroWinkler(lookup, oldMatch);
+      float newMatchScore = StringMetric.compareJaroWinkler(lookup, name);
+
+      // If new match exceeds old match, delete old match.
+      if (newMatchScore > oldMatchScore) {
+        iterator.remove();
+      }
     }
-
-    plugin.getScheduler().runTaskLaterAsynchronously(
-        () -> {
-          Iterator<Map.Entry<String, PlayerProfile>> iterator = lookupCache.asMap().entrySet().iterator();
-          while (iterator.hasNext()) {
-            Map.Entry<String, PlayerProfile> entry = iterator.next();
-            String oldMatch = entry.getValue().getName();
-
-            // Shouldn't be possible - all profiles should be complete.
-            if (oldMatch == null) {
-              iterator.remove();
-              continue;
-            }
-
-            String lookup = entry.getKey();
-            float oldMatchScore = StringMetric.compareJaroWinkler(lookup, oldMatch);
-            float newMatchScore = StringMetric.compareJaroWinkler(lookup, name);
-
-            // If new match exceeds old match, delete old match.
-            if (newMatchScore > oldMatchScore) {
-              iterator.remove();
-            }
-          }
-        },
-        7L
-    );
   }
 
 }

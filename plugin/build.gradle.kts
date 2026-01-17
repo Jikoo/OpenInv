@@ -22,10 +22,14 @@ dependencies {
   implementation(project(":openinvadapterspigot", configuration = SpigotReobf.ARTIFACT_CONFIG))
   implementation(libs.planarwrappers)
   implementation(libs.folia.scheduler.wrapper)
+  compileOnly(libs.sqlite.jdbc)
 }
 
 tasks.processResources {
-  expand("version" to version)
+  expand(
+    "version" to version,
+    "sqlite" to libs.sqlite.jdbc.get().version
+  )
 }
 
 tasks.jar {
