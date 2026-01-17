@@ -8,3 +8,12 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    ignore:
+      # The SQLite JDBC is provided by Spigot and, for now, Paper.
+      # To ensure it is still present even if Paper stops providing it,
+      # we need to declare it as a library.
+      # To prevent needlessly downloading (and loading) a second copy,
+      # we want to ensure that we are using the provided version.
+      - dependency-name: "org.xerial:sqlite-jdbc"
+      # Spigot and Spigot API updates are manual.
+      - dependency-name: "org.spigotmc:*"
