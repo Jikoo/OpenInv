@@ -134,7 +134,6 @@ public class SqliteProfileStore extends BatchProfileStore {
         connection.setAutoCommit(true);
       }
     } catch (SQLException e) {
-      // TODO retry on error? Might be best-handled at the BatchProfileStore level.
       plugin.getLogger().log(Level.WARNING, "Encountered an exception updating profiles", e);
     }
 
@@ -204,12 +203,31 @@ public class SqliteProfileStore extends BatchProfileStore {
                 LIMIT 1
               """
           );
-          String likePrefix = text.isEmpty() ? "%" : text.charAt(0) + "%";
-          statement.setString(1, likePrefix);
+          statement.setString(1, getLikePrefix(text));
           statement.setString(2, text);
           return statement;
         }
     );
+  }
+
+  private @NotNull String getLikePrefix(@NotNull String search) {
+    StringBuilder prefix = new StringBuilder();
+    int searchLen = search.length();
+    if (searchLen > 0) {
+      char first = search.charAt(0);
+
+      // Add first character of the search to LIKE prefix.
+      prefix.append(first);
+
+      // If the first character appears to be Geyser-like, append another.
+      if (searchLen > 1 && (first == '.' || first == '*')) {
+        prefix.append(search.charAt(1));
+      }
+    }
+
+    // Add wildcard.
+    prefix.append('%');
+    return prefix.toString();
   }
 
   private @Nullable Profile getProfile(
