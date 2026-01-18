@@ -43,6 +43,10 @@ jobs:
           files: ./OpenInv.jar
           game-versions: "${{ steps.parse_versions.outputs.PAPER_VERSIONS }}"
           game-version-filter: releases
+          loaders: |
+            spigot
+            paper
+            folia
 
   modrinth_release:
     runs-on: ubuntu-latest
@@ -59,6 +63,10 @@ jobs:
           files: ./OpenInv.jar
           game-versions: "${{ steps.parse_versions.outputs.PAPER_VERSIONS }}"
           game-version-filter: releases
+          loaders: |
+            spigot
+            paper
+            folia
 
   hangar_release:
     runs-on: ubuntu-latest
@@ -69,11 +77,14 @@ jobs:
           # Find line declaring Paper versions.
           raw=$(grep "\\*\\*Paper:\\*\\*" <<< "${{ github.event.release.body }}")
           # Trim Paper versions identifier prefix.
-          raw=${raw/'**'Paper:'**'/}
+          raw="${raw/'**'Paper:'**'/}"
+          # Trim leading and trailing spaces.
+          raw="${raw##[[:space:]]}"
+          raw="${raw%%[[:space:]]}"
 
           # Generate JSON for Hangar. GitHub Actions provides jq 1.7 in the 24.04 image.
-          # Trim, then split on comma and optional spaces.
-          hangar_versions=$(jq -nc --arg versions "$raw" '{"PAPER": $versions | trim | split(", *";null)}')
+          # Split on comma and optional spaces.
+          hangar_versions=$(jq -nc --arg versions "$raw" '{"PAPER": $versions | split(", *";null)}')
 
           echo "$hangar_versions"
           echo "HANGAR_PAPER_VERSIONS=$hangar_versions" >> "$GITHUB_OUTPUT"
