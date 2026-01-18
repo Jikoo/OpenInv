@@ -1,7 +1,9 @@
 ## About
 
-OpenInv is a [Bukkit plugin](https://dev.bukkit.org/projects/openinv) which allows users to open and edit anyone's
+OpenInv is a Bukkit plugin which allows users to open and edit anyone's
 inventory or ender chest - online or not!
+
+Downloads are available on [GitHub](https://github.com/Jikoo/OpenInv/releases), [DBO](https://dev.bukkit.org/projects/openinv)/[CurseForge](https://www.curseforge.com/minecraft/bukkit-plugins/openinv), [Modrinth](https://modrinth.com/plugin/openinv), and [Hangar](https://hangar.papermc.io/jikoo/OpenInv).
 
 ## Features
 
@@ -17,6 +19,7 @@ inventory or ender chest - online or not!
   - Cross-world support! Allow access only from the same world.
 - **SilentContainer**: Open containers without displaying an animation or making sound.
 - **AnyContainer**: Open containers, even if blocked by ocelots or blocks.
+- **Resource Pack Support**: Personalize view using resource pack tricks like custom fonts and characters. See [the wiki](https://github.com/Jikoo/OpenInv/wiki/Customizing-Inventories) for details.
 
 ## Commands
 
