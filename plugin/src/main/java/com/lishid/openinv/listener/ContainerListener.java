@@ -40,6 +40,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
+import static com.lishid.openinv.internal.AnySilentContainerBase.getHolder;
+
 /**
  * A listener managing AnyContainer, SilentContainer, and more.
  */
@@ -101,7 +103,7 @@ public class ContainerListener implements Listener {
       return;
     }
 
-    InventoryHolder holder = InventoryAccess.getHolder(event.getInventory());
+    InventoryHolder holder = getHolder(event.getInventory());
     if (PlayerToggles.silent().is(player)
         && holder != null
         && this.accessor.getAnySilentContainer().isAnySilentContainer(holder)) {
