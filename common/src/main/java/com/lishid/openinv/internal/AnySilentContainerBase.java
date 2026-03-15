@@ -10,12 +10,15 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Chest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
 import java.lang.reflect.Method;
 
 public abstract class AnySilentContainerBase implements IAnySilentContainer {
 
   private static final @Nullable Method BLOCK_GET_STATE_BOOLEAN;
+  private static final @Nullable Method INVENTORY_GET_HOLDER_BOOLEAN;
 
   static {
     @Nullable Method getState;
@@ -26,6 +29,15 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
       getState = null;
     }
     BLOCK_GET_STATE_BOOLEAN = getState;
+
+    @Nullable Method getHolder;
+    try {
+      //noinspection JavaReflectionMemberAccess
+      getHolder = Inventory.class.getMethod("getHolder", boolean.class);
+    } catch (NoSuchMethodException e) {
+      getHolder = null;
+    }
+    INVENTORY_GET_HOLDER_BOOLEAN = getHolder;
   }
 
   private static BlockState getBlockState(Block block) {
@@ -38,6 +50,18 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
       }
     }
     return block.getState();
+  }
+
+  public static @Nullable InventoryHolder getHolder(@NotNull Inventory inventory) {
+    if (INVENTORY_GET_HOLDER_BOOLEAN != null) {
+      try {
+        return (InventoryHolder) INVENTORY_GET_HOLDER_BOOLEAN.invoke(inventory, false);
+      } catch (ReflectiveOperationException ignored) {
+        // fallback
+      }
+    }
+  
+    return inventory.getHolder();
   }
 
   @Override
