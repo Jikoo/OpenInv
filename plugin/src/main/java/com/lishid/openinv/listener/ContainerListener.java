@@ -19,6 +19,7 @@ package com.lishid.openinv.listener;
 import com.google.errorprone.annotations.Keep;
 import com.lishid.openinv.internal.ViewOnly;
 import com.lishid.openinv.util.InternalAccessor;
+import com.lishid.openinv.util.InventoryAccess;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.setting.PlayerToggles;
@@ -100,7 +101,7 @@ public class ContainerListener implements Listener {
       return;
     }
 
-    InventoryHolder holder = event.getInventory().getHolder();
+    InventoryHolder holder = InventoryAccess.getHolder(event.getInventory());
     if (PlayerToggles.silent().is(player)
         && holder != null
         && this.accessor.getAnySilentContainer().isAnySilentContainer(holder)) {
