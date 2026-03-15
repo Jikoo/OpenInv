@@ -52,7 +52,7 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
     return block.getState();
   }
 
-  private static @Nullable InventoryHolder getHolder(@NotNull Inventory inventory) {
+  public static @Nullable InventoryHolder getHolder(@NotNull Inventory inventory) {
     if (INVENTORY_GET_HOLDER_BOOLEAN != null) {
       try {
         return (InventoryHolder) INVENTORY_GET_HOLDER_BOOLEAN.invoke(inventory, false);
