@@ -45,6 +45,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -211,6 +213,16 @@ public class AnySilentContainer extends AnySilentContainerBase {
     } catch (IllegalArgumentException | IllegalAccessException e) {
       logger.log(java.util.logging.Level.WARNING, "Error bypassing GameModeChangeEvent", e);
     }
+  }
+
+  @Override
+  protected org.bukkit.block.BlockState getState(@NotNull org.bukkit.block.Block block) {
+    return block.getState(false);
+  }
+
+  @Override
+  protected InventoryHolder getHolder(@NotNull Inventory inventory) {
+    return inventory.getHolder(false);
   }
 
 }

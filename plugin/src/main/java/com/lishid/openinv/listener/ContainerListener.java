@@ -100,10 +100,8 @@ public class ContainerListener implements Listener {
       return;
     }
 
-    InventoryHolder holder = event.getInventory().getHolder();
     if (PlayerToggles.silent().is(player)
-        && holder != null
-        && this.accessor.getAnySilentContainer().isAnySilentContainer(holder)) {
+        && this.accessor.getAnySilentContainer().isAnySilentContainer(event.getInventory())) {
       this.accessor.getAnySilentContainer().deactivateContainer(player);
     }
   }
