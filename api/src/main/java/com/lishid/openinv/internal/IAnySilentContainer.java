@@ -23,6 +23,7 @@ import org.bukkit.block.EnderChest;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
@@ -118,5 +119,13 @@ public interface IAnySilentContainer {
         || holder instanceof org.bukkit.block.ShulkerBox
         || holder instanceof org.bukkit.block.Barrel;
   }
+
+  /**
+   * Check if the given {@link Inventory} belongs to a container which can be unblocked or silenced.
+   * 
+   * @param inventory the potential container inventory
+   * @return true if the type is a supported container
+   */
+  boolean isAnySilentContainer(@NotNull Inventory inventory);
 
 }

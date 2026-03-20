@@ -8,6 +8,8 @@ import org.bukkit.block.EnderChest;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Chest;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,5 +104,12 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
   public boolean isAnySilentContainer(@NotNull Block block) {
     return isAnySilentContainer(getBlockState(block));
   }
+
+  @Override
+  public boolean isAnySilentContainer(@NotNull Inventory inventory) {
+    return isAnySilentContainer(getHolder(inventory));
+  }
+
+  protected abstract InventoryHolder getHolder(@NotNull Inventory inventory);
 
 }
