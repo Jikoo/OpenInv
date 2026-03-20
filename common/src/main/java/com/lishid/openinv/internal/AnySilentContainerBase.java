@@ -11,40 +11,12 @@ import org.bukkit.block.data.type.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.lang.reflect.Method;
 
 public abstract class AnySilentContainerBase implements IAnySilentContainer {
 
-  private static final @Nullable Method BLOCK_GET_STATE_BOOLEAN;
-
-  static {
-    @Nullable Method getState;
-    try {
-      //noinspection JavaReflectionMemberAccess
-      getState = Block.class.getMethod("getState", boolean.class);
-    } catch (NoSuchMethodException e) {
-      getState = null;
-    }
-    BLOCK_GET_STATE_BOOLEAN = getState;
-  }
-
-  private static BlockState getBlockState(Block block) {
-    // Paper: Get state without snapshotting.
-    if (BLOCK_GET_STATE_BOOLEAN != null) {
-      try {
-        return (BlockState) BLOCK_GET_STATE_BOOLEAN.invoke(block, false);
-      } catch (ReflectiveOperationException ignored) {
-        // If we encounter an issue, fall through to regular snapshotting method.
-      }
-    }
-    return block.getState();
-  }
-
   @Override
   public boolean isAnyContainerNeeded(@NotNull Block block) {
-    BlockState blockState = getBlockState(block);
+    BlockState blockState = getState(block);
 
     // Barrels do not require AnyContainer.
     if (blockState instanceof Barrel) {
@@ -102,13 +74,15 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
 
   @Override
   public boolean isAnySilentContainer(@NotNull Block block) {
-    return isAnySilentContainer(getBlockState(block));
+    return isAnySilentContainer(getState(block));
   }
 
   @Override
   public boolean isAnySilentContainer(@NotNull Inventory inventory) {
     return isAnySilentContainer(getHolder(inventory));
   }
+
+  protected abstract BlockState getState(@NotNull Block block);
 
   protected abstract InventoryHolder getHolder(@NotNull Inventory inventory);
 

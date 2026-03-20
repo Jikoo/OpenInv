@@ -216,6 +216,11 @@ public class AnySilentContainer extends AnySilentContainerBase {
   }
 
   @Override
+  protected org.bukkit.block.BlockState getState(@NotNull org.bukkit.block.Block block) {
+    return block.getState(false);
+  }
+
+  @Override
   protected InventoryHolder getHolder(@NotNull Inventory inventory) {
     return inventory.getHolder(false);
   }
