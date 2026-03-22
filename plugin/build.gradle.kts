@@ -27,8 +27,10 @@ dependencies {
 
 tasks.processResources {
   expand(
-    "version" to version,
-    "sqlite" to libs.sqlite.jdbc.get().version
+    mutableMapOf(
+      "version" to version,
+      "sqlite" to libs.sqlite.jdbc.get().version
+    )
   )
 }
 
