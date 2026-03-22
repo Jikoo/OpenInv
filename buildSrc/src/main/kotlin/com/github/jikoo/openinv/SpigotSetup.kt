@@ -46,12 +46,7 @@ abstract class SpigotSetup : Plugin<Project> {
 
       // Add Spigot dependency.
       val dependency = target.dependencies.create(
-        "org.spigotmc",
-        "spigot",
-        spigotExt.version.get(),
-        spigotExt.configuration.orNull,
-        spigotExt.classifier.orNull,
-        spigotExt.ext.orNull
+        "org.spigotmc:spigot:${spigotExt.version.get()}:${spigotExt.classifier.getOrElse("")}"
       )
       target.dependencies.add("compileOnly", dependency)
     }
