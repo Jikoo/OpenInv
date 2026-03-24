@@ -1,5 +1,3 @@
-import com.github.jikoo.openinv.SpigotReobf
-
 plugins {
   `openinv-base`
   alias(libs.plugins.shadow)
@@ -19,7 +17,9 @@ dependencies {
   implementation(project(":openinvadapterpaper1_21_4"))
   implementation(project(":openinvadapterpaper1_21_3"))
   implementation(project(":openinvadapterpaper1_21_1"))
-  implementation(project(":openinvadapterspigot", configuration = SpigotReobf.ARTIFACT_CONFIG))
+  implementation(project(":openinvadapterspigot")) {
+    isTransitive = false
+  }
   implementation(libs.planarwrappers)
   implementation(libs.folia.scheduler.wrapper)
   compileOnly(libs.sqlite.jdbc)

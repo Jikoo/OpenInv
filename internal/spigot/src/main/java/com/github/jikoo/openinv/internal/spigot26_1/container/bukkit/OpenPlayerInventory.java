@@ -1,11 +1,11 @@
-package com.lishid.openinv.internal.reobf.container.bukkit;
+package com.github.jikoo.openinv.internal.spigot26_1.container.bukkit;
 
 import com.google.common.base.Preconditions;
-import com.lishid.openinv.internal.reobf.container.BaseOpenInventory;
+import com.github.jikoo.openinv.internal.spigot26_1.container.BaseOpenInventory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
-import org.bukkit.craftbukkit.v1_21_R7.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_21_R7.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;

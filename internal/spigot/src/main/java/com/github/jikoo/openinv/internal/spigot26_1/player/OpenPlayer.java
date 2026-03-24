@@ -1,4 +1,4 @@
-package com.lishid.openinv.internal.reobf.player;
+package com.github.jikoo.openinv.internal.spigot26_1.player;
 
 import com.lishid.openinv.event.OpenEvents;
 import com.mojang.logging.LogUtils;
@@ -13,8 +13,8 @@ import net.minecraft.util.Util;
 import net.minecraft.world.level.storage.PlayerDataStorage;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.bukkit.craftbukkit.v1_21_R7.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R7.entity.CraftPlayer;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

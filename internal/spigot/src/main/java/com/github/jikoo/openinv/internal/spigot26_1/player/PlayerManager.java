@@ -1,9 +1,9 @@
-package com.lishid.openinv.internal.reobf.player;
+package com.github.jikoo.openinv.internal.spigot26_1.player;
 
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenEnderChest;
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
+import com.github.jikoo.openinv.internal.spigot26_1.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.internal.reobf.container.OpenEnderChest;
-import com.lishid.openinv.internal.reobf.container.OpenInventory;
-import com.lishid.openinv.internal.reobf.container.menu.OpenChestMenu;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
@@ -24,9 +24,9 @@ import net.minecraft.world.level.storage.ValueInput;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.craftbukkit.v1_21_R7.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R7.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_21_R7.event.CraftEventFactory;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;

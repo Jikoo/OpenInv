@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
 
       # We can't use 'maven' prebuilt cache setup because it requires that the project have a pom file.
       # BuildTools installs to Maven local if available, so it's easier to just rely on that.
@@ -36,7 +36,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew build
 
       # Upload artifacts
       - name: Upload Distributable Jar

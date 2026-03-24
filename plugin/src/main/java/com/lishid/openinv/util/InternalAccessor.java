@@ -64,23 +64,21 @@ public class InternalAccessor {
   }
 
   private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
+    // TODO reorganize internals, version handling
+    if (!PAPER) {
+      if (BukkitVersions.MINECRAFT.equals(Version.of(26, 1))) {
+        // Load Spigot accessor.
+        return new com.github.jikoo.openinv.internal.spigot26_1.InternalAccessor(logger, lang);
+      }
+      return null;
+    }
+
     Version maxSupported = Version.of(1, 21, 11);
     Version minSupported = Version.of(1, 21, 1);
 
     // Ensure version is in supported range.
     if (BukkitVersions.MINECRAFT.greaterThan(maxSupported) || BukkitVersions.MINECRAFT.lessThan(minSupported)) {
       return null;
-    }
-
-    // Load Spigot accessor.
-    if (!PAPER) {
-      if (BukkitVersions.MINECRAFT.equals(maxSupported)) {
-        // Current Spigot, remapped internals are available.
-        return new com.lishid.openinv.internal.reobf.InternalAccessor(logger, lang);
-      } else {
-        // Older Spigot; unsupported.
-        return null;
-      }
     }
 
     // Paper or a Paper fork, can use Mojang-mapped internals.
@@ -211,6 +209,9 @@ public class InternalAccessor {
     }
     if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 10))) {
       return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.15";
+    }
+    if (BukkitVersions.MINECRAFT.lessThan(Version.of(26, 1))) {
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.3.0";
     }
 
     return "https://github.com/Jikoo/OpenInv/releases";

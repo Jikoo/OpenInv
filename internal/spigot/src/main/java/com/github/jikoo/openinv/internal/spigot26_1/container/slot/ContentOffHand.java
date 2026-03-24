@@ -1,6 +1,6 @@
-package com.lishid.openinv.internal.reobf.container.slot;
+package com.github.jikoo.openinv.internal.spigot26_1.container.slot;
 
-import com.lishid.openinv.internal.reobf.player.OpenPlayer;
+import com.github.jikoo.openinv.internal.spigot26_1.player.OpenPlayer;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
