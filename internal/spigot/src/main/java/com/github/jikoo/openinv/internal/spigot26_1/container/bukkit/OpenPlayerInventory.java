@@ -1,7 +1,7 @@
 package com.github.jikoo.openinv.internal.spigot26_1.container.bukkit;
 
 import com.google.common.base.Preconditions;
-import com.github.jikoo.openinv.internal.spigot26_1.container.BaseOpenInventory;
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
@@ -15,13 +15,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class OpenPlayerInventory extends CraftInventory implements PlayerInventory {
 
-  public OpenPlayerInventory(@NotNull BaseOpenInventory inventory) {
+  public OpenPlayerInventory(@NotNull OpenInventory inventory) {
     super(inventory);
   }
 
   @Override
-  public @NotNull BaseOpenInventory getInventory() {
-    return (BaseOpenInventory) super.getInventory();
+  public @NotNull OpenInventory getInventory() {
+    return (OpenInventory) super.getInventory();
   }
 
   @Override

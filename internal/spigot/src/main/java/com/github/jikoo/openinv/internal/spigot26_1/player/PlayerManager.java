@@ -1,7 +1,7 @@
 package com.github.jikoo.openinv.internal.spigot26_1.player;
 
-import com.github.jikoo.openinv.internal.spigot26_1.container.OpenEnderChest;
 import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenEnderChest;
 import com.github.jikoo.openinv.internal.spigot26_1.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.util.JulLoggerAdapter;

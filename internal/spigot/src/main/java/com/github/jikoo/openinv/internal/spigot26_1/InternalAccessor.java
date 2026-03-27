@@ -1,8 +1,8 @@
 package com.github.jikoo.openinv.internal.spigot26_1;
 
 import com.github.jikoo.openinv.internal.spigot26_1.container.AnySilentContainer;
-import com.github.jikoo.openinv.internal.spigot26_1.container.OpenEnderChest;
 import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenEnderChest;
 import com.github.jikoo.openinv.internal.spigot26_1.container.slot.placeholder.PlaceholderLoader;
 import com.github.jikoo.openinv.internal.spigot26_1.player.PlayerManager;
 import com.lishid.openinv.internal.Accessor;

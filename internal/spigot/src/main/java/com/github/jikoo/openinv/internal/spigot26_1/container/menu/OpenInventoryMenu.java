@@ -2,7 +2,7 @@ package com.github.jikoo.openinv.internal.spigot26_1.container.menu;
 
 import com.google.common.base.Preconditions;
 import com.lishid.openinv.util.Permissions;
-import com.github.jikoo.openinv.internal.spigot26_1.container.BaseOpenInventory;
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
 import com.github.jikoo.openinv.internal.spigot26_1.container.bukkit.OpenDummyPlayerInventory;
 import com.github.jikoo.openinv.internal.spigot26_1.container.bukkit.OpenPlayerInventorySelf;
 import com.github.jikoo.openinv.internal.spigot26_1.container.slot.ContentDrop;
@@ -23,15 +23,15 @@ import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class OpenInventoryMenu extends OpenSyncMenu<BaseOpenInventory> {
+public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
 
   private int offset;
 
-  public OpenInventoryMenu(BaseOpenInventory inventory, ServerPlayer viewer, int i, boolean viewOnly) {
+  public OpenInventoryMenu(OpenInventory inventory, ServerPlayer viewer, int i, boolean viewOnly) {
     super(getMenuType(inventory, viewer), i, inventory, viewer, viewOnly);
   }
 
-  private static MenuType<ChestMenu> getMenuType(BaseOpenInventory inventory, ServerPlayer viewer) {
+  private static MenuType<ChestMenu> getMenuType(OpenInventory inventory, ServerPlayer viewer) {
     int size = inventory.getContainerSize();
     // Disallow duplicate access to own main inventory contents.
     if (inventory.getOwnerHandle().equals(viewer)) {
@@ -99,7 +99,7 @@ public class OpenInventoryMenu extends OpenSyncMenu<BaseOpenInventory> {
   }
 
   @Override
-  protected @NotNull CraftInventoryView<OpenChestMenu<BaseOpenInventory>, Inventory> createBukkitEntity() {
+  protected @NotNull CraftInventoryView<OpenChestMenu<OpenInventory>, Inventory> createBukkitEntity() {
     Inventory bukkitInventory;
     if (viewOnly) {
       bukkitInventory = new OpenDummyPlayerInventory(container);

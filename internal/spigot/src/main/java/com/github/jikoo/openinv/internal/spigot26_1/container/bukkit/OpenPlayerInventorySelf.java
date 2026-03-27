@@ -1,6 +1,6 @@
 package com.github.jikoo.openinv.internal.spigot26_1.container.bukkit;
 
-import com.github.jikoo.openinv.internal.spigot26_1.container.BaseOpenInventory;
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +8,7 @@ public class OpenPlayerInventorySelf extends OpenPlayerInventory {
 
   private final int offset;
 
-  public OpenPlayerInventorySelf(@NotNull BaseOpenInventory inventory, int offset) {
+  public OpenPlayerInventorySelf(@NotNull OpenInventory inventory, int offset) {
     super(inventory);
     this.offset = offset;
   }
