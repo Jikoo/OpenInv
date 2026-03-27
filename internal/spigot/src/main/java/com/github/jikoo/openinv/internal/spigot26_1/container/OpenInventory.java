@@ -1,0 +1,49 @@
+package com.github.jikoo.openinv.internal.spigot26_1.container;
+
+import com.github.jikoo.openinv.internal.spigot26_1.container.menu.OpenChestMenu;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public class OpenInventory extends BaseOpenInventory {
+
+  public OpenInventory(@NotNull Player bukkitPlayer) {
+    super(bukkitPlayer);
+  }
+
+  @Override
+  public @NotNull Component getTitle(@Nullable ServerPlayer viewer, @Nullable OpenChestMenu<?> menu) {
+    MutableComponent component = Component.empty();
+    // Prefix for use with custom bitmap image fonts.
+    if (owner.equals(viewer)) {
+      component.append(
+          Component.translatableWithFallback("openinv.container.inventory.self", "")
+              .withStyle(style -> style
+                  .withFont(new FontDescription.Resource(Identifier.parse("openinv:font/inventory")))
+                  .withColor(ChatFormatting.WHITE)));
+    } else {
+      component.append(
+          Component.translatableWithFallback("openinv.container.inventory.other", "")
+              .withStyle(style -> style
+                  .withFont(new FontDescription.Resource(Identifier.parse("openinv:font/inventory")))
+                  .withColor(ChatFormatting.WHITE)));
+    }
+    if (menu != null && menu.isViewOnly()) {
+      component.append(Component.translatableWithFallback("openinv.container.inventory.viewonly", "[RO] "));
+    } else {
+      component.append(Component.translatableWithFallback("openinv.container.inventory.editable", ""));
+    }
+    // Normal title: "Inventory - OwnerName"
+    component.append(Component.translatableWithFallback("openinv.container.inventory.prefix", "", owner.getName()))
+        .append(Component.translatable("container.inventory"))
+        .append(Component.translatableWithFallback("openinv.container.inventory.suffix", " - %s", owner.getName()));
+    return component;
+  }
+
+}

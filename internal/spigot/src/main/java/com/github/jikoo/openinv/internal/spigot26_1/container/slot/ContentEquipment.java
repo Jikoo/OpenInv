@@ -1,13 +1,13 @@
-package com.lishid.openinv.internal.reobf.container.slot;
+package com.github.jikoo.openinv.internal.spigot26_1.container.slot;
 
-import com.lishid.openinv.internal.reobf.container.slot.placeholder.Placeholders;
+import com.github.jikoo.openinv.internal.spigot26_1.container.slot.placeholder.Placeholders;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_21_R7.CraftEquipmentSlot;
-import org.bukkit.craftbukkit.v1_21_R7.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.CraftEquipmentSlot;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;

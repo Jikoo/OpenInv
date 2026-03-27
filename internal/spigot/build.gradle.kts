@@ -1,5 +1,4 @@
 import com.github.jikoo.openinv.SpigotDependencyExtension
-import com.github.jikoo.openinv.SpigotReobf
 import com.github.jikoo.openinv.SpigotSetup
 
 plugins {
@@ -7,12 +6,11 @@ plugins {
   alias(libs.plugins.shadow)
 }
 
-apply<SpigotSetup>()
-apply<SpigotReobf>()
+java {
+  toolchain.languageVersion = JavaLanguageVersion.of(25)
+}
 
-val spigotVer = "1.21.11-R0.2-SNAPSHOT"
-// Used by common adapter to relocate Craftbukkit classes to a versioned package.
-rootProject.extra["craftbukkitPackage"] = "v1_21_R7"
+apply<SpigotSetup>()
 
 configurations.all {
   resolutionStrategy.capabilitiesResolution.withCapability("org.spigotmc:spigot-api") {
@@ -30,15 +28,12 @@ configurations.all {
 
 dependencies {
   compileOnly(libs.spigotapi)
-  extensions.getByType(SpigotDependencyExtension::class.java).version = spigotVer
+  extensions.getByType(SpigotDependencyExtension::class.java).version = "26.1-R0.1-SNAPSHOT"
+  compileOnly("com.mojang:logging:1.6.11")
+  compileOnly("com.mojang:brigadier:1.3.10")
+  compileOnly("com.mojang:datafixerupper:9.0.19")
+  compileOnly("com.mojang:authlib:7.0.62")
 
   compileOnly(project(":openinvapi"))
   compileOnly(project(":openinvcommon"))
-
-  // Reduce duplicate code by lightly remapping common adapter.
-  implementation(project(":openinvadaptercommon", configuration = "spigotRelocated"))
-}
-
-tasks.shadowJar {
-  relocate("com.lishid.openinv.internal.common", "com.lishid.openinv.internal.reobf")
 }

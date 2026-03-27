@@ -1,8 +1,8 @@
-package com.lishid.openinv.internal.reobf.container;
+package com.github.jikoo.openinv.internal.spigot26_1.container;
 
 import com.lishid.openinv.internal.AnySilentContainerBase;
-import com.lishid.openinv.internal.reobf.container.menu.OpenChestMenu;
-import com.lishid.openinv.internal.reobf.player.PlayerManager;
+import com.github.jikoo.openinv.internal.spigot26_1.container.menu.OpenChestMenu;
+import com.github.jikoo.openinv.internal.spigot26_1.player.PlayerManager;
 import com.lishid.openinv.util.ReflectionHelper;
 import com.lishid.openinv.util.lang.LanguageManager;
 import net.minecraft.core.BlockPos;
@@ -205,7 +205,7 @@ public class AnySilentContainer extends AnySilentContainerBase {
   }
 
   @Override
-  protected InventoryHolder getHolder(@NotNull Inventory inventory) {
+  protected @Nullable InventoryHolder getHolder(@NotNull Inventory inventory) {
     return inventory.getHolder();
   }
 

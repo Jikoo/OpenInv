@@ -12,7 +12,7 @@ abstract class SpigotDependencyExtension(
     .convention(version.map {
       it.replace("-R\\d+\\.\\d+-SNAPSHOT".toRegex(), "")
     })
-  val classifier = objects.property(String::class.java).convention("remapped-mojang")
+  val classifier = objects.property(String::class.java).convention("")
   val java = objects.property(JavaToolchainSpec::class.java)
   val ignoreCached = objects.property(Boolean::class.java).convention(false)
 
