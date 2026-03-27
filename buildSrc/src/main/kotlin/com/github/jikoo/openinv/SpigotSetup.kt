@@ -31,7 +31,7 @@ abstract class SpigotSetup : Plugin<Project> {
       // Install Spigot with BuildTools.
       val spigot: File = target.providers.of(BuildToolsValueSource::class.java) {
         parameters {
-          installDir.set(target.layout.buildDirectory.dir("tmp/spigot"))
+          installDir.set(target.gradle.gradleUserHomeDir.resolve("caches/spigot"))
           workingDir.set(target.layout.buildDirectory.dir("tmp/buildtools"))
           spigotVersion.set(spigotExt.version)
           spigotRevision.set(spigotExt.revision)
