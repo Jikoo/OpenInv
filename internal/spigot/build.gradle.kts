@@ -2,33 +2,26 @@ import com.github.jikoo.openinv.SpigotDependencyExtension
 import com.github.jikoo.openinv.SpigotSetup
 
 plugins {
-  `openinv-base`
   alias(libs.plugins.shadow)
+}
+
+repositories {
+  maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 java {
   toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 
-apply<SpigotSetup>()
-
-configurations.all {
-  resolutionStrategy.capabilitiesResolution.withCapability("org.spigotmc:spigot-api") {
-    val spigot = candidates.firstOrNull {
-      it.id.let { id ->
-        id is ModuleComponentIdentifier && id.module == "spigot-api"
-      }
-    }
-    if (spigot != null) {
-      select(spigot)
-    }
-    because("module is written for Spigot servers")
-  }
+tasks.withType<JavaCompile>().configureEach {
+  options.release = 21
 }
+
+apply<SpigotSetup>()
 
 dependencies {
   compileOnly(libs.spigotapi)
-  extensions.getByType(SpigotDependencyExtension::class.java).version = "26.1-R0.1-SNAPSHOT"
+  extensions.getByType(SpigotDependencyExtension::class.java).version = "26.1.1-R0.1-SNAPSHOT"
   compileOnly("com.mojang:logging:1.6.11")
   compileOnly("com.mojang:brigadier:1.3.10")
   compileOnly("com.mojang:datafixerupper:9.0.19")

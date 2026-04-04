@@ -1,13 +1,14 @@
 plugins {
-  `openinv-base`
   alias(libs.plugins.shadow)
 }
 
 repositories {
+  maven("https://hub.spigotmc.org/nexus/content/groups/public/")
   maven("https://jitpack.io")
 }
 
 dependencies {
+  compileOnly(libs.spigotapi)
   implementation(project(":openinvapi"))
   implementation(project(":openinvcommon"))
   implementation(project(":openinvadaptercommon"))
@@ -17,12 +18,18 @@ dependencies {
   implementation(project(":openinvadapterpaper1_21_4"))
   implementation(project(":openinvadapterpaper1_21_3"))
   implementation(project(":openinvadapterpaper1_21_1"))
-  implementation(project(":openinvadapterspigot")) {
-    isTransitive = false
-  }
+  implementation(project(":openinvadapterspigot"))
   implementation(libs.planarwrappers)
   implementation(libs.folia.scheduler.wrapper)
   compileOnly(libs.sqlite.jdbc)
+}
+
+java {
+  toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+tasks.withType<JavaCompile>().configureEach {
+  options.release = 21
 }
 
 tasks.processResources {
