@@ -9,7 +9,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -17,12 +17,13 @@ import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An extension of {@link AbstractContainerMenu} storing and managing data common to all special inventories.
  */
+@NullMarked
 public abstract class OpenChestMenu<T extends Container & ISpecialInventory & InternalOwned<ServerPlayer>>
     extends AbstractContainerMenu {
 
@@ -33,13 +34,13 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   protected final boolean viewOnly;
   protected final boolean ownContainer;
   protected final int topSize;
-  private CraftInventoryView<OpenChestMenu<T>, Inventory> bukkitEntity;
+  private @Nullable CraftInventoryView<OpenChestMenu<T>, Inventory> bukkitEntity;
 
   protected OpenChestMenu(
-      @NotNull MenuType<ChestMenu> type,
+      MenuType<ChestMenu> type,
       int containerCounter,
-      @NotNull T container,
-      @NotNull ServerPlayer viewer,
+      T container,
+      ServerPlayer viewer,
       boolean viewOnly
   ) {
     super(type, containerCounter);
@@ -90,7 +91,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     }
   }
 
-  public static @NotNull MenuType<ChestMenu> getChestMenuType(int inventorySize) {
+  public static MenuType<ChestMenu> getChestMenuType(int inventorySize) {
     inventorySize = ((int) Math.ceil(inventorySize / 9.0)) * 9;
     return switch (inventorySize) {
       case 9 -> MenuType.GENERIC_9x1;
@@ -103,11 +104,10 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     };
   }
 
-
   protected void preSlotSetup() {
   }
 
-  protected @NotNull Slot getUpperSlot(int index, int x, int y) {
+  protected Slot getUpperSlot(int index, int x, int y) {
     Slot slot = new Slot(container, index, x, y);
     if (viewOnly) {
       return SlotViewOnly.wrap(slot);
@@ -120,7 +120,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
-  public final @NotNull CraftInventoryView<OpenChestMenu<T>, Inventory> getBukkitView() {
+  public final CraftInventoryView<OpenChestMenu<T>, Inventory> getBukkitView() {
     if (bukkitEntity == null) {
       bukkitEntity = createBukkitEntity();
     }
@@ -128,7 +128,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     return bukkitEntity;
   }
 
-  protected @NotNull CraftInventoryView<OpenChestMenu<T>, Inventory> createBukkitEntity() {
+  protected CraftInventoryView<OpenChestMenu<T>, Inventory> createBukkitEntity() {
     Inventory top;
     if (viewOnly) {
       top = new OpenDummyInventory(container, container.getBukkitType());
@@ -153,7 +153,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
       }
 
       @Override
-      public @NotNull InventoryType.SlotType getSlotType(int slot) {
+      public InventoryType.SlotType getSlotType(int slot) {
         if (viewOnly) {
           return InventoryType.SlotType.OUTSIDE;
         }
@@ -270,18 +270,17 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   }
 
   @Override
-  public void clicked(int i, int j, @NotNull ClickType clickType, @NotNull Player player) {
+  public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
     if (viewOnly) {
-      if (clickType == ClickType.QUICK_CRAFT) {
+      if (containerInput == ContainerInput.QUICK_CRAFT) {
         sendAllDataToRemote();
       }
-      return;
     }
-    super.clicked(i, j, clickType, player);
+    super.clicked(slotIndex, buttonNum, containerInput, player);
   }
 
   @Override
-  public boolean stillValid(@NotNull Player player) {
+  public boolean stillValid(Player player) {
     return true;
   }
 

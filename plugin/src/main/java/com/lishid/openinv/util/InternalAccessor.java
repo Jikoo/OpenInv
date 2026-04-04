@@ -66,15 +66,16 @@ public class InternalAccessor {
   private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
     // TODO reorganize internals, version handling
     if (!PAPER) {
-      if (BukkitVersions.MINECRAFT.equals(Version.of(26, 1))) {
+      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))
+          && BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(26, 1, 1))) {
         // Load Spigot accessor.
         return new com.github.jikoo.openinv.internal.spigot26_1.InternalAccessor(logger, lang);
       }
       return null;
     }
 
-    Version maxSupported = Version.of(1, 21, 11);
-    Version minSupported = Version.of(1, 21, 1);
+    Version maxSupported = Version.of(21, 1, 1);
+    Version minSupported = maxSupported;//Version.of(1, 21, 1);
 
     // Ensure version is in supported range.
     if (BukkitVersions.MINECRAFT.greaterThan(maxSupported) || BukkitVersions.MINECRAFT.lessThan(minSupported)) {
