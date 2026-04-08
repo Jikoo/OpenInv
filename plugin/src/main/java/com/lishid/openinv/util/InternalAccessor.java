@@ -64,7 +64,6 @@ public class InternalAccessor {
   }
 
   private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
-    // TODO reorganize internals, version handling
     if (!PAPER) {
       if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))
           && BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(26, 1, 1))) {
@@ -75,7 +74,7 @@ public class InternalAccessor {
     }
 
     Version maxSupported = Version.of(21, 1, 1);
-    Version minSupported = maxSupported;//Version.of(1, 21, 1);
+    Version minSupported = maxSupported;//Version.of(1, 21, 6);
 
     // Ensure version is in supported range.
     if (BukkitVersions.MINECRAFT.greaterThan(maxSupported) || BukkitVersions.MINECRAFT.lessThan(minSupported)) {
@@ -90,26 +89,64 @@ public class InternalAccessor {
         && BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 9))) { // 1.21.9, 1.21.10
       return new com.lishid.openinv.internal.paper1_21_10.InternalAccessor(logger, lang);
     }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 8))
-        && BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 6))) { // 1.21.6, 1.21.7, 1.21.8
-      return new com.lishid.openinv.internal.paper1_21_8.InternalAccessor(logger, lang);
-    }
-    if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 5))) { // 1.21.5
-      return new com.lishid.openinv.internal.paper1_21_5.InternalAccessor(logger, lang);
-    }
-    if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 4))) { // 1.21.4
-      return new com.lishid.openinv.internal.paper1_21_4.InternalAccessor(logger, lang);
-    }
-    if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21, 2))) {
-      // 1.21.1-1.21.2 placeholder format
-      return new com.lishid.openinv.internal.paper1_21_1.InternalAccessor(logger, lang);
-    }
-
-    // 1.21.2, 1.21.3
-    return new com.lishid.openinv.internal.paper1_21_3.InternalAccessor(logger, lang);
+    return new com.lishid.openinv.internal.paper1_21_8.InternalAccessor(logger, lang);
   }
 
   public String getReleasesLink() {
+    if (PAPER) {
+      // Paper 1.21.1+
+      return getPaperReleaseLink();
+    }
+    // Spigot 1.21.1+
+    return getSpigotReleaseLink();
+  }
+
+  private String getPaperReleaseLink() {
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 6))) {
+      return "https://github.com/Jikoo/OpenInv/releases";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 1))) {
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.3.0";
+    }
+    return getLegacyReleaseLink();
+  }
+
+  private String getSpigotReleaseLink() {
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) {
+      return "https://github.com/Jikoo/OpenInv/releases";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 11))) { // 1.21.11
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.3.0";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 10))) { // 1.21.10
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.15";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 9))) { // 1.21.9
+      return "Unsupported; upgrade to 1.21.10: https://github.com/Jikoo/OpenInv/releases/tag/5.1.15";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 8))) { // 1.21.8, 1.21.7
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.13";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 6))) { // 1.21.6
+      return "Unsupported; upgrade to 1.21.7: https://github.com/Jikoo/OpenInv/releases/tag/5.1.13";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 5))) { // 1.21.5
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.11";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 4))) { // 1.21.4
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.9";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 3))) { // 1.21.3
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.6";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 1))) { // 1.21.1, 1.21.2
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.3";
+    }
+    // 1.21.0 and lower
+    return getLegacyReleaseLink();
+  }
+
+  private String getLegacyReleaseLink() {
     if (BukkitVersions.MINECRAFT.lessThan(Version.of(1, 4, 4))) { // Good luck.
       return "https://dev.bukkit.org/projects/openinv/files?&sort=datecreated";
     }
@@ -176,46 +213,8 @@ public class InternalAccessor {
     if (BukkitVersions.MINECRAFT.equals(Version.of(1, 20, 5))) { // 1.20.5
       return "Unsupported; upgrade to 1.20.6: https://github.com/Jikoo/OpenInv/releases/tag/5.1.2";
     }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21))) { // 1.20.4, 1.20.6, 1.21
-      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.2";
-    }
-    if (!PAPER) {
-      return getSpigotReleaseLink();
-    }
-    // Paper 1.21.1+
-    return "https://github.com/Jikoo/OpenInv/releases";
-  }
-
-  private String getSpigotReleaseLink() {
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 2))) {
-      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.3";
-    }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 3))) {
-      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.6";
-    }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 4))) {
-      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.9";
-    }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 5))) {
-      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.11";
-    }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 6))) {
-      return "Unsupported; upgrade to 1.21.7: https://github.com/Jikoo/OpenInv/releases";
-    }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 8))) {
-      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.13";
-    }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 9))) {
-      return "Unsupported; upgrade to 1.21.10: https://github.com/Jikoo/OpenInv/releases/tag/5.1.15";
-    }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 10))) {
-      return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.15";
-    }
-    if (BukkitVersions.MINECRAFT.lessThan(Version.of(26, 1))) {
-      return "https://github.com/Jikoo/OpenInv/releases/tag/5.3.0";
-    }
-
-    return "https://github.com/Jikoo/OpenInv/releases";
+    // 1.20.4, 1.20.6, 1.21
+    return "https://github.com/Jikoo/OpenInv/releases/tag/5.1.2";
   }
 
   /**

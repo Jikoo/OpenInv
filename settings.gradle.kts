@@ -21,10 +21,6 @@ if (!java.lang.Boolean.getBoolean("jitpack")) {
     "common",
     "paper1_21_10",
     "paper1_21_8",
-    "paper1_21_5",
-    "paper1_21_4",
-    "paper1_21_3",
-    "paper1_21_1",
     "spigot"
   )
   for (internal in internals) {

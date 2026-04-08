@@ -19,9 +19,10 @@ tasks.withType<JavaCompile>().configureEach {
 class ToolchainJvmVersion: AttributeCompatibilityRule<Int> {
   override fun execute(details: CompatibilityCheckDetails<Int>) {
     if (details.consumerValue == details.producerValue) {
+      details.compatible()
       return
     }
-    if (details.consumerValue == null) {
+    if (details.producerValue == null) {
       details.incompatible()
       return
     }
