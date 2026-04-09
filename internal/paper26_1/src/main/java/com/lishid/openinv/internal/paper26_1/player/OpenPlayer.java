@@ -1,6 +1,5 @@
-package com.lishid.openinv.internal.paper1_21_8.player;
+package com.lishid.openinv.internal.paper26_1.player;
 
-import com.lishid.openinv.internal.paper26_1.player.BaseOpenPlayer;
 import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,8 +10,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.bukkit.craftbukkit.CraftServer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-
-import java.nio.file.Path;
 
 public class OpenPlayer extends BaseOpenPlayer {
 
@@ -33,7 +30,7 @@ public class OpenPlayer extends BaseOpenPlayer {
 
       CompoundTag oldData = isOnline()
           ? null
-          : worldNbtStorage.load(player.getName().getString(), player.getStringUUID(), scopedCollector).orElse(null);
+          : worldNbtStorage.load(player.nameAndId()).orElse(null);
       CompoundTag playerData = getWritableTag(oldData);
 
       ValueOutput valueOutput = TagValueOutput.createWrappingWithContext(scopedCollector, player.registryAccess(), playerData);
@@ -43,11 +40,6 @@ public class OpenPlayer extends BaseOpenPlayer {
     } catch (Exception e) {
       LogUtils.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
     }
-  }
-
-  @Override
-  protected void safeReplaceFile(@NotNull Path dataFile, @NotNull Path tempFile, @NotNull Path backupFile) {
-    net.minecraft.Util.safeReplaceFile(dataFile, tempFile, backupFile);
   }
 
   @Override

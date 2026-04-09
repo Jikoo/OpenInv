@@ -18,7 +18,7 @@ if (!java.lang.Boolean.getBoolean("jitpack")) {
   project(":openinvcommon").projectDir = file("common")
 
   val internals = listOf(
-    "common",
+    "paper26_1",
     "paper1_21_10",
     "paper1_21_8",
     "spigot"

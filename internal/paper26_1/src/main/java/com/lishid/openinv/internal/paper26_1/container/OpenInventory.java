@@ -1,11 +1,11 @@
-package com.lishid.openinv.internal.paper1_21_8.container;
+package com.lishid.openinv.internal.paper26_1.container;
 
-import com.lishid.openinv.internal.paper26_1.container.BaseOpenInventory;
 import com.lishid.openinv.internal.paper26_1.container.menu.OpenChestMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,13 +25,13 @@ public class OpenInventory extends BaseOpenInventory {
       component.append(
           Component.translatableWithFallback("openinv.container.inventory.self", "")
               .withStyle(style -> style
-                  .withFont(ResourceLocation.parse("openinv:font/inventory"))
+                  .withFont(new FontDescription.Resource(Identifier.parse("openinv:font/inventory")))
                   .withColor(ChatFormatting.WHITE)));
     } else {
       component.append(
           Component.translatableWithFallback("openinv.container.inventory.other", "")
               .withStyle(style -> style
-                  .withFont(ResourceLocation.parse("openinv:font/inventory"))
+                  .withFont(new FontDescription.Resource(Identifier.parse("openinv:font/inventory")))
                   .withColor(ChatFormatting.WHITE)));
     }
     if (menu != null && menu.isViewOnly()) {

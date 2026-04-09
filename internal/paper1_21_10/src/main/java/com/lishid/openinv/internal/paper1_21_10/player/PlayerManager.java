@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
-public class PlayerManager extends com.lishid.openinv.internal.common.player.PlayerManager {
+public class PlayerManager extends com.lishid.openinv.internal.paper26_1.player.PlayerManager {
 
   public PlayerManager(@NotNull Logger logger) {
     super(logger);

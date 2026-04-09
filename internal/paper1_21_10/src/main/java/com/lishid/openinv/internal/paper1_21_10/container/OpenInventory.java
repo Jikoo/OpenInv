@@ -1,7 +1,7 @@
 package com.lishid.openinv.internal.paper1_21_10.container;
 
-import com.lishid.openinv.internal.common.container.BaseOpenInventory;
-import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
+import com.lishid.openinv.internal.paper26_1.container.BaseOpenInventory;
+import com.lishid.openinv.internal.paper26_1.container.menu.OpenChestMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;

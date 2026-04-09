@@ -11,7 +11,7 @@ dependencies {
   compileOnly(libs.spigotapi)
   implementation(project(":openinvapi"))
   implementation(project(":openinvcommon"))
-  implementation(project(":openinvadaptercommon"))
+  implementation(project(":openinvadapterpaper26_1"))
   implementation(project(":openinvadapterpaper1_21_10"))
   implementation(project(":openinvadapterpaper1_21_8"))
   implementation(project(":openinvadapterspigot"))
