@@ -33,20 +33,21 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+@NullMarked
 public class PlayerManager implements com.lishid.openinv.internal.PlayerManager {
 
-  protected final @NotNull Logger logger;
+  protected final Logger logger;
   protected @Nullable Field bukkitEntity;
 
-  public PlayerManager(@NotNull Logger logger) {
+  public PlayerManager(Logger logger) {
     this.logger = logger;
     try {
       bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
@@ -57,7 +58,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     }
   }
 
-  public static @NotNull ServerPlayer getHandle(final Player player) {
+  public static ServerPlayer getHandle(final Player player) {
     if (player instanceof CraftPlayer craftPlayer) {
       return craftPlayer.getHandle();
     }
@@ -78,7 +79,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
   }
 
   @Override
-  public @Nullable Player loadPlayer(@NotNull final OfflinePlayer offline) {
+  public @Nullable Player loadPlayer(final OfflinePlayer offline) {
     if (!(Bukkit.getServer() instanceof CraftServer craftServer)) {
       return null;
     }
@@ -105,10 +106,10 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     return null;
   }
 
-  protected @NotNull ServerPlayer createNewPlayer(
-      @NotNull MinecraftServer server,
-      @NotNull ServerLevel worldServer,
-      @NotNull final OfflinePlayer offline
+  protected ServerPlayer createNewPlayer(
+      MinecraftServer server,
+      ServerLevel worldServer,
+      final OfflinePlayer offline
   ) {
     // See net.minecraft.server.players.PlayerList#canPlayerLogin(ServerLoginPacketListenerImpl, GameProfile)
     // See net.minecraft.server.network.ServerLoginPacketListenerImpl#handleHello(ServerboundHelloPacket)
@@ -143,7 +144,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     return entity;
   }
 
-  protected boolean loadData(@NotNull MinecraftServer server, @NotNull ServerPlayer player) {
+  protected boolean loadData(MinecraftServer server, ServerPlayer player) {
     // See CraftPlayer#loadData
 
     try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), new JulLoggerAdapter(logger))) {
@@ -167,9 +168,9 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
   }
 
   protected void parseWorld(
-      @NotNull MinecraftServer server,
-      @NotNull ServerPlayer player,
-      @NotNull ValueInput loadedData
+      MinecraftServer server,
+      ServerPlayer player,
+      ValueInput loadedData
   ) {
     // See PlayerList#placeNewPlayer
     World bukkitWorld;
@@ -188,7 +189,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     player.setServerLevel(((CraftWorld) bukkitWorld).getHandle());
   }
 
-  protected void spawnInDefaultWorld(@NotNull MinecraftServer server, @NotNull ServerPlayer player) {
+  protected void spawnInDefaultWorld(MinecraftServer server, ServerPlayer player) {
     ServerLevel level = server.getLevel(Level.OVERWORLD);
     if (level != null) {
       // Adjust player to default spawn (in keeping with Paper handling) when world not found.
@@ -200,7 +201,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     }
   }
 
-  protected void injectPlayer(@NotNull MinecraftServer server, @NotNull ServerPlayer player) throws IllegalAccessException {
+  protected void injectPlayer(MinecraftServer server, ServerPlayer player) throws IllegalAccessException {
     if (bukkitEntity == null) {
       return;
     }
@@ -211,7 +212,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
   }
 
   @Override
-  public @NotNull Player inject(@NotNull Player player) {
+  public Player inject(Player player) {
     try {
       ServerPlayer nmsPlayer = getHandle(player);
       if (nmsPlayer.getBukkitEntity() instanceof BaseOpenPlayer openPlayer) {
@@ -232,7 +233,8 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
 
   @Override
   public @Nullable InventoryView openInventory(
-      @NotNull Player bukkitPlayer, @NotNull ISpecialInventory inventory,
+      Player bukkitPlayer,
+      ISpecialInventory inventory,
       boolean viewOnly
   ) {
     ServerPlayer player = getHandle(bukkitPlayer);
