@@ -6,6 +6,7 @@ import com.lishid.openinv.internal.paper26_1.container.OpenEnderChest;
 import com.lishid.openinv.internal.paper26_1.container.menu.OpenChestMenu;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -22,7 +23,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -218,9 +221,26 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
       if (nmsPlayer.getBukkitEntity() instanceof BaseOpenPlayer openPlayer) {
         return openPlayer;
       }
-      MinecraftServer server = nmsPlayer.level().getServer();
-      injectPlayer(server, nmsPlayer);
-      return nmsPlayer.getBukkitEntity();
+
+      org.slf4j.Logger logger = LogUtils.getLogger();
+
+      try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(nmsPlayer.problemPath(), logger)) {
+        CompoundTag extraData = new CompoundTag();
+
+        // Copy extra data out of existing player.
+        ValueOutput output = TagValueOutput.createWrappingWithContext(scopedCollector, nmsPlayer.registryAccess(), extraData);
+        nmsPlayer.getBukkitEntity().setExtraData(output);
+
+        MinecraftServer server = nmsPlayer.level().getServer();
+        injectPlayer(server, nmsPlayer);
+        CraftPlayer newPlayer = nmsPlayer.getBukkitEntity();
+
+        // Set extra data in new player.
+        ValueInput input = TagValueInput.create(scopedCollector, nmsPlayer.registryAccess(), extraData);
+        newPlayer.readExtraData(input);
+
+        return newPlayer;
+      }
     } catch (IllegalAccessException e) {
       logger.log(
           java.util.logging.Level.WARNING,
