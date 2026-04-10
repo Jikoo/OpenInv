@@ -48,29 +48,19 @@ public abstract class BaseOpenPlayer extends CraftPlayer {
       // ServerPlayer#addAdditionalSaveData(CompoundTag)
       // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
       "warden_spawn_tracker", // No longer needed as of 1.21.11
-      "entered_nether_pos", // Replaces enteredNetherPosition as of 1.21.6
-      "enteredNetherPosition",
-      "respawn", // Replaces SpawnXyz fields as of 1.21.6
-      "SpawnX",
-      "SpawnY",
-      "SpawnZ",
-      "SpawnForced",
-      "SpawnAngle",
-      "SpawnDimension",
+      "entered_nether_pos",
+      "respawn",
       "raid_omen_position",
       "ender_pearls",
       "ShoulderEntityLeft",
       "ShoulderEntityRight",
       // Player#addAdditionalSaveData(CompoundTag)
       "LastDeathLocation",
-      "current_explosion_impact_pos",
       // LivingEntity#addAdditionalSaveData(CompoundTag)
+      "current_explosion_impact_pos",
       "active_effects",
-      "sleeping_pos", // Replaces SleepingXyz fields as of 1.21.6
-      "SleepingX",
-      "SleepingY",
-      "SleepingZ",
-      "Brain",
+      "sleeping_pos",
+      "Brain", // No longer needed as of 26.1
       "last_hurt_by_player",
       "last_hurt_by_player_memory_time",
       "last_hurt_by_mob",
