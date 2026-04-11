@@ -21,7 +21,7 @@ apply<SpigotSetup>()
 
 dependencies {
   compileOnly(libs.spigotapi)
-  extensions.getByType(SpigotDependencyExtension::class.java).version = "26.1.1-R0.1-SNAPSHOT"
+  extensions.getByType(SpigotDependencyExtension::class.java).version = "26.1.2-R0.1-SNAPSHOT"
   compileOnly("com.mojang:logging:1.6.11")
   compileOnly("com.mojang:brigadier:1.3.10")
   compileOnly("com.mojang:datafixerupper:9.0.19")
