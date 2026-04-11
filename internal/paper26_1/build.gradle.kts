@@ -58,7 +58,7 @@ dependencies {
     exclude(group = "org.spigotmc", module = "spigot-api")
   }
 
-  paperweight.paperDevBundle("26.1.1.build.15-alpha")
+  paperweight.paperDevBundle("26.1.2.build.5-alpha")
 }
 
 tasks.reobfJar {
