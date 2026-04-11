@@ -11,10 +11,21 @@ dependencies {
   compileOnly(libs.spigotapi)
   implementation(project(":openinvapi"))
   implementation(project(":openinvcommon"))
-  implementation(project(":openinvadapterpaper26_1"))
-  implementation(project(":openinvadapterpaper1_21_10"))
-  implementation(project(":openinvadapterpaper1_21_8"))
-  implementation(project(":openinvadapterspigot"))
+  implementation(project(":openinvadapterpaper26_1")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
+  implementation(project(":openinvadapterpaper1_21_11")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
+  implementation(project(":openinvadapterpaper1_21_10")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
+  implementation(project(":openinvadapterpaper1_21_8")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
+  implementation(project(":openinvadapterspigot")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
   implementation(libs.planarwrappers)
   implementation(libs.folia.scheduler.wrapper)
   compileOnly(libs.sqlite.jdbc)

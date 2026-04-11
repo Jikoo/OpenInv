@@ -20,9 +20,6 @@ dependencies {
   implementation(project(":openinvadapterpaper26_1")) {
     exclude(group = "io.papermc.paper", module = "dev-bundle")
   }
-  implementation(project(":openinvadapterpaper1_21_11")) {
-    exclude(group = "io.papermc.paper", module = "dev-bundle")
-  }
 
-  paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
+  paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 }

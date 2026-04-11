@@ -17,7 +17,12 @@ dependencies {
   implementation(project(":openinvcommon")) {
     exclude(group = "org.spigotmc", module = "spigot-api")
   }
-  implementation(project(":openinvadapterpaper26_1"))
+  implementation(project(":openinvadapterpaper26_1")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
+  implementation(project(":openinvadapterpaper1_21_11")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
 
   paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
 }

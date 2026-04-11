@@ -9,7 +9,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -267,16 +266,6 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     existing.setCount(max);
     slot.setChanged();
     return true;
-  }
-
-  @Override
-  public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
-    if (viewOnly) {
-      if (containerInput == ContainerInput.QUICK_CRAFT) {
-        sendAllDataToRemote();
-      }
-    }
-    super.clicked(slotIndex, buttonNum, containerInput, player);
   }
 
   @Override
