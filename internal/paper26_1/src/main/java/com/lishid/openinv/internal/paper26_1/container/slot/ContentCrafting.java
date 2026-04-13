@@ -1,7 +1,7 @@
 package com.lishid.openinv.internal.paper26_1.container.slot;
 
 import com.lishid.openinv.internal.paper26_1.container.slot.placeholder.Placeholders;
-import com.lishid.openinv.internal.paper26_1.player.BaseOpenPlayer;
+import com.lishid.openinv.internal.paper26_1.player.OpenPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -35,7 +35,7 @@ public class ContentCrafting implements Content {
     // Player must be online and not in creative - since the creative client is (semi-)authoritative,
     // it ignores changes without extra help, and will delete the item as a result.
     // Spectator mode is technically possible but may cause the item to be dropped if the client opens an inventory.
-    return BaseOpenPlayer.isConnected(holder.connection) && holder.gameMode.isSurvival();
+    return OpenPlayer.isConnected(holder.connection) && holder.gameMode.isSurvival();
   }
 
   @Override

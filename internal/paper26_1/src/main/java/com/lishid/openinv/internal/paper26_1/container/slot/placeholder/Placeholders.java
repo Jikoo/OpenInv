@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.paper26_1.container.slot.placeholder;
 
-import com.lishid.openinv.internal.paper26_1.player.BaseOpenPlayer;
+import com.lishid.openinv.internal.paper26_1.player.OpenPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -23,7 +23,7 @@ public final class Placeholders {
   public static @NotNull ItemStack blockedOffline = ItemStack.EMPTY;
 
   public static ItemStack survivalOnly(@NotNull ServerPlayer serverPlayer) {
-    if (!BaseOpenPlayer.isConnected(serverPlayer.connection)) {
+    if (!OpenPlayer.isConnected(serverPlayer.connection)) {
       return blockedOffline;
     }
 

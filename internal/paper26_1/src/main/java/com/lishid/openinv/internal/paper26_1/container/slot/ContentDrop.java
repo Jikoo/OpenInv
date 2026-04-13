@@ -1,7 +1,7 @@
 package com.lishid.openinv.internal.paper26_1.container.slot;
 
 import com.lishid.openinv.internal.paper26_1.container.slot.placeholder.Placeholders;
-import com.lishid.openinv.internal.paper26_1.player.BaseOpenPlayer;
+import com.lishid.openinv.internal.paper26_1.player.OpenPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
@@ -64,14 +64,14 @@ public class ContentDrop implements Content {
 
     @Override
     public ItemStack getOrDefault() {
-      return BaseOpenPlayer.isConnected(holder.connection)
+      return OpenPlayer.isConnected(holder.connection)
           ? Placeholders.drop
           : Placeholders.blockedOffline;
     }
 
     @Override
     public boolean mayPlace(@NotNull ItemStack itemStack) {
-      return BaseOpenPlayer.isConnected(holder.connection);
+      return OpenPlayer.isConnected(holder.connection);
     }
 
     @Override
