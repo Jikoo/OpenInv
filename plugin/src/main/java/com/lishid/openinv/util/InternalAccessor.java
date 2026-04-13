@@ -73,7 +73,7 @@ public class InternalAccessor {
       return null;
     }
 
-    Version maxSupported = Version.of(21, 1, 2);
+    Version maxSupported = Version.of(26, 1, 2);
     Version minSupported = Version.of(1, 21, 6);
 
     // Ensure version is in supported range.
