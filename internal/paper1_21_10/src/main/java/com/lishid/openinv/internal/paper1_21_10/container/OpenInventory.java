@@ -1,7 +1,7 @@
 package com.lishid.openinv.internal.paper1_21_10.container;
 
-import com.lishid.openinv.internal.common.container.BaseOpenInventory;
 import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
+import com.lishid.openinv.internal.legacycommon.container.LegacyBaseOpenInventory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class OpenInventory extends BaseOpenInventory {
+public class OpenInventory extends LegacyBaseOpenInventory {
 
   public OpenInventory(@NotNull Player bukkitPlayer) {
     super(bukkitPlayer);

@@ -2,8 +2,8 @@ package com.lishid.openinv.internal.common.container;
 
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.InternalOwned;
+import com.lishid.openinv.internal.common.container.menu.ContainerInputOpenEnderChestMenu;
 import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
-import com.lishid.openinv.internal.common.container.menu.OpenEnderChestMenu;
 import com.lishid.openinv.internal.common.player.PlayerManager;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -193,7 +193,7 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
 
   public @Nullable OpenChestMenu<?> createMenu(Player player, int i, boolean viewOnly) {
     if (player instanceof ServerPlayer serverPlayer) {
-      return new OpenEnderChestMenu(this, serverPlayer, i, viewOnly);
+      return new ContainerInputOpenEnderChestMenu(this, serverPlayer, i, viewOnly);
     }
     return null;
   }

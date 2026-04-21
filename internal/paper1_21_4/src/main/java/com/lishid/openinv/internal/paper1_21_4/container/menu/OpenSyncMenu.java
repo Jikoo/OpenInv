@@ -9,8 +9,10 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.inventory.ContainerSynchronizer;
@@ -214,6 +216,17 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   @Override
   public void setRemoteCarried(ItemStack itemstack) {
     this.remoteCarried = itemstack.copy();
+  }
+
+  @Override
+  public void clicked(int i, int j, @NotNull ClickType clickType, @NotNull Player player) {
+    if (isViewOnly()) {
+      if (clickType == ClickType.QUICK_CRAFT) {
+        sendAllDataToRemote();
+      }
+      return;
+    }
+    super.clicked(i, j, clickType, player);
   }
 
   @Override

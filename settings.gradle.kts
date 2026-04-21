@@ -19,6 +19,8 @@ if (!java.lang.Boolean.getBoolean("jitpack")) {
 
   val internals = listOf(
     "common",
+    "legacycommon",
+    "paper1_21_11",
     "paper1_21_10",
     "paper1_21_8",
     "paper1_21_5",

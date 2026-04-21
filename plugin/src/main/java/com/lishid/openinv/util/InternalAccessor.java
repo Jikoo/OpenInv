@@ -64,7 +64,7 @@ public class InternalAccessor {
   }
 
   private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
-    Version maxSupported = Version.of(1, 21, 11);
+    Version maxSupported = Version.of(26, 1, 2);
     Version minSupported = Version.of(1, 21, 1);
 
     // Ensure version is in supported range.
@@ -72,20 +72,20 @@ public class InternalAccessor {
       return null;
     }
 
-    // Load Spigot accessor.
+    // Load Spigot accessor. Paper 26.1+ ships unobfuscated; Spigot reobf applies only up to 1.21.11.
     if (!PAPER) {
-      if (BukkitVersions.MINECRAFT.equals(maxSupported)) {
-        // Current Spigot, remapped internals are available.
+      if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 11))) {
         return new com.lishid.openinv.internal.reobf.InternalAccessor(logger, lang);
-      } else {
-        // Older Spigot; unsupported.
-        return null;
       }
+      return null;
     }
 
     // Paper or a Paper fork, can use Mojang-mapped internals.
-    if (BukkitVersions.MINECRAFT.equals(maxSupported)) { // 1.21.11
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1, 0))) { // 26.1.x (common tracks latest)
       return new com.lishid.openinv.internal.common.InternalAccessor(logger, lang);
+    }
+    if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 11))) { // 1.21.11
+      return new com.lishid.openinv.internal.paper1_21_11.InternalAccessor(logger, lang);
     }
     if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 10))
         && BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 9))) { // 1.21.9, 1.21.10

@@ -3,8 +3,8 @@ package com.lishid.openinv.internal.common.container;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.InternalOwned;
 import com.lishid.openinv.internal.common.container.bukkit.OpenPlayerInventory;
+import com.lishid.openinv.internal.common.container.menu.ContainerInputOpenInventoryMenu;
 import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
-import com.lishid.openinv.internal.common.container.menu.OpenInventoryMenu;
 import com.lishid.openinv.internal.common.container.slot.Content;
 import com.lishid.openinv.internal.common.container.slot.ContentCrafting;
 import com.lishid.openinv.internal.common.container.slot.ContentCraftingResult;
@@ -327,7 +327,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
 
   public @Nullable OpenChestMenu<?> createMenu(Player player, int i, boolean viewOnly) {
     if (player instanceof ServerPlayer serverPlayer) {
-      return new OpenInventoryMenu(this, serverPlayer, i, viewOnly);
+      return new ContainerInputOpenInventoryMenu(this, serverPlayer, i, viewOnly);
     }
     return null;
   }

@@ -18,6 +18,12 @@ public class OpenEnderChestMenu extends OpenSyncMenu<OpenEnderChest> {
     super(getChestMenuType(enderChest.getContainerSize()), containerId, enderChest, viewer, viewOnly);
   }
 
+  // The NMS clicked(...) override lives in ContainerInputOpenEnderChestMenu
+  // (26.1+ dispatch) and in LegacyOpenEnderChestMenu / paper1_21_4.OpenSyncMenu
+  // (1.21.1-1.21.10 dispatch). Keeping ContainerInput out of this class's
+  // method table lets legacy adapters' javac resolve super.clicked(ClickType)
+  // without needing ContainerInput on their classpath.
+
   @Override
   public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
     if (viewOnly) {

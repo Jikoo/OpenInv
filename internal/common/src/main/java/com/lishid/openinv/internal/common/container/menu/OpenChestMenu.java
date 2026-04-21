@@ -9,7 +9,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -269,16 +268,11 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
     return true;
   }
 
-  @Override
-  public void clicked(int i, int j, @NotNull ClickType clickType, @NotNull Player player) {
-    if (viewOnly) {
-      if (clickType == ClickType.QUICK_CRAFT) {
-        sendAllDataToRemote();
-      }
-      return;
-    }
-    super.clicked(i, j, clickType, player);
-  }
+  // The NMS clicked(...) override lives in the concrete subclasses
+  // (OpenInventoryMenu, OpenEnderChestMenu) because its third-parameter type
+  // diverged between Minecraft versions: pre-26.1 servers use ClickType,
+  // 26.1+ servers use ContainerInput. Keeping version-specific NMS types out
+  // of this abstract base class lets legacy adapters extend it cleanly.
 
   @Override
   public boolean stillValid(@NotNull Player player) {

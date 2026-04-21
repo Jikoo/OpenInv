@@ -11,7 +11,7 @@ apply<SpigotSetup>()
 apply<SpigotReobf>()
 
 val spigotVer = "1.21.11-R0.2-SNAPSHOT"
-// Used by common adapter to relocate Craftbukkit classes to a versioned package.
+// Used by the paper1_21_11 adapter to relocate Craftbukkit classes to a versioned package.
 rootProject.extra["craftbukkitPackage"] = "v1_21_R7"
 
 configurations.all {
@@ -35,10 +35,11 @@ dependencies {
   compileOnly(project(":openinvapi"))
   compileOnly(project(":openinvcommon"))
 
-  // Reduce duplicate code by lightly remapping common adapter.
-  implementation(project(":openinvadaptercommon", configuration = "spigotRelocated"))
+  // Reduce duplicate code by lightly remapping the paper1_21_11 adapter. Paper 26.1+
+  // has no Spigot reobfuscation path, so 1.21.11 is the last reobf-capable version.
+  implementation(project(":openinvadapterpaper1_21_11", configuration = "spigotRelocated"))
 }
 
 tasks.shadowJar {
-  relocate("com.lishid.openinv.internal.common", "com.lishid.openinv.internal.reobf")
+  relocate("com.lishid.openinv.internal.paper1_21_11", "com.lishid.openinv.internal.reobf")
 }

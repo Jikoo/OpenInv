@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
-public class InternalAccessor extends com.lishid.openinv.internal.common.InternalAccessor {
+public class InternalAccessor extends com.lishid.openinv.internal.legacycommon.LegacyInternalAccessor {
 
   private final @NotNull PlayerManager manager;
 
