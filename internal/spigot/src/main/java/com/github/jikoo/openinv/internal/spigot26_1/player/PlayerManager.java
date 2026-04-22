@@ -1,11 +1,12 @@
 package com.github.jikoo.openinv.internal.spigot26_1.player;
 
-import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
 import com.github.jikoo.openinv.internal.spigot26_1.container.OpenEnderChest;
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
 import com.github.jikoo.openinv.internal.spigot26_1.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
@@ -20,6 +21,7 @@ import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -174,8 +176,23 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
       if (nmsPlayer.getBukkitEntity() instanceof OpenPlayer openPlayer) {
         return openPlayer;
       }
-      injectPlayer(nmsPlayer);
-      return nmsPlayer.getBukkitEntity();
+
+      org.slf4j.Logger logger = LogUtils.getLogger();
+
+      try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(nmsPlayer.problemPath(), logger)) {
+        // Copy extra data out of existing player.
+        TagValueOutput output = TagValueOutput.createWithContext(scopedCollector, nmsPlayer.registryAccess());
+        nmsPlayer.getBukkitEntity().setExtraData(output);
+
+        injectPlayer(nmsPlayer);
+        CraftPlayer newPlayer = nmsPlayer.getBukkitEntity();
+
+        // Set extra data in new player.
+        ValueInput input = TagValueInput.create(scopedCollector, nmsPlayer.registryAccess(), output.buildResult());
+        newPlayer.readExtraData(input);
+
+        return newPlayer;
+      }
     } catch (IllegalAccessException e) {
       logger.log(
           java.util.logging.Level.WARNING,
