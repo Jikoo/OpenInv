@@ -1,9 +1,9 @@
 [versions]
 spigotapi = "1.21.5-R0.1-SNAPSHOT"
-specialsource = "1.11.6"
 planarwrappers = "3.3.0"
+jspecify = "1.0.0"
 annotations = "26.1.0"
-paperweight = "2.0.0-beta.17"
+paperweight = "2.0.0-beta.21"
 shadow = "9.4.1"
 folia-scheduler-wrapper = "v0.0.3"
 errorprone-core = "2.48.0"
@@ -13,12 +13,11 @@ sqlite-jdbc = "3.49.1.0"
 
 [libraries]
 spigotapi = { module = "org.spigotmc:spigot-api", version.ref = "spigotapi" }
-specialsource = { module = "net.md-5:SpecialSource", version.ref = "specialsource" }
 planarwrappers = { module = "com.github.jikoo:planarwrappers", version.ref = "planarwrappers" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 folia-scheduler-wrapper = { module = "com.github.NahuLD.folia-scheduler-wrapper:folia-scheduler-wrapper", version.ref = "folia-scheduler-wrapper" }
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone-core" }
-errorprone-gradle = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorprone-gradle" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
 

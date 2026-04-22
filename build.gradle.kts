@@ -2,20 +2,39 @@ plugins {
   `java-library`
   alias(libs.plugins.paperweight) apply false
   alias(libs.plugins.shadow) apply false
-  id(libs.plugins.errorprone.gradle.get().pluginId) apply false
+  alias(libs.plugins.errorprone.gradle)
 }
-
-// Set by Spigot module, used by Paper module to convert to Spigot's version of Mojang mappings.
-project.ext.set("craftbukkitPackage", "UNKNOWN")
 
 repositories {
   maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 // Allow submodules to target higher Java release versions.
-// Not currently necessary (as lowest supported version is in the 1.21 range)
-// but may become relevant in the future.
 java.disableAutoTargetJvm()
+
+subprojects {
+  apply(plugin = "java-library")
+  apply(plugin = rootProject.libs.plugins.errorprone.gradle.get().pluginId)
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    compileOnly(rootProject.libs.jspecify)
+    compileOnly(rootProject.libs.annotations)
+    errorprone(rootProject.libs.errorprone.core)
+  }
+
+  tasks {
+    withType<JavaCompile>().configureEach {
+      options.encoding = Charsets.UTF_8.name()
+    }
+    withType<Javadoc>().configureEach {
+      options.encoding = Charsets.UTF_8.name()
+    }
+  }
+}
 
 // Task to delete ./dist where final files are output.
 tasks.register("cleanDist") {

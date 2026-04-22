@@ -16,7 +16,7 @@ abstract class BuildToolsValueSource : ValueSource<File, BuildToolsValueSource.P
   abstract val exec: ExecOperations
 
   interface Parameters : ValueSourceParameters {
-    val mavenLocal: Property<File>
+    val installDir: DirectoryProperty
     val workingDir: DirectoryProperty
 
     val spigotVersion: Property<String>
@@ -31,11 +31,11 @@ abstract class BuildToolsValueSource : ValueSource<File, BuildToolsValueSource.P
   override fun obtain(): File {
     val version = parameters.spigotVersion.get()
     val revision = parameters.spigotRevision.get()
-    val installLocation = getInstallLocation(version)
+    val spigotLocation = parameters.installDir.get().asFile.resolve("spigot-$version.jar")
     // If Spigot is already installed, don't reinstall.
-    if (!parameters.ignoreCached.get() && installLocation.exists()) {
+    if (!parameters.ignoreCached.get() && spigotLocation.exists()) {
       println("Skipping Spigot installation, $version is present")
-      return installLocation
+      return spigotLocation
     }
 
     val buildTools = installBuildTools(parameters.workingDir.get().asFile)
@@ -47,22 +47,29 @@ abstract class BuildToolsValueSource : ValueSource<File, BuildToolsValueSource.P
       executable = parameters.javaExecutable.get()
       workingDir = buildTools.parentFile
       classpath(buildTools)
-      args = listOf("--nogui", "--rev", revision, "--remapped")
+      args = listOf("--nogui", "--rev", revision)
     }.rethrowFailure()
+
+    val spigotBuild = buildTools.parentFile.resolve("Spigot/Spigot-Server/target/spigot-$version.jar")
+
+    if (!spigotBuild.exists()) {
+      throw IllegalStateException(
+        "Spigot build completed, but $spigotBuild does not exist! Did BuildTools change output location?"
+      )
+    }
+
+    spigotBuild.copyTo(spigotLocation, overwrite = true)
 
     // Mark work for delete.
     cleanUp(buildTools.parentFile)
 
-    if (!installLocation.exists()) {
+    if (!spigotLocation.exists()) {
       throw IllegalStateException(
         "Failed to install Spigot $version from $revision. Does the revision point to a different version?"
       )
     }
-    return installLocation
-  }
 
-  private fun getInstallLocation(version: String): File {
-    return parameters.mavenLocal.get().resolve("org/spigotmc/spigot/$version/spigot-$version-remapped-mojang.jar")
+    return spigotLocation
   }
 
   private fun installBuildTools(workingDir: File): File {

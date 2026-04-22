@@ -1,7 +1,8 @@
 package com.lishid.openinv.internal.paper1_21_10.container;
 
-import com.lishid.openinv.internal.common.container.BaseOpenInventory;
-import com.lishid.openinv.internal.common.container.menu.OpenChestMenu;
+import com.lishid.openinv.internal.paper1_21_11.container.menu.OpenInventoryMenu;
+import com.lishid.openinv.internal.paper26_1.container.BaseOpenInventory;
+import com.lishid.openinv.internal.paper26_1.container.menu.OpenChestMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -45,6 +46,14 @@ public class OpenInventory extends BaseOpenInventory {
         .append(Component.translatable("container.inventory"))
         .append(Component.translatableWithFallback("openinv.container.inventory.suffix", " - %s", owner.getName()));
     return component;
+  }
+
+  @Override
+  public @Nullable OpenChestMenu<?> createMenu(net.minecraft.world.entity.player.Player player, int i, boolean viewOnly) {
+    if (player instanceof ServerPlayer serverPlayer) {
+      return new OpenInventoryMenu(this, serverPlayer, i, viewOnly);
+    }
+    return null;
   }
 
 }

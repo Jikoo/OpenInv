@@ -1,0 +1,26 @@
+package com.github.jikoo.openinv.internal.spigot26_1.container.bukkit;
+
+import com.github.jikoo.openinv.internal.spigot26_1.container.OpenInventory;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+
+public class OpenPlayerInventorySelf extends OpenPlayerInventory {
+
+  private final int offset;
+
+  public OpenPlayerInventorySelf(@NotNull OpenInventory inventory, int offset) {
+    super(inventory);
+    this.offset = offset;
+  }
+
+  @Override
+  public ItemStack getItem(int index) {
+    return super.getItem(offset + index);
+  }
+
+  @Override
+  public void setItem(int index, ItemStack item) {
+    super.setItem(offset + index, item);
+  }
+
+}

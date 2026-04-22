@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.paper1_21_10.player;
 
-import com.lishid.openinv.internal.common.player.PlayerManager;
+import com.lishid.openinv.internal.paper26_1.player.PlayerManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.craftbukkit.CraftServer;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public class OpenPlayer extends com.lishid.openinv.internal.common.player.OpenPlayer {
+public class OpenPlayer extends com.lishid.openinv.internal.paper26_1.player.OpenPlayer {
 
   protected OpenPlayer(
       CraftServer server,

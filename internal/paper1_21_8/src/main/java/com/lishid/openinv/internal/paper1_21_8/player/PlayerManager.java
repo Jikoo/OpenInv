@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.paper1_21_8.player;
 
-import com.lishid.openinv.internal.common.player.BaseOpenPlayer;
+import com.lishid.openinv.internal.paper26_1.player.OpenPlayer;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
-public class PlayerManager extends com.lishid.openinv.internal.common.player.PlayerManager {
+public class PlayerManager extends com.lishid.openinv.internal.paper26_1.player.PlayerManager {
 
   public PlayerManager(@NotNull Logger logger) {
     super(logger);
@@ -65,14 +65,14 @@ public class PlayerManager extends com.lishid.openinv.internal.common.player.Pla
 
     bukkitEntity.setAccessible(true);
 
-    bukkitEntity.set(player, new OpenPlayer(server.server, player, this));
+    bukkitEntity.set(player, new com.lishid.openinv.internal.paper1_21_8.player.OpenPlayer(server.server, player, this));
   }
 
   @Override
   public @NotNull Player inject(@NotNull Player player) {
     try {
       ServerPlayer nmsPlayer = getHandle(player);
-      if (nmsPlayer.getBukkitEntity() instanceof BaseOpenPlayer openPlayer) {
+      if (nmsPlayer.getBukkitEntity() instanceof OpenPlayer openPlayer) {
         return openPlayer;
       }
       MinecraftServer server = nmsPlayer.getServer();
