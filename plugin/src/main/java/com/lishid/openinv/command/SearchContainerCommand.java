@@ -28,6 +28,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.Nameable;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -95,6 +96,7 @@ public class SearchContainerCommand implements TabExecutor {
     World world = senderPlayer.getWorld();
     Chunk centerChunk = senderPlayer.getLocation().getChunk();
     StringBuilder locations = new StringBuilder();
+    locations.append("\n");
 
     for (int dX = -radius; dX <= radius; ++dX) {
       for (int dZ = -radius; dZ <= radius; ++dZ) {
@@ -109,17 +111,25 @@ public class SearchContainerCommand implements TabExecutor {
           if (!SearchHelper.findMatch(holder.getInventory(), itemStack -> itemStack.getType() == material)) {
             continue;
           }
-          locations.append(holder.getInventory().getType().name().toLowerCase(Locale.ENGLISH)).append(" (")
-              .append(tileEntity.getX()).append(',').append(tileEntity.getY()).append(',')
-              .append(tileEntity.getZ()).append("), ");
+          locations.append(holder.getInventory().getType().name().toLowerCase(Locale.ENGLISH)).append(": ");
+          if (holder instanceof Nameable){
+            Nameable nm = (Nameable) holder;
+            String custom_name = nm.getCustomName();
+            if (custom_name != null){
+              locations.append(custom_name.toLowerCase(Locale.ENGLISH).strip()).append(" - ");
+            }
+          }
+          locations.append(" (").append(tileEntity.getX()).append(',').append(tileEntity.getY()).append(',')
+              .append(tileEntity.getZ()).append(")\n");
         }
       }
     }
 
     // Matches found, delete trailing comma and space
-    if (!locations.isEmpty()) {
-      locations.delete(locations.length() - 2, locations.length());
-    } else {
+    // if (!locations.isEmpty()) {
+    //   locations.delete(locations.length() - 2, locations.length());
+    // } else {
+    if (locations.isEmpty()){
       lang.sendMessage(
           sender,
           "messages.info.container.noMatches",
