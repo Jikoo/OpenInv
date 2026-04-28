@@ -55,8 +55,7 @@ public class SearchContainerCommand implements TabExecutor {
       @NotNull CommandSender sender,
       @NotNull Command command,
       @NotNull String label,
-      @NotNull String[] args
-  ) {
+      @NotNull String[] args) {
     if (!(sender instanceof Player senderPlayer)) {
       lang.sendMessage(sender, "messages.error.consoleUnsupported");
       return true;
@@ -73,8 +72,7 @@ public class SearchContainerCommand implements TabExecutor {
       lang.sendMessage(
           sender,
           "messages.error.invalidMaterial",
-          new Replacement("%target%", args[0])
-      );
+          new Replacement("%target%", args[0]));
       return false;
     }
 
@@ -112,11 +110,10 @@ public class SearchContainerCommand implements TabExecutor {
             continue;
           }
           locations.append(holder.getInventory().getType().name().toLowerCase(Locale.ENGLISH)).append(": ");
-          if (holder instanceof Nameable){
-            Nameable nm = (Nameable) holder;
-            String custom_name = nm.getCustomName();
-            if (custom_name != null){
-              locations.append(custom_name.toLowerCase(Locale.ENGLISH).strip()).append(" - ");
+          if (holder instanceof Nameable named) {
+            String customName = named.getCustomName();
+            if (customName != null) {
+              locations.append(customName.toLowerCase(Locale.ENGLISH).strip()).append(" - ");
             }
           }
           locations.append(" (").append(tileEntity.getX()).append(',').append(tileEntity.getY()).append(',')
@@ -125,16 +122,11 @@ public class SearchContainerCommand implements TabExecutor {
       }
     }
 
-    // Matches found, delete trailing comma and space
-    // if (!locations.isEmpty()) {
-    //   locations.delete(locations.length() - 2, locations.length());
-    // } else {
-    if (locations.isEmpty()){
+    if (locations.isEmpty()) {
       lang.sendMessage(
           sender,
           "messages.info.container.noMatches",
-          new Replacement("%target%", material.name())
-      );
+          new Replacement("%target%", material.name()));
       return true;
     }
 
@@ -142,8 +134,7 @@ public class SearchContainerCommand implements TabExecutor {
         sender,
         "messages.info.container.matches",
         new Replacement("%target%", material.name()),
-        new Replacement("%detail%", locations.toString())
-    );
+        new Replacement("%detail%", locations.toString()));
     return true;
   }
 
@@ -152,8 +143,7 @@ public class SearchContainerCommand implements TabExecutor {
       @NotNull CommandSender sender,
       @NotNull Command command,
       @NotNull String label,
-      String[] args
-  ) {
+      String[] args) {
     if (args.length < 1 || args.length > 2 || !command.testPermissionSilent(sender)) {
       return Collections.emptyList();
     }
