@@ -122,7 +122,7 @@ public class SearchContainerCommand implements TabExecutor {
       }
     }
 
-    if (locations.isEmpty()) {
+    if (locations.length() < 2) {
       lang.sendMessage(
           sender,
           "messages.info.container.noMatches",
