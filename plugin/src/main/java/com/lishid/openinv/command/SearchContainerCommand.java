@@ -28,6 +28,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.Nameable;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -54,8 +55,7 @@ public class SearchContainerCommand implements TabExecutor {
       @NotNull CommandSender sender,
       @NotNull Command command,
       @NotNull String label,
-      @NotNull String[] args
-  ) {
+      @NotNull String[] args) {
     if (!(sender instanceof Player senderPlayer)) {
       lang.sendMessage(sender, "messages.error.consoleUnsupported");
       return true;
@@ -72,8 +72,7 @@ public class SearchContainerCommand implements TabExecutor {
       lang.sendMessage(
           sender,
           "messages.error.invalidMaterial",
-          new Replacement("%target%", args[0])
-      );
+          new Replacement("%target%", args[0]));
       return false;
     }
 
@@ -95,6 +94,7 @@ public class SearchContainerCommand implements TabExecutor {
     World world = senderPlayer.getWorld();
     Chunk centerChunk = senderPlayer.getLocation().getChunk();
     StringBuilder locations = new StringBuilder();
+    locations.append("\n");
 
     for (int dX = -radius; dX <= radius; ++dX) {
       for (int dZ = -radius; dZ <= radius; ++dZ) {
@@ -109,22 +109,24 @@ public class SearchContainerCommand implements TabExecutor {
           if (!SearchHelper.findMatch(holder.getInventory(), itemStack -> itemStack.getType() == material)) {
             continue;
           }
-          locations.append(holder.getInventory().getType().name().toLowerCase(Locale.ENGLISH)).append(" (")
-              .append(tileEntity.getX()).append(',').append(tileEntity.getY()).append(',')
-              .append(tileEntity.getZ()).append("), ");
+          locations.append(holder.getInventory().getType().name().toLowerCase(Locale.ENGLISH)).append(": ");
+          if (holder instanceof Nameable named) {
+            String customName = named.getCustomName();
+            if (customName != null) {
+              locations.append(customName.toLowerCase(Locale.ENGLISH).strip()).append(" - ");
+            }
+          }
+          locations.append(" (").append(tileEntity.getX()).append(',').append(tileEntity.getY()).append(',')
+              .append(tileEntity.getZ()).append(")\n");
         }
       }
     }
 
-    // Matches found, delete trailing comma and space
-    if (!locations.isEmpty()) {
-      locations.delete(locations.length() - 2, locations.length());
-    } else {
+    if (locations.length() < 2) {
       lang.sendMessage(
           sender,
           "messages.info.container.noMatches",
-          new Replacement("%target%", material.name())
-      );
+          new Replacement("%target%", material.name()));
       return true;
     }
 
@@ -132,8 +134,7 @@ public class SearchContainerCommand implements TabExecutor {
         sender,
         "messages.info.container.matches",
         new Replacement("%target%", material.name()),
-        new Replacement("%detail%", locations.toString())
-    );
+        new Replacement("%detail%", locations.toString()));
     return true;
   }
 
@@ -142,8 +143,7 @@ public class SearchContainerCommand implements TabExecutor {
       @NotNull CommandSender sender,
       @NotNull Command command,
       @NotNull String label,
-      String[] args
-  ) {
+      String[] args) {
     if (args.length < 1 || args.length > 2 || !command.testPermissionSilent(sender)) {
       return Collections.emptyList();
     }
