@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +39,7 @@ public class InventoryManager implements Listener {
 
   private final Map<UUID, ISpecialPlayerInventory> inventories = new ConcurrentHashMap<>();
   private final Map<UUID, ISpecialEnderChest> enderChests = new ConcurrentHashMap<>();
-  private final Set<UUID> expectedCloses = new HashSet<>();
+  private final Set<UUID> expectedCloses = ConcurrentHashMap.newKeySet();
   private final @NotNull OpenInv plugin;
   private final @NotNull Config config;
   private final @NotNull InternalAccessor accessor;
@@ -54,11 +53,6 @@ public class InventoryManager implements Listener {
   public void evictAll() {
     Stream.concat(inventories.values().stream(), enderChests.values().stream())
         .map(inventory -> {
-          // Rather than iterate twice, evict all viewers during remapping.
-          for (HumanEntity viewer : List.copyOf(inventory.getBukkitInventory().getViewers())) {
-            expectedCloses.add(viewer.getUniqueId());
-            viewer.closeInventory();
-          }
           // If saving is prevented, return a null value for the player to save.
           if (config.isSaveDisabled() || OpenEvents.saveCancelled(inventory)) {
             return null;
@@ -217,8 +211,7 @@ public class InventoryManager implements Listener {
       if (alwaysDenied
           || !connectedState.hasPermission(viewer)
           || (!Objects.equals(owner.getWorld(), viewer.getWorld()) && !Permissions.ACCESS_CROSSWORLD.hasPermission(viewer))) {
-        expectedCloses.add(viewer.getUniqueId());
-        viewer.closeInventory();
+        plugin.getScheduler().runTaskAtEntity(viewer, viewer::closeInventory);
       }
     }
   }
@@ -269,7 +262,7 @@ public class InventoryManager implements Listener {
   private <T extends ISpecialInventory> @Nullable T remove(@NotNull UUID key, @NotNull T inventory) {
     for (HumanEntity viewer : List.copyOf(inventory.getBukkitInventory().getViewers())) {
       expectedCloses.add(viewer.getUniqueId());
-      viewer.closeInventory();
+      plugin.getScheduler().runTaskAtEntity(viewer, viewer::closeInventory);
     }
     return null;
   }
