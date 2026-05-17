@@ -70,23 +70,25 @@ public abstract class PlayerLookupCommand implements TabExecutor {
           return;
         }
 
-        new WrappedRunnable() {
-          @Override
-          public void run() {
-            // Ensure sender still exists.
-            if ((sender instanceof Player player) && !player.isValid()) {
-              return;
-            }
-
-            // Perform access checks and load target if necessary.
-            PlayerAccess onlineTarget = access(sender, target, accessInv);
-
-            if (onlineTarget != null) {
-              handle(sender, onlineTarget, accessInv, args);
-            }
+        Runnable sync = () -> {
+          // Ensure sender still exists.
+          if ((sender instanceof Player player) && !player.isValid()) {
+            return;
           }
-        }.runTask(PlayerLookupCommand.this.plugin);
 
+          // Perform access checks and load target if necessary.
+          PlayerAccess onlineTarget = access(sender, target, accessInv);
+
+          if (onlineTarget != null) {
+            handle(sender, onlineTarget, accessInv, args);
+          }
+        };
+
+        if (sender instanceof Player senderPlayer) {
+          PlayerLookupCommand.this.plugin.getScheduler().runTaskAtEntity(senderPlayer, sync);
+        } else {
+          PlayerLookupCommand.this.plugin.getScheduler().runTask(sync);
+        }
       }
     }.runTaskAsynchronously(this.plugin);
 
