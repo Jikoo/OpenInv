@@ -96,7 +96,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
     for (int index = 0; index < slots.size(); ++index) {
       Slot slot = slots.get(index);
       ItemStack itemStack = slot instanceof SlotPlaceholder placeholder ? placeholder.getOrDefault() : slot.getItem();
-      contentsCopy.add(itemStack);
+      contentsCopy.add(itemStack.copy());
       this.remoteSlots.get(index).force(itemStack);
     }
 
