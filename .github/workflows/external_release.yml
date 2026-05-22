@@ -59,6 +59,7 @@ jobs:
         with:
           modrinth-id: 1UlvXbzL
           modrinth-featured: false
+          modrinth-unfeature-mode: none
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files: ./OpenInv.jar
           game-versions: "${{ steps.parse_versions.outputs.PAPER_VERSIONS }}"
