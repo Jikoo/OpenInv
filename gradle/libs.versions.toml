@@ -8,7 +8,7 @@ shadow = "9.4.1"
 folia-scheduler-wrapper = "v0.0.3"
 errorprone-core = "2.49.0"
 errorprone-gradle = "5.1.0"
-slf4j = "2.0.17"
+slf4j = "2.0.18"
 sqlite-jdbc = "3.49.1.0"
 
 [libraries]
