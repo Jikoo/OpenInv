@@ -11,6 +11,9 @@ dependencies {
   compileOnly(libs.spigotapi)
   implementation(project(":openinvapi"))
   implementation(project(":openinvcommon"))
+  implementation(project(":openinvadapterpaper26_2")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
   implementation(project(":openinvadapterpaper26_1")) {
     exclude(group = "io.papermc.paper", module = "dev-bundle")
   }
