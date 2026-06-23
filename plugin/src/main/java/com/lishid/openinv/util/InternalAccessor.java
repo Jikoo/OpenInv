@@ -73,7 +73,7 @@ public class InternalAccessor {
       return null;
     }
 
-    Version maxSupported = Version.of(26, 1, 2);
+    Version maxSupported = Version.of(26, 2);
     Version minSupported = Version.of(1, 21, 6);
 
     // Ensure version is in supported range.
@@ -82,6 +82,9 @@ public class InternalAccessor {
     }
 
     // Paper or a Paper fork, can use Mojang-mapped internals.
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2
+      return new com.lishid.openinv.internal.paper26_2.InternalAccessor(logger, lang);
+    }
     if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) { // 26.1.1, 26.1.2
       return new com.lishid.openinv.internal.paper26_1.InternalAccessor(logger, lang);
     }

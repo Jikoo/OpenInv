@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.paper1_21_8.player;
 
-import com.lishid.openinv.internal.paper26_1.player.OpenPlayer;
+import com.lishid.openinv.internal.paper26_2.player.OpenPlayer;
 import com.lishid.openinv.util.JulLoggerAdapter;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;

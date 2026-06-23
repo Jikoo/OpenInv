@@ -1,10 +1,9 @@
-package com.lishid.openinv.internal.paper1_21_11.container.menu;
+package com.lishid.openinv.internal.paper26_2.container.menu;
 
 import com.lishid.openinv.internal.paper26_2.container.BaseOpenInventory;
-import com.lishid.openinv.internal.paper26_2.container.menu.BaseOpenInventoryMenu;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
@@ -15,14 +14,13 @@ public class OpenInventoryMenu extends BaseOpenInventoryMenu {
   }
 
   @Override
-  public void clicked(int i, int j, ClickType clickType, Player player) {
+  public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
     if (viewOnly) {
-      if (clickType == ClickType.QUICK_CRAFT) {
+      if (containerInput == ContainerInput.QUICK_CRAFT) {
         sendAllDataToRemote();
       }
-      return;
     }
-    super.clicked(i, j, clickType, player);
+    super.clicked(slotIndex, buttonNum, containerInput, player);
   }
 
 }
