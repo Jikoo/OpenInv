@@ -65,6 +65,9 @@ public class InternalAccessor {
 
   private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
     if (!PAPER) {
+      if (BukkitVersions.MINECRAFT.equals(Version.of(26, 2))) {
+        return new com.github.jikoo.openinv.internal.spigot26_2.InternalAccessor(logger, lang);
+      }
       if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))
           && BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(26, 1, 2))) {
         // Load Spigot accessor.
