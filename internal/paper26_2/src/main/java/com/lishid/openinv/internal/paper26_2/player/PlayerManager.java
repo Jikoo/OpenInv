@@ -99,7 +99,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     ServerPlayer entity = createNewPlayer(server, worldServer, offline);
 
     // Stop listening for advancement progression - if this is not cleaned up, loading causes a memory leak.
-    clearAdvancements(entity);
+    removeAdvancementListeners(entity);
 
     // Try to load the player's data.
     if (loadData(server, entity)) {
@@ -148,7 +148,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
     return entity;
   }
 
-  protected void clearAdvancements(ServerPlayer entity) {
+  protected void removeAdvancementListeners(ServerPlayer entity) {
     entity.getAdvancements().clearTriggers();
   }
 

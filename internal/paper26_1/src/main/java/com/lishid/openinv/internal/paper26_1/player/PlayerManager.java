@@ -4,9 +4,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.logging.Logger;
 
+@NullMarked
 public class PlayerManager extends com.lishid.openinv.internal.paper26_2.player.PlayerManager {
 
   public PlayerManager(Logger logger) {
@@ -14,7 +16,7 @@ public class PlayerManager extends com.lishid.openinv.internal.paper26_2.player.
   }
 
   @Override
-  protected void clearAdvancements(ServerPlayer entity) {
+  protected void removeAdvancementListeners(ServerPlayer entity) {
     entity.getAdvancements().stopListening();
   }
 
