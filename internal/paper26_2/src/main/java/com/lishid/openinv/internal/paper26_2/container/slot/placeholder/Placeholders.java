@@ -10,6 +10,10 @@ import java.util.EnumMap;
 
 public final class Placeholders {
 
+  // N.B. Slot#getNoItemIcon is still clientside, unfortunately.
+  // Worth checking every few updates just in case - it would be nice to
+  // get rid of some of the placeholders.
+
   static final @NotNull EnumMap<GameType, ItemStack> BLOCKED_GAME_TYPE = new EnumMap<>(GameType.class);
   public static @NotNull ItemStack craftingOutput = ItemStack.EMPTY;
   public static @NotNull ItemStack cursor = ItemStack.EMPTY;

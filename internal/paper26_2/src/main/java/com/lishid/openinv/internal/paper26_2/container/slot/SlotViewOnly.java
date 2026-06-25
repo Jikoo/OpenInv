@@ -119,6 +119,11 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
+  public @NotNull ItemStack safeClone(@NotNull Player player) {
+    return ItemStack.EMPTY;
+  }
+
+  @Override
   public @NotNull ItemStack safeInsert(@NotNull ItemStack itemStack) {
     return itemStack;
   }
@@ -131,11 +136,6 @@ public class SlotViewOnly extends SlotPlaceholder {
   @Override
   public boolean allowModification(@NotNull Player player) {
     return false;
-  }
-
-  @Override
-  public int getContainerSlot() {
-    return super.getContainerSlot();
   }
 
   @Override
