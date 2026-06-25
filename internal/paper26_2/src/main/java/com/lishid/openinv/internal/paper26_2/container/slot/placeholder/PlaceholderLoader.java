@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-public abstract class PlaceholderLoader {
+public class PlaceholderLoader {
 
   public void load(@Nullable ConfigurationSection section) throws Exception {
     Placeholders.craftingOutput = parse(section, "crafting-output", defaultCraftingOutput());
