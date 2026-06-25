@@ -9,7 +9,6 @@ import com.lishid.openinv.internal.paper26_2.container.AnySilentContainer;
 import com.lishid.openinv.internal.paper26_2.container.OpenEnderChest;
 import com.lishid.openinv.internal.paper26_2.container.OpenInventory;
 import com.lishid.openinv.internal.paper26_2.container.slot.placeholder.PlaceholderLoader;
-import com.lishid.openinv.internal.paper26_2.container.slot.placeholder.PlaceholderLoaderBase;
 import com.lishid.openinv.internal.paper26_2.player.PlayerManager;
 import com.lishid.openinv.util.lang.LanguageManager;
 import net.minecraft.world.Container;
@@ -46,7 +45,7 @@ public class InternalAccessor implements Accessor {
     return new AnySilentContainer(logger, lang);
   }
 
-  protected @NotNull PlaceholderLoaderBase createPlaceholderLoader() {
+  protected @NotNull PlaceholderLoader createPlaceholderLoader() {
     return new PlaceholderLoader();
   }
 

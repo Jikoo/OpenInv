@@ -3,9 +3,8 @@ package com.lishid.openinv.internal.paper26_1;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.paper26_1.container.AnySilentContainer;
 import com.lishid.openinv.internal.paper26_1.container.OpenEnderChest;
-import com.lishid.openinv.internal.paper26_1.container.slot.placeholder.PlaceholderLoader;
 import com.lishid.openinv.internal.paper26_1.player.PlayerManager;
-import com.lishid.openinv.internal.paper26_2.container.slot.placeholder.PlaceholderLoaderBase;
+import com.lishid.openinv.internal.paper26_2.container.slot.placeholder.PlaceholderLoader;
 import com.lishid.openinv.util.lang.LanguageManager;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -32,8 +31,8 @@ public class InternalAccessor extends com.lishid.openinv.internal.paper26_2.Inte
   }
 
   @Override
-  protected @NotNull PlaceholderLoaderBase createPlaceholderLoader() {
-    return new PlaceholderLoader();
+  protected @NotNull PlaceholderLoader createPlaceholderLoader() {
+    return new com.lishid.openinv.internal.paper26_1.container.slot.placeholder.PlaceholderLoader();
   }
 
   @Override
