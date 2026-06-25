@@ -23,9 +23,6 @@ dependencies {
   implementation(project(":openinvadapterpaper1_21_10")) {
     exclude(group = "io.papermc.paper", module = "dev-bundle")
   }
-  implementation(project(":openinvadapterpaper1_21_8")) {
-    exclude(group = "io.papermc.paper", module = "dev-bundle")
-  }
   implementation(project(":openinvadapterspigot")) {
     exclude(group = "io.papermc.paper", module = "dev-bundle")
   }

@@ -74,7 +74,7 @@ public class InternalAccessor {
     }
 
     Version maxSupported = Version.of(26, 2);
-    Version minSupported = Version.of(1, 21, 6);
+    Version minSupported = Version.of(1, 21, 9);
 
     // Ensure version is in supported range.
     if (BukkitVersions.MINECRAFT.greaterThan(maxSupported) || BukkitVersions.MINECRAFT.lessThan(minSupported)) {
@@ -88,14 +88,11 @@ public class InternalAccessor {
     if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) { // 26.1.1, 26.1.2
       return new com.lishid.openinv.internal.paper26_1.InternalAccessor(logger, lang);
     }
-    if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 11))) {
+    if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 11))) { // 1.21.11
       return new com.lishid.openinv.internal.paper1_21_11.InternalAccessor(logger, lang);
     }
-    if (BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(1, 21, 10))
-        && BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 9))) { // 1.21.9, 1.21.10
-      return new com.lishid.openinv.internal.paper1_21_10.InternalAccessor(logger, lang);
-    }
-    return new com.lishid.openinv.internal.paper1_21_8.InternalAccessor(logger, lang);
+    // 1.21.9, 1.21.10
+    return new com.lishid.openinv.internal.paper1_21_10.InternalAccessor(logger, lang);
   }
 
   public String getReleasesLink() {
@@ -108,8 +105,11 @@ public class InternalAccessor {
   }
 
   private String getPaperReleaseLink() {
-    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 6))) {
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 9))) {
       return "https://github.com/Jikoo/OpenInv/releases";
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 6))) {
+      return "https://github.com/Jikoo/OpenInv/releases/tag/5.3.2";
     }
     if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(1, 21, 1))) {
       return "https://github.com/Jikoo/OpenInv/releases/tag/5.3.0";

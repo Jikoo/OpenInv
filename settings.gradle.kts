@@ -22,7 +22,6 @@ if (!java.lang.Boolean.getBoolean("jitpack")) {
     "paper26_1",
     "paper1_21_11",
     "paper1_21_10",
-    "paper1_21_8",
     "spigot"
   )
   for (internal in internals) {
