@@ -31,7 +31,7 @@ public class OpenPlayer extends CraftPlayer {
   /**
    * List of tags to always reset when saving.
    *
-   * @see net.minecraft.world.entity.Entity#saveWithoutId(ValueOutput)
+   * @see net.minecraft.world.entity.Entity#saveWithoutId(ValueOutput, boolean)
    * @see ServerPlayer#addAdditionalSaveData(ValueOutput)
    * @see net.minecraft.world.entity.player.Player#addAdditionalSaveData(ValueOutput)
    * @see net.minecraft.world.entity.LivingEntity#addAdditionalSaveData(ValueOutput)
@@ -47,33 +47,23 @@ public class OpenPlayer extends CraftPlayer {
       "TicksFrozen",
       "HasVisualFire",
       "Tags",
+      "data",
       "Passengers",
       // ServerPlayer#addAdditionalSaveData(CompoundTag)
       // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
-      "warden_spawn_tracker",
-      "entered_nether_pos", // Replaces enteredNetherPosition
-      "enteredNetherPosition",
-      "respawn", // Replaces SpawnXyz fields as of 1.21.6
-      "SpawnX",
-      "SpawnY",
-      "SpawnZ",
-      "SpawnForced",
-      "SpawnAngle",
-      "SpawnDimension",
+      "entered_nether_pos",
+      "last_explosion_impact_pos",
+      "respawn",
       "raid_omen_position",
       "ender_pearls",
-      // Player#addAdditionalSaveData(CompoundTag)
       "ShoulderEntityLeft",
       "ShoulderEntityRight",
+      // Player#addAdditionalSaveData(CompoundTag)
       "LastDeathLocation",
-      "current_explosion_impact_pos",
       // LivingEntity#addAdditionalSaveData(CompoundTag)
+      "current_explosion_impact_pos",
       "active_effects",
-      "sleeping_pos", // Replaces SleepingXyz fields as of 1.21.6
-      "SleepingX",
-      "SleepingY",
-      "SleepingZ",
-      "Brain",
+      "sleeping_pos",
       "last_hurt_by_player",
       "last_hurt_by_player_memory_time",
       "last_hurt_by_mob",

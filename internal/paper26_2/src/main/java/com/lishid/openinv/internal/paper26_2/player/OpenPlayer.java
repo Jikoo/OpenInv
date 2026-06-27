@@ -54,6 +54,7 @@ public class OpenPlayer extends CraftPlayer {
       // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
       "warden_spawn_tracker", // No longer needed as of 1.21.11
       "entered_nether_pos",
+      "last_explosion_impact_pos",
       "respawn",
       "raid_omen_position",
       "ender_pearls",
