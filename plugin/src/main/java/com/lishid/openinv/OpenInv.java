@@ -188,7 +188,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   private void sendVersionError(@NotNull Consumer<String> messageMethod) {
     if (!accessor.isSupported()) {
       messageMethod.accept("Your server version (" + accessor.getVersion() + ") is not supported.");
-      messageMethod.accept("Please download the correct version of OpenInv here: " + accessor.getReleasesLink());
+      messageMethod.accept("Please check https://github.com/Jikoo/OpenInv/wiki/Supported-Versions to find a matching OI version.");
     }
     if (!isSpigot) {
       messageMethod.accept("OpenInv requires that you use Spigot or a Spigot fork. Per the 1.14 update thread");
