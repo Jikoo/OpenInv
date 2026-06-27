@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.Set;
 
 public class OpenPlayer extends CraftPlayer {
@@ -99,9 +98,8 @@ public class OpenPlayer extends CraftPlayer {
     try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), logger)) {
       PlayerDataStorage worldNbtStorage = server.getServer().getPlayerList().playerIo;
 
-      CompoundTag oldData = isOnline()
-          ? null
-          : load(worldNbtStorage, player, scopedCollector).orElse(null);
+      CompoundTag oldData;
+      oldData = isOnline() ? null : worldNbtStorage.load(player.nameAndId()).orElse(null);
       CompoundTag playerData = getWritableTag(oldData);
 
       ValueOutput valueOutput = TagValueOutput.createWrappingWithContext(scopedCollector, player.registryAccess(), playerData);
@@ -111,14 +109,6 @@ public class OpenPlayer extends CraftPlayer {
     } catch (Exception e) {
       LogUtils.getLogger().warn("Failed to save player data for {}: {}", player.getScoreboardName(), e);
     }
-  }
-
-  protected Optional<CompoundTag> load(
-      PlayerDataStorage storage,
-      ServerPlayer player,
-      ProblemReporter.ScopedCollector collector
-  ) {
-    return storage.load(player.nameAndId());
   }
 
   protected void saveSafe(
