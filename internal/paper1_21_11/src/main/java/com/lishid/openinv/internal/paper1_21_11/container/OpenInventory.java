@@ -1,14 +1,14 @@
 package com.lishid.openinv.internal.paper1_21_11.container;
 
 import com.lishid.openinv.internal.paper1_21_11.container.menu.OpenInventoryMenu;
-import com.lishid.openinv.internal.paper26_1.container.menu.OpenChestMenu;
+import com.lishid.openinv.internal.paper26_2.container.menu.OpenChestMenu;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class OpenInventory extends com.lishid.openinv.internal.paper26_1.container.OpenInventory {
+public class OpenInventory extends com.lishid.openinv.internal.paper26_2.container.OpenInventory {
 
   public OpenInventory(org.bukkit.entity.Player bukkitPlayer) {
     super(bukkitPlayer);

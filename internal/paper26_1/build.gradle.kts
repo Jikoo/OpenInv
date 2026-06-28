@@ -57,6 +57,9 @@ dependencies {
   implementation(project(":openinvcommon")) {
     exclude(group = "org.spigotmc", module = "spigot-api")
   }
+  api(project(":openinvadapterpaper26_2")) {
+    exclude(group = "io.papermc.paper", module = "dev-bundle")
+  }
 
   paperweight.paperDevBundle("26.1.2.build.5-alpha")
 }

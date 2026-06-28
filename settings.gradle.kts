@@ -18,11 +18,12 @@ if (!java.lang.Boolean.getBoolean("jitpack")) {
   project(":openinvcommon").projectDir = file("common")
 
   val internals = listOf(
+    "paper26_2",
     "paper26_1",
     "paper1_21_11",
     "paper1_21_10",
-    "paper1_21_8",
-    "spigot"
+    "spigot26_2",
+    "spigot26_1"
   )
   for (internal in internals) {
     include(":openinvadapter$internal")

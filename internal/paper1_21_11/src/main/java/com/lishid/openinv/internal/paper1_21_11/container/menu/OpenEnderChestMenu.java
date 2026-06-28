@@ -1,7 +1,7 @@
 package com.lishid.openinv.internal.paper1_21_11.container.menu;
 
-import com.lishid.openinv.internal.paper26_1.container.OpenEnderChest;
-import com.lishid.openinv.internal.paper26_1.container.menu.OpenSyncMenu;
+import com.lishid.openinv.internal.paper26_2.container.OpenEnderChest;
+import com.lishid.openinv.internal.paper26_2.container.menu.OpenSyncMenu;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;

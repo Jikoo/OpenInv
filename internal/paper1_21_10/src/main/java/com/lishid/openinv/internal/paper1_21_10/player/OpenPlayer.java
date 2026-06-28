@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public class OpenPlayer extends com.lishid.openinv.internal.paper26_1.player.OpenPlayer {
+public class OpenPlayer extends com.lishid.openinv.internal.paper26_2.player.OpenPlayer {
 
   protected OpenPlayer(
       CraftServer server,
