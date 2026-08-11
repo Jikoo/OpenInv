@@ -59,7 +59,6 @@ tasks.shadowJar {
   relocate("me.nahu.scheduler.wrapper", "com.github.jikoo.openinv.lib.nahu.scheduler-wrapper")
   relocate("com.github.jikoo.planarwrappers", "com.github.jikoo.openinv.lib.planarwrappers")
   minimize {
-    exclude(":openinv**")
     exclude(dependency(libs.folia.scheduler.wrapper.get()))
   }
 }
