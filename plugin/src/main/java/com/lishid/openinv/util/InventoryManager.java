@@ -133,6 +133,7 @@ public class InventoryManager implements Listener {
 
   @Keep
   @EventHandler
+  @SuppressWarnings("ReferenceEquality") // We do really want to check that we have the same ref here.
   private void onInventoryClose(@NotNull InventoryCloseEvent event) {
     ISpecialInventory inventory = InventoryAccess.getInventory(event.getInventory());
 

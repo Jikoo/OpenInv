@@ -34,7 +34,7 @@ public class ContentOffHand extends ContentEquipment {
     return new SlotEquipment(container, slot, x, y) {
       @Override
       public void setChanged() {
-        if (OpenPlayer.isConnected(holder.connection) && holder.containerMenu != holder.inventoryMenu) {
+        if (OpenPlayer.isConnected(holder.connection) && !holder.containerMenu.equals(holder.inventoryMenu)) {
           holder.connection.send(
               new ClientboundContainerSetSlotPacket(
                   holder.inventoryMenu.containerId,

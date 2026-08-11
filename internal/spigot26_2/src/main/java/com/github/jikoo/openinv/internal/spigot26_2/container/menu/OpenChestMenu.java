@@ -164,17 +164,17 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
 
   private int getTopSize(ServerPlayer viewer) {
     MenuType<?> menuType = getType();
-    if (menuType == MenuType.GENERIC_9x1) {
+    if (MenuType.GENERIC_9x1.equals(menuType)) {
       return 9;
-    } else if (menuType == MenuType.GENERIC_9x2) {
+    } else if (MenuType.GENERIC_9x2.equals(menuType)) {
       return 18;
-    } else if (menuType == MenuType.GENERIC_9x3) {
+    } else if (MenuType.GENERIC_9x3.equals(menuType)) {
       return 27;
-    } else if (menuType == MenuType.GENERIC_9x4) {
+    } else if (MenuType.GENERIC_9x4.equals(menuType)) {
       return 36;
-    } else if (menuType == MenuType.GENERIC_9x5) {
+    } else if (MenuType.GENERIC_9x5.equals(menuType)) {
       return 45;
-    } else if (menuType == MenuType.GENERIC_9x6) {
+    } else if (MenuType.GENERIC_9x6.equals(menuType)) {
       return 54;
     }
     // This is a bit gross, but allows us a safe fallthrough.

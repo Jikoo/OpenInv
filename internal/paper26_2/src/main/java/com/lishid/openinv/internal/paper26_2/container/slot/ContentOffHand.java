@@ -10,6 +10,8 @@ import net.minecraft.world.inventory.Slot;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  * A slot for equipment that updates held items if necessary.
  */
@@ -37,7 +39,7 @@ public class ContentOffHand extends ContentEquipment {
     return new SlotEquipment(container, slot, x, y) {
       @Override
       public void setChanged() {
-        if (OpenPlayer.isConnected(holder.connection) && holder.containerMenu != holder.inventoryMenu) {
+        if (OpenPlayer.isConnected(holder.connection) && !Objects.equals(holder.containerMenu, holder.inventoryMenu)) {
           holder.connection.send(
               new ClientboundContainerSetSlotPacket(
                   holder.inventoryMenu.containerId,
