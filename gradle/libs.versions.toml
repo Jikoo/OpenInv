@@ -1,7 +1,7 @@
 [versions]
 spigotapi = "1.21.5-R0.1-SNAPSHOT"
 planarwrappers = "3.3.0"
-jspecify = "1.0.0"
+jspecify = "1.0.1"
 annotations = "26.1.0"
 paperweight = "2.0.0-beta.21"
 shadow = "9.6.1"
