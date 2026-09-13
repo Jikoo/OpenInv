@@ -221,8 +221,8 @@ public class PlayerLoader implements Listener {
       Map.Entry<String, Profile> entry = iterator.next();
       String oldMatch = entry.getValue().name();
       String lookup = entry.getKey();
-      float oldMatchScore = StringMetric.compareJaroWinkler(lookup, oldMatch);
-      float newMatchScore = StringMetric.compareJaroWinkler(lookup, name);
+      double oldMatchScore = FuzzyJaroWinkler.getSimilarity(lookup, oldMatch);
+      double newMatchScore = FuzzyJaroWinkler.getSimilarity(lookup, name);
 
       // If new match exceeds old match, delete old match.
       if (newMatchScore > oldMatchScore) {

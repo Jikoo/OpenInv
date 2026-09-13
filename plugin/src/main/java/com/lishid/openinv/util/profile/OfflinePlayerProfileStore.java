@@ -1,6 +1,6 @@
 package com.lishid.openinv.util.profile;
 
-import com.lishid.openinv.util.StringMetric;
+import com.lishid.openinv.util.FuzzyJaroWinkler;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +58,7 @@ public class OfflinePlayerProfileStore implements ProfileStore {
   public @Nullable Profile getProfileInexact(@NotNull String search) {
     ProfileStore.warnMainThread(logger);
 
-    float bestMatch = 0.0F;
+    double bestMatch = 0.0F;
     Profile bestProfile = null;
     for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
       String name = player.getName();
@@ -67,7 +67,7 @@ public class OfflinePlayerProfileStore implements ProfileStore {
         return null;
       }
 
-      float currentMatch = StringMetric.compareJaroWinkler(name, name);
+      double currentMatch = FuzzyJaroWinkler.getSimilarity(search, name);
 
       if (currentMatch > bestMatch) {
         bestMatch = currentMatch;

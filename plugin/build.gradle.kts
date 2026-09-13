@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
   alias(libs.plugins.shadow)
 }
@@ -6,6 +9,8 @@ repositories {
   maven("https://hub.spigotmc.org/nexus/content/groups/public/")
   maven("https://jitpack.io")
 }
+
+val mockitoAgent: Configuration = configurations.create("mockitoAgent")
 
 dependencies {
   compileOnly(libs.spigotapi)
@@ -32,6 +37,10 @@ dependencies {
   implementation(libs.planarwrappers)
   implementation(libs.folia.scheduler.wrapper)
   compileOnly(libs.sqlite.jdbc)
+
+  testImplementation(rootProject.libs.hamcrest)
+  testImplementation(libs.mockito.core)
+  mockitoAgent(libs.mockito.core) { isTransitive = false }
 }
 
 java {
@@ -40,6 +49,27 @@ java {
 
 tasks.withType<JavaCompile>().configureEach {
   options.release = 21
+}
+
+tasks.withType<Test>().configureEach {
+  // Use as many cores as possible to run tests.
+  maxParallelForks = Runtime.getRuntime().availableProcessors()
+  // As Bukkit is very heavily statically initialized, don't reuse forks.
+  forkEvery = 1
+  jvmArgs("-Xshare:off", "-javaagent:${mockitoAgent.asPath}")
+  testLogging {
+    showStackTraces = true
+    exceptionFormat = TestExceptionFormat.FULL
+    events(TestLogEvent.STANDARD_OUT)
+  }
+}
+
+testing {
+  suites {
+    named<JvmTestSuite>("test") {
+      useJUnitJupiter(libs.junit.jupiter.get().version!!)
+    }
+  }
 }
 
 tasks.processResources {
