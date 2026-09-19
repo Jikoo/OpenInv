@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
-public class AnySilentContainer extends com.lishid.openinv.internal.paper26_2.container.AnySilentContainer {
+public class AnySilentContainer extends com.lishid.openinv.internal.paper26_3.container.AnySilentContainer {
 
   public AnySilentContainer(@NotNull Logger logger, @NotNull LanguageManager lang) {
     super(logger, lang);

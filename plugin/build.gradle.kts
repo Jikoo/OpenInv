@@ -16,7 +16,7 @@ dependencies {
   compileOnly(libs.spigotapi)
   implementation(project(":openinvapi"))
   implementation(project(":openinvcommon"))
-  implementation(project(":openinvadapterpaper26_2")) {
+  implementation(project(":openinvadapterpaper26_3")) {
     exclude(group = "io.papermc.paper", module = "dev-bundle")
   }
   implementation(project(":openinvadapterpaper26_1")) {
@@ -25,10 +25,7 @@ dependencies {
   implementation(project(":openinvadapterpaper1_21_11")) {
     exclude(group = "io.papermc.paper", module = "dev-bundle")
   }
-  implementation(project(":openinvadapterpaper1_21_10")) {
-    exclude(group = "io.papermc.paper", module = "dev-bundle")
-  }
-  implementation(project(":openinvadapterspigot26_2")) {
+  implementation(project(":openinvadapterspigot26_3")) {
     exclude(group = "org.spigotmc", module = "spigot")
   }
   implementation(project(":openinvadapterspigot26_1")) {

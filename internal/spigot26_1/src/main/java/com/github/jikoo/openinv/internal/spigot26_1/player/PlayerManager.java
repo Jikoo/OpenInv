@@ -6,7 +6,7 @@ import org.jspecify.annotations.NullMarked;
 import java.util.logging.Logger;
 
 @NullMarked
-public class PlayerManager extends com.github.jikoo.openinv.internal.spigot26_2.player.PlayerManager {
+public class PlayerManager extends com.github.jikoo.openinv.internal.spigot26_3.player.PlayerManager {
 
   public PlayerManager(Logger logger) {
     super(logger);

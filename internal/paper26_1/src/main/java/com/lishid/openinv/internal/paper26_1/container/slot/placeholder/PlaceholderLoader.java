@@ -4,7 +4,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
-public class PlaceholderLoader extends com.lishid.openinv.internal.paper26_2.container.slot.placeholder.PlaceholderLoader {
+public class PlaceholderLoader extends com.lishid.openinv.internal.paper26_3.container.slot.placeholder.PlaceholderLoader {
 
   @Override
   protected @NotNull Item getDefaultCursorItem() {

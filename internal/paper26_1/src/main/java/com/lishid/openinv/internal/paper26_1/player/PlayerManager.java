@@ -9,7 +9,7 @@ import org.jspecify.annotations.NullMarked;
 import java.util.logging.Logger;
 
 @NullMarked
-public class PlayerManager extends com.lishid.openinv.internal.paper26_2.player.PlayerManager {
+public class PlayerManager extends com.lishid.openinv.internal.paper26_3.player.PlayerManager {
 
   public PlayerManager(Logger logger) {
     super(logger);

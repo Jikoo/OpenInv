@@ -64,38 +64,33 @@ public class InternalAccessor {
   }
 
   private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
-    if (!PAPER) {
-      if (BukkitVersions.MINECRAFT.equals(Version.of(26, 2))) {
-        return new com.github.jikoo.openinv.internal.spigot26_2.InternalAccessor(logger, lang);
-      }
-      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))
-          && BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(26, 1, 2))) {
-        // Load Spigot accessor.
-        return new com.github.jikoo.openinv.internal.spigot26_1.InternalAccessor(logger, lang);
-      }
+    // Ensure version is in supported range.
+    if (BukkitVersions.MINECRAFT.greaterThan(Version.of(26, 3))
+        || BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21, 11))) {
       return null;
     }
 
-    Version maxSupported = Version.of(26, 2);
-    Version minSupported = Version.of(1, 21, 9);
-
-    // Ensure version is in supported range.
-    if (BukkitVersions.MINECRAFT.greaterThan(maxSupported) || BukkitVersions.MINECRAFT.lessThan(minSupported)) {
+    // Spigot adapters.
+    if (!PAPER) {
+      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2, 26.3
+        return new com.github.jikoo.openinv.internal.spigot26_3.InternalAccessor(logger, lang);
+      }
+      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) { // 26.1.1, 26.1.2
+        return new com.github.jikoo.openinv.internal.spigot26_1.InternalAccessor(logger, lang);
+      }
+      // Spigot min version is 26.1.1, differing from Paper for one more release.
       return null;
     }
 
     // Paper or a Paper fork, can use Mojang-mapped internals.
-    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2
-      return new com.lishid.openinv.internal.paper26_2.InternalAccessor(logger, lang);
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2, 26.3
+      return new com.lishid.openinv.internal.paper26_3.InternalAccessor(logger, lang);
     }
     if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) { // 26.1.1, 26.1.2
       return new com.lishid.openinv.internal.paper26_1.InternalAccessor(logger, lang);
     }
-    if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 11))) { // 1.21.11
-      return new com.lishid.openinv.internal.paper1_21_11.InternalAccessor(logger, lang);
-    }
-    // 1.21.9, 1.21.10
-    return new com.lishid.openinv.internal.paper1_21_10.InternalAccessor(logger, lang);
+    // 1.21.11
+    return new com.lishid.openinv.internal.paper1_21_11.InternalAccessor(logger, lang);
   }
 
   /**

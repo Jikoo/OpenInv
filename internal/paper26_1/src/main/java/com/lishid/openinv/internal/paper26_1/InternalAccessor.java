@@ -4,14 +4,14 @@ import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.paper26_1.container.AnySilentContainer;
 import com.lishid.openinv.internal.paper26_1.container.OpenEnderChest;
 import com.lishid.openinv.internal.paper26_1.player.PlayerManager;
-import com.lishid.openinv.internal.paper26_2.container.slot.placeholder.PlaceholderLoader;
+import com.lishid.openinv.internal.paper26_3.container.slot.placeholder.PlaceholderLoader;
 import com.lishid.openinv.util.lang.LanguageManager;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
-public class InternalAccessor extends com.lishid.openinv.internal.paper26_2.InternalAccessor {
+public class InternalAccessor extends com.lishid.openinv.internal.paper26_3.InternalAccessor {
 
   public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
     super(logger, lang);

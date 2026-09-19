@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @NullMarked
-public class InternalAccessor extends com.github.jikoo.openinv.internal.spigot26_2.InternalAccessor {
+public class InternalAccessor extends com.github.jikoo.openinv.internal.spigot26_3.InternalAccessor {
 
   private final PlayerManager manager;
 

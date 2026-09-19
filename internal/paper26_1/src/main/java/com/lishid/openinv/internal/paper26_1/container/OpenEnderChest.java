@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class OpenEnderChest extends com.lishid.openinv.internal.paper26_2.container.OpenEnderChest {
+public class OpenEnderChest extends com.lishid.openinv.internal.paper26_3.container.OpenEnderChest {
 
   public OpenEnderChest(@NotNull org.bukkit.entity.Player player) {
     super(player);
