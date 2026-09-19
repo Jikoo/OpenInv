@@ -57,22 +57,17 @@ public class JulLoggerAdapter extends LegacyAbstractLogger implements LocationAw
   }
 
   private void addSource(String fqcn, LogRecord logRecord) {
-    // TODO stackwalker?
-    StackTraceElement[] trace = new Throwable().getStackTrace();
-    int maxElements = 12;
-    int lastIgnored = maxElements;
-    // Start from 2; 0 is above and 1 is caller of internal method.
-    for (int i = 2; i < maxElements; ++i) {
-      if (isIgnored(trace[i].getClassName(), fqcn)) {
-        lastIgnored = i;
-      }
-    }
-
-    if (lastIgnored < maxElements - 1) {
-      StackTraceElement caller = trace[lastIgnored + 1];
-      logRecord.setSourceClassName(caller.getClassName());
-      logRecord.setSourceMethodName(caller.getMethodName());
-    }
+    StackWalker.getInstance().walk(stream -> stream
+        // Start at index 2 - this is an internal method, so we want at least the caller's caller.
+        .skip(2)
+        // Walk at maximum 10 frames.
+        .limit(10)
+        .filter(frame -> isIgnored(frame.getClassName(), fqcn))
+        .findFirst()
+    ).ifPresent(frame -> {
+      logRecord.setSourceClassName(frame.getClassName());
+      logRecord.setSourceMethodName(frame.getMethodName());
+    });
   }
 
   private boolean isIgnored(String className, String fqcn) {
