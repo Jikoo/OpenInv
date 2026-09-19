@@ -9,20 +9,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
 /**
  * A slot in a survival crafting inventory. Unavailable when not online in a survival mode.
  */
+@NullMarked
 public class ContentCrafting implements Content {
 
   private final int index;
   private ServerPlayer holder;
   private List<ItemStack> items;
 
-  public ContentCrafting(@NotNull ServerPlayer holder, int index) {
+  public ContentCrafting(ServerPlayer holder, int index) {
     setHolder(holder);
     this.index = index;
   }
@@ -31,7 +32,7 @@ public class ContentCrafting implements Content {
     return isAvailable(holder);
   }
 
-  public static boolean isAvailable(@NotNull ServerPlayer holder) {
+  public static boolean isAvailable(ServerPlayer holder) {
     // Player must be online and not in creative - since the creative client is (semi-)authoritative,
     // it ignores changes without extra help, and will delete the item as a result.
     // Spectator mode is technically possible but may cause the item to be dropped if the client opens an inventory.
@@ -39,7 +40,7 @@ public class ContentCrafting implements Content {
   }
 
   @Override
-  public void setHolder(@NotNull ServerPlayer holder) {
+  public void setHolder(ServerPlayer holder) {
     this.holder = holder;
     // Note: CraftingContainer#getItems is immutable! Be careful with updates.
     this.items = holder.inventoryMenu.getCraftSlots().getContents();
@@ -108,12 +109,12 @@ public class ContentCrafting implements Content {
     }
 
     @Override
-    public boolean mayPickup(@NotNull Player player) {
+    public boolean mayPickup(Player player) {
       return isAvailable();
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack itemStack) {
+    public boolean mayPlace(ItemStack itemStack) {
       return isAvailable();
     }
 

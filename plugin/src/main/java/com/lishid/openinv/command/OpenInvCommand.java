@@ -28,8 +28,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -37,32 +37,33 @@ import java.util.StringJoiner;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 
+@NullMarked
 public class OpenInvCommand extends PlayerLookupCommand {
 
-  private final @NotNull InventoryManager manager;
+  private final InventoryManager manager;
   private final Map<Player, String> openInvHistory = new WeakHashMap<>();
   private final Map<Player, String> openEnderHistory = new WeakHashMap<>();
 
   public OpenInvCommand(
-      @NotNull OpenInv plugin,
-      @NotNull Config config,
-      @NotNull InventoryManager manager,
-      @NotNull LanguageManager lang,
-      @NotNull PlayerLoader playerLoader
+      OpenInv plugin,
+      Config config,
+      InventoryManager manager,
+      LanguageManager lang,
+      PlayerLoader playerLoader
   ) {
     super(plugin, lang, config, playerLoader);
     this.manager = manager;
   }
 
   @Override
-  protected boolean isAccessInventory(@NotNull Command command) {
+  protected boolean isAccessInventory(Command command) {
     return command.getName().equals("openinv");
   }
 
   @Override
   protected @Nullable String getTargetIdentifer(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
+      CommandSender sender,
+      Command command,
       @Nullable String argument,
       boolean accessInv
   ) {
@@ -95,7 +96,7 @@ public class OpenInvCommand extends PlayerLookupCommand {
     return argument;
   }
 
-  private void showHelp(@NotNull CommandSender sender) {
+  private void showHelp(CommandSender sender) {
     // Get registered commands
     for (String commandName : plugin.getDescription().getCommands().keySet()) {
       PluginCommand command = plugin.getCommand(commandName);
@@ -124,12 +125,12 @@ public class OpenInvCommand extends PlayerLookupCommand {
   }
 
   @Override
-  protected @Nullable OfflinePlayer getTarget(@NotNull String identifier) {
+  protected @Nullable OfflinePlayer getTarget(String identifier) {
     return playerLoader.match(identifier);
   }
 
   @Override
-  protected boolean deniedCommand(@NotNull CommandSender sender, @NotNull Player onlineTarget, boolean accessInv) {
+  protected boolean deniedCommand(CommandSender sender, Player onlineTarget, boolean accessInv) {
     if (onlineTarget.equals(sender)) {
       // Permission for opening own inventory.
       if (!(accessInv ? Permissions.INVENTORY_OPEN_SELF : Permissions.ENDERCHEST_OPEN_SELF).hasPermission(sender)) {
@@ -150,10 +151,10 @@ public class OpenInvCommand extends PlayerLookupCommand {
 
   @Override
   protected void handle(
-      @NotNull CommandSender sender,
-      @NotNull PlayerAccess playerAccess,
+      CommandSender sender,
+      PlayerAccess playerAccess,
       boolean accessInv,
-      @NotNull String @NotNull [] args
+      String[] args
   ) {
     Player player = (Player) sender;
     Player target = playerAccess.player();

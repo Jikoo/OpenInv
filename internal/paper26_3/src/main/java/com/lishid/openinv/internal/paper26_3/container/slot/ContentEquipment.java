@@ -8,11 +8,13 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A slot for equipment that displays placeholders if empty.
  */
+@NullMarked
 public class ContentEquipment implements Content {
 
   private EntityEquipment equipment;
@@ -32,7 +34,7 @@ public class ContentEquipment implements Content {
   }
 
   @Override
-  public void setHolder(@NotNull ServerPlayer holder) {
+  public void setHolder(ServerPlayer holder) {
     this.equipment = holder.getInventory().equipment;
   }
 
@@ -72,7 +74,7 @@ public class ContentEquipment implements Content {
 
   public class SlotEquipment extends SlotPlaceholder {
 
-    private ServerPlayer viewer;
+    private @Nullable ServerPlayer viewer;
 
     SlotEquipment(Container container, int index, int x, int y) {
       super(container, index, x, y);
@@ -96,7 +98,7 @@ public class ContentEquipment implements Content {
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack itemStack) {
+    public boolean mayPlace(ItemStack itemStack) {
       if (viewer == null) {
         return true;
       }

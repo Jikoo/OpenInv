@@ -8,23 +8,25 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Objects;
 
 /**
  * A slot for equipment that updates held items if necessary.
  */
+@NullMarked
 public class ContentOffHand extends ContentEquipment {
 
   private ServerPlayer holder;
 
   public ContentOffHand(ServerPlayer holder) {
     super(holder, EquipmentSlot.OFFHAND);
+    this.holder = holder; // Redundant, but silences nullity warning.
   }
 
   @Override
-  public void setHolder(@NotNull ServerPlayer holder) {
+  public void setHolder(ServerPlayer holder) {
     super.setHolder(holder);
     this.holder = holder;
   }

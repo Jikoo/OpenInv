@@ -5,21 +5,22 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A view-only slot that can't be interacted with.
  */
+@NullMarked
 public class ContentViewOnly implements Content {
 
-  protected @NotNull ServerPlayer holder;
+  protected ServerPlayer holder;
 
-  public ContentViewOnly(@NotNull ServerPlayer holder) {
+  public ContentViewOnly(ServerPlayer holder) {
     this.holder = holder;
   }
 
   @Override
-  public void setHolder(@NotNull ServerPlayer holder) {
+  public void setHolder(ServerPlayer holder) {
     this.holder = holder;
   }
 

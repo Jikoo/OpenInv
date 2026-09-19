@@ -7,9 +7,10 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class OpenDummyPlayerInventory extends OpenDummyInventory implements PlayerInventory {
 
   public OpenDummyPlayerInventory(Container inventory) {
@@ -22,12 +23,12 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getArmorContents() {
+  public ItemStack[] getArmorContents() {
     return new ItemStack[4];
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getExtraContents() {
+  public ItemStack[] getExtraContents() {
     return new ItemStack[4];
   }
 
@@ -52,22 +53,22 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public void setItem(@NotNull EquipmentSlot slot, @Nullable ItemStack item) {
+  public void setItem(EquipmentSlot slot, @Nullable ItemStack item) {
 
   }
 
   @Override
-  public @NotNull ItemStack getItem(@NotNull EquipmentSlot slot) {
+  public ItemStack getItem(EquipmentSlot slot) {
     return new ItemStack(Material.AIR);
   }
 
   @Override
-  public void setArmorContents(ItemStack @NotNull [] items) {
+  public void setArmorContents(ItemStack[] items) {
 
   }
 
   @Override
-  public void setExtraContents(ItemStack @NotNull [] items) {
+  public void setExtraContents(ItemStack[] items) {
 
   }
 
@@ -92,7 +93,7 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public @NotNull ItemStack getItemInMainHand() {
+  public ItemStack getItemInMainHand() {
     return new ItemStack(Material.AIR);
   }
 
@@ -102,7 +103,7 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public @NotNull ItemStack getItemInOffHand() {
+  public ItemStack getItemInOffHand() {
     return new ItemStack(Material.AIR);
   }
 
@@ -114,7 +115,7 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   @SuppressWarnings("InlineMeSuggester")
   @Deprecated
   @Override
-  public @NotNull ItemStack getItemInHand() {
+  public ItemStack getItemInHand() {
     return new ItemStack(Material.AIR);
   }
 

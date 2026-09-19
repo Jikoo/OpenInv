@@ -1,7 +1,7 @@
 package com.github.jikoo.openinv.internal.spigot26_3.container.bukkit;
 
-import com.google.common.base.Preconditions;
 import com.github.jikoo.openinv.internal.spigot26_3.container.OpenInventory;
+import com.google.common.base.Preconditions;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
@@ -10,22 +10,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class OpenPlayerInventory extends CraftInventory implements PlayerInventory {
 
-  public OpenPlayerInventory(@NotNull OpenInventory inventory) {
+  public OpenPlayerInventory(OpenInventory inventory) {
     super(inventory);
   }
 
   @Override
-  public @NotNull OpenInventory getInventory() {
+  public OpenInventory getInventory() {
     return (OpenInventory) super.getInventory();
   }
 
   @Override
-  public ItemStack @NotNull [] getContents() {
+  public ItemStack[] getContents() {
     return asCraftMirror(getInventory().getOwnerHandle().getInventory().getContents());
   }
 
@@ -45,7 +46,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public ItemStack @NotNull [] getStorageContents() {
+  public ItemStack[] getStorageContents() {
     return asCraftMirror(getInventory().getOwnerHandle().getInventory().getNonEquipmentItems());
   }
 
@@ -60,32 +61,32 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull InventoryType getType() {
+  public InventoryType getType() {
     return InventoryType.PLAYER;
   }
 
   @Override
-  public @NotNull Player getHolder() {
+  public Player getHolder() {
     return getInventory().getOwner();
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getArmorContents() {
+  public ItemStack[] getArmorContents() {
     return getInventory().getOwnerHandle().getBukkitEntity().getInventory().getArmorContents();
   }
 
   @Override
-  public void setArmorContents(ItemStack @NotNull [] items) {
+  public void setArmorContents(ItemStack[] items) {
     getInventory().getOwnerHandle().getBukkitEntity().getInventory().setArmorContents(items);
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getExtraContents() {
+  public ItemStack[] getExtraContents() {
     return getInventory().getOwnerHandle().getBukkitEntity().getInventory().getExtraContents();
   }
 
   @Override
-  public void setExtraContents(ItemStack @NotNull [] items) {
+  public void setExtraContents(ItemStack[] items) {
     getInventory().getOwnerHandle().getBukkitEntity().getInventory().setExtraContents(items);
   }
 
@@ -130,7 +131,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getItemInMainHand() {
+  public ItemStack getItemInMainHand() {
     Inventory internal = getInventory().getOwnerHandle().getInventory();
     return CraftItemStack.asCraftMirror(internal.getSelectedItem());
   }
@@ -142,7 +143,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getItemInOffHand() {
+  public ItemStack getItemInOffHand() {
     return getInventory().getOwnerHandle().getBukkitEntity().getInventory().getItemInOffHand();
   }
 
@@ -154,7 +155,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   @SuppressWarnings("InlineMeSuggester")
   @Deprecated
   @Override
-  public @NotNull ItemStack getItemInHand() {
+  public ItemStack getItemInHand() {
     return getItemInMainHand();
   }
 
@@ -178,12 +179,12 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @Nullable ItemStack getItem(@NotNull org.bukkit.inventory.EquipmentSlot slot) {
+  public @Nullable ItemStack getItem(org.bukkit.inventory.EquipmentSlot slot) {
     return getInventory().getOwnerHandle().getBukkitEntity().getInventory().getItem(slot);
   }
 
   @Override
-  public void setItem(@NotNull org.bukkit.inventory.EquipmentSlot slot, @Nullable ItemStack item) {
+  public void setItem(org.bukkit.inventory.EquipmentSlot slot, @Nullable ItemStack item) {
     getInventory().getOwnerHandle().getBukkitEntity().getInventory().setItem(slot, item);
   }
 

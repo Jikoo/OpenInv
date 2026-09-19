@@ -27,27 +27,28 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+@NullMarked
 public class ContainerSettingCommand implements TabExecutor {
 
-  private final @NotNull LanguageManager lang;
+  private final LanguageManager lang;
 
-  public ContainerSettingCommand(@NotNull LanguageManager lang) {
+  public ContainerSettingCommand(LanguageManager lang) {
     this.lang = lang;
   }
 
   @Override
   public boolean onCommand(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
-      @NotNull String[] args
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args
   ) {
     if (!(sender instanceof Player player)) {
       lang.sendMessage(sender, "messages.error.consoleUnsupported");
@@ -95,7 +96,7 @@ public class ContainerSettingCommand implements TabExecutor {
     return true;
   }
 
-  private void set(@NotNull PlayerToggle toggle, @NotNull UUID uuid, boolean state) {
+  private void set(PlayerToggle toggle, UUID uuid, boolean state) {
     if (toggle.set(uuid, state)) {
       OpenEvents.notifyPlayerToggle(toggle, uuid, state);
     }
@@ -103,10 +104,10 @@ public class ContainerSettingCommand implements TabExecutor {
 
   @Override
   public List<String> onTabComplete(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
-      @NotNull String[] args
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args
   ) {
     if (!command.testPermissionSilent(sender) || args.length != 1) {
       return Collections.emptyList();

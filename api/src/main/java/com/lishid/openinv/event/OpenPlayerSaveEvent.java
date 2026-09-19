@@ -5,11 +5,12 @@ import com.lishid.openinv.internal.ISpecialInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Event fired before OpenInv saves a player's data when closing an {@link ISpecialInventory}.
  */
+@NullMarked
 public class OpenPlayerSaveEvent extends PlayerSaveEvent {
 
   private static final HandlerList HANDLERS = new HandlerList();
@@ -26,10 +27,11 @@ public class OpenPlayerSaveEvent extends PlayerSaveEvent {
    */
   @RestrictedApi(
       explanation = "Constructor is not considered part of the API and may be subject to change.",
+      link = "",
       allowedOnPath = ".*/com/lishid/openinv/event/OpenEvents.java"
   )
   @ApiStatus.Internal
-  OpenPlayerSaveEvent(@NotNull Player player, @NotNull ISpecialInventory inventory) {
+  OpenPlayerSaveEvent(Player player, ISpecialInventory inventory) {
     super(player);
     this.inventory = inventory;
   }
@@ -39,11 +41,10 @@ public class OpenPlayerSaveEvent extends PlayerSaveEvent {
    *
    * @return the special inventory
    */
-  public @NotNull ISpecialInventory getInventory() {
+  public ISpecialInventory getInventory() {
     return inventory;
   }
 
-  @NotNull
   @Override
   public HandlerList getHandlers() {
     return HANDLERS;

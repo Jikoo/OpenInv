@@ -4,25 +4,26 @@ import com.github.jikoo.openinv.internal.spigot26_3.player.OpenPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.EnumMap;
 
+@NullMarked
 public final class Placeholders {
 
-  static final @NotNull EnumMap<GameType, ItemStack> BLOCKED_GAME_TYPE = new EnumMap<>(GameType.class);
-  public static @NotNull ItemStack craftingOutput = ItemStack.EMPTY;
-  public static @NotNull ItemStack cursor = ItemStack.EMPTY;
-  public static @NotNull ItemStack drop = ItemStack.EMPTY;
-  public static @NotNull ItemStack emptyHelmet = ItemStack.EMPTY;
-  public static @NotNull ItemStack emptyChestplate = ItemStack.EMPTY;
-  public static @NotNull ItemStack emptyLeggings = ItemStack.EMPTY;
-  public static @NotNull ItemStack emptyBoots = ItemStack.EMPTY;
-  public static @NotNull ItemStack emptyOffHand = ItemStack.EMPTY;
-  public static @NotNull ItemStack notSlot = ItemStack.EMPTY;
-  public static @NotNull ItemStack blockedOffline = ItemStack.EMPTY;
+  static final EnumMap<GameType, ItemStack> BLOCKED_GAME_TYPE = new EnumMap<>(GameType.class);
+  public static ItemStack craftingOutput = ItemStack.EMPTY;
+  public static ItemStack cursor = ItemStack.EMPTY;
+  public static ItemStack drop = ItemStack.EMPTY;
+  public static ItemStack emptyHelmet = ItemStack.EMPTY;
+  public static ItemStack emptyChestplate = ItemStack.EMPTY;
+  public static ItemStack emptyLeggings = ItemStack.EMPTY;
+  public static ItemStack emptyBoots = ItemStack.EMPTY;
+  public static ItemStack emptyOffHand = ItemStack.EMPTY;
+  public static ItemStack notSlot = ItemStack.EMPTY;
+  public static ItemStack blockedOffline = ItemStack.EMPTY;
 
-  public static ItemStack survivalOnly(@NotNull ServerPlayer serverPlayer) {
+  public static ItemStack survivalOnly(ServerPlayer serverPlayer) {
     if (!OpenPlayer.isConnected(serverPlayer.connection)) {
       return blockedOffline;
     }

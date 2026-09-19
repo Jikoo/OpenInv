@@ -1,5 +1,6 @@
 package com.lishid.openinv.util;
 
+import org.jspecify.annotations.NullMarked;
 import org.slf4j.Marker;
 import org.slf4j.helpers.LegacyAbstractLogger;
 import org.slf4j.helpers.MessageFormatter;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
  * An adapter for wrapping a {@link java.util.logging.Logger} as a {@link org.slf4j.Logger}.
  * <br>Largely based on {@code JDK14LoggerAdapter}, which is not present at runtime.
  */
+@NullMarked
 public class JulLoggerAdapter extends LegacyAbstractLogger implements LocationAwareLogger {
 
   private final Logger wrapped;

@@ -16,7 +16,7 @@
 
 package com.lishid.openinv.util.lang;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A data holder for string replacement in translations.
@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * @param placeholder the placeholder to be replaced
  * @param value the value to insert
  */
-public record Replacement(@NotNull String placeholder, @NotNull String value) {
+@NullMarked
+public record Replacement(String placeholder, String value) {
 
 }

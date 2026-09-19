@@ -20,37 +20,38 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@NullMarked
 public class OpenEnderChest implements Container, StackedContentsCompatible, InternalOwned<ServerPlayer>,
     ISpecialEnderChest {
 
-  private CraftInventory inventory;
-  private @NotNull ServerPlayer owner;
+  private @Nullable CraftInventory inventory;
+  private ServerPlayer owner;
   private NonNullList<ItemStack> items;
   private int maxStack = 64;
   private final List<HumanEntity> transaction = new ArrayList<>();
 
-  public OpenEnderChest(@NotNull org.bukkit.entity.Player player) {
+  public OpenEnderChest(org.bukkit.entity.Player player) {
     this.owner = PlayerManager.getHandle(player);
     this.items = owner.getEnderChestInventory().items;
   }
 
   @Override
-  public @NotNull ServerPlayer getOwnerHandle() {
+  public ServerPlayer getOwnerHandle() {
     return owner;
   }
 
   @Override
-  public @NotNull org.bukkit.inventory.Inventory getBukkitInventory() {
+  public org.bukkit.inventory.Inventory getBukkitInventory() {
     if (inventory == null) {
       inventory = new CraftInventory(this) {
         @Override
-        public @NotNull InventoryType getType() {
+        public InventoryType getType() {
           return InventoryType.ENDER_CHEST;
         }
       };
@@ -59,7 +60,7 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public void setPlayerOnline(@NotNull org.bukkit.entity.Player player) {
+  public void setPlayerOnline(org.bukkit.entity.Player player) {
     owner = PlayerManager.getHandle(player);
     NonNullList<ItemStack> activeItems = owner.getEnderChestInventory().items;
 
@@ -73,7 +74,7 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public @NotNull org.bukkit.entity.Player getPlayer() {
+  public org.bukkit.entity.Player getPlayer() {
     return owner.getBukkitEntity();
   }
 
@@ -88,12 +89,12 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public @NotNull ItemStack getItem(int index) {
+  public ItemStack getItem(int index) {
     return index >= 0 && index < items.size() ? items.get(index) : ItemStack.EMPTY;
   }
 
   @Override
-  public @NotNull ItemStack removeItem(int index, int amount) {
+  public ItemStack removeItem(int index, int amount) {
     ItemStack itemstack = ContainerHelper.removeItem(items, index, amount);
 
     if (!itemstack.isEmpty()) {
@@ -104,12 +105,12 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public @NotNull ItemStack removeItemNoUpdate(int index) {
+  public ItemStack removeItemNoUpdate(int index) {
     return index >= 0 && index < items.size() ? items.set(index, ItemStack.EMPTY) : ItemStack.EMPTY;
   }
 
   @Override
-  public void setItem(int index, @NotNull ItemStack itemStack) {
+  public void setItem(int index, ItemStack itemStack) {
     if (index >= 0 && index < items.size()) {
       items.set(index, itemStack);
     }
@@ -126,32 +127,32 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public boolean stillValid(@NotNull Player player) {
+  public boolean stillValid(Player player) {
     return true;
   }
 
   @Override
-  public @NotNull List<ItemStack> getContents() {
+  public List<ItemStack> getContents() {
     return items;
   }
 
   @Override
-  public void onOpen(@NotNull CraftHumanEntity craftHumanEntity) {
+  public void onOpen(CraftHumanEntity craftHumanEntity) {
     transaction.add(craftHumanEntity);
   }
 
   @Override
-  public void onClose(@NotNull CraftHumanEntity craftHumanEntity) {
+  public void onClose(CraftHumanEntity craftHumanEntity) {
     transaction.remove(craftHumanEntity);
   }
 
   @Override
-  public @NotNull List<HumanEntity> getViewers() {
+  public List<HumanEntity> getViewers() {
     return transaction;
   }
 
   @Override
-  public org.bukkit.entity.@NotNull Player getOwner() {
+  public org.bukkit.entity.Player getOwner() {
     return getPlayer();
   }
 
@@ -172,7 +173,7 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
   }
 
   @Override
-  public void fillStackedContents(@NotNull StackedItemContents stackedContents) {
+  public void fillStackedContents(StackedItemContents stackedContents) {
     for (ItemStack itemstack : items) {
       stackedContents.accountStack(itemstack);
     }

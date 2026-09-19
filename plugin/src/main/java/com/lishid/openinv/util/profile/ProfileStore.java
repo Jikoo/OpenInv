@@ -1,15 +1,16 @@
 package com.lishid.openinv.util.profile;
 
 import org.bukkit.Bukkit;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@NullMarked
 public interface ProfileStore {
 
-  void addProfile(@NotNull Profile profile);
+  void addProfile(Profile profile);
 
   void setup() throws Exception;
 
@@ -17,11 +18,11 @@ public interface ProfileStore {
 
   void tryImport() throws Exception;
 
-  @Nullable Profile getProfileExact(@NotNull String name);
+  @Nullable Profile getProfileExact(String name);
 
-  @Nullable Profile getProfileInexact(@NotNull String search);
+  @Nullable Profile getProfileInexact(String search);
 
-  static void warnMainThread(@NotNull Logger logger) {
+  static void warnMainThread(Logger logger) {
     if (!Bukkit.getServer().isPrimaryThread()) {
       return;
     }

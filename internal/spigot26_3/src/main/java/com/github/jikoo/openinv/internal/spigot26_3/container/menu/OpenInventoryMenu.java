@@ -1,13 +1,13 @@
 package com.github.jikoo.openinv.internal.spigot26_3.container.menu;
 
-import com.google.common.base.Preconditions;
-import com.lishid.openinv.util.Permissions;
 import com.github.jikoo.openinv.internal.spigot26_3.container.OpenInventory;
 import com.github.jikoo.openinv.internal.spigot26_3.container.bukkit.OpenDummyPlayerInventory;
 import com.github.jikoo.openinv.internal.spigot26_3.container.bukkit.OpenPlayerInventorySelf;
 import com.github.jikoo.openinv.internal.spigot26_3.container.slot.ContentDrop;
 import com.github.jikoo.openinv.internal.spigot26_3.container.slot.ContentEquipment;
 import com.github.jikoo.openinv.internal.spigot26_3.container.slot.SlotViewOnly;
+import com.google.common.base.Preconditions;
+import com.lishid.openinv.util.Permissions;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -20,9 +20,10 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
 
   private int offset;
@@ -48,7 +49,7 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
   }
 
   @Override
-  protected @NotNull Slot getUpperSlot(int index, int x, int y) {
+  protected Slot getUpperSlot(int index, int x, int y) {
     index += offset;
     Slot slot = container.getMenuSlot(index, x, y);
 
@@ -99,7 +100,7 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
   }
 
   @Override
-  protected @NotNull CraftInventoryView<OpenChestMenu<OpenInventory>, Inventory> createBukkitEntity() {
+  protected CraftInventoryView<OpenChestMenu<OpenInventory>, Inventory> createBukkitEntity() {
     Inventory bukkitInventory;
     if (viewOnly) {
       bukkitInventory = new OpenDummyPlayerInventory(container);
@@ -176,7 +177,7 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
       }
 
       @Override
-      public @NotNull InventoryType.SlotType getSlotType(int slot) {
+      public InventoryType.SlotType getSlotType(int slot) {
         if (viewOnly || slot < 0) {
           return InventoryType.SlotType.OUTSIDE;
         }
@@ -198,7 +199,7 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
   }
 
   @Override
-  public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
+  public ItemStack quickMoveStack(Player player, int index) {
     if (viewOnly) {
       return ItemStack.EMPTY;
     }

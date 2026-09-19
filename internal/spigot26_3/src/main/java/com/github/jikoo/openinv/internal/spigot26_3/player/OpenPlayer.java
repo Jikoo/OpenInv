@@ -16,9 +16,9 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Field;
@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
+@NullMarked
 public class OpenPlayer extends CraftPlayer {
 
   /**
@@ -128,7 +129,7 @@ public class OpenPlayer extends CraftPlayer {
   }
 
   @Contract("null -> new")
-  protected @NotNull CompoundTag getWritableTag(@Nullable CompoundTag oldData) {
+  protected CompoundTag getWritableTag(@Nullable CompoundTag oldData) {
     if (oldData == null) {
       return new CompoundTag();
     }
@@ -146,7 +147,7 @@ public class OpenPlayer extends CraftPlayer {
     return oldData;
   }
 
-  protected void revertSpecialValues(@NotNull CompoundTag newData, @NotNull CompoundTag oldData) {
+  protected void revertSpecialValues(CompoundTag newData, CompoundTag oldData) {
     // Revert automatic updates to play timestamps.
     copyValue(oldData, newData, "bukkit", "lastPlayed", NumericTag.class);
     copyValue(oldData, newData, "Paper", "LastSeen", NumericTag.class);
@@ -154,11 +155,11 @@ public class OpenPlayer extends CraftPlayer {
   }
 
   private <T extends Tag> void copyValue(
-      @NotNull CompoundTag source,
-      @NotNull CompoundTag target,
-      @NotNull String container,
-      @NotNull String key,
-      @SuppressWarnings("SameParameterValue") @NotNull Class<T> tagType
+      CompoundTag source,
+      CompoundTag target,
+      String container,
+      String key,
+      @SuppressWarnings("SameParameterValue") Class<T> tagType
   ) {
     CompoundTag oldContainer = getTag(source, container, CompoundTag.class);
     CompoundTag newContainer = getTag(target, container, CompoundTag.class);
@@ -174,8 +175,8 @@ public class OpenPlayer extends CraftPlayer {
 
   private <T extends Tag> @Nullable T getTag(
       @Nullable CompoundTag container,
-      @NotNull String key,
-      @NotNull Class<T> dataType
+      String key,
+      Class<T> dataType
   ) {
     if (container == null) {
       return null;
@@ -188,8 +189,8 @@ public class OpenPlayer extends CraftPlayer {
   }
 
   private <T extends Tag> void setTag(
-      @NotNull CompoundTag container,
-      @NotNull String key,
+      CompoundTag container,
+      String key,
       @Nullable T data
   ) {
     if (data == null) {

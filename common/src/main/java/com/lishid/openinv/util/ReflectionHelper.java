@@ -16,13 +16,15 @@
 
 package com.lishid.openinv.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
 
 /**
  * A utility for making reflection easier.
  */
+@NullMarked
 public final class ReflectionHelper {
 
   /**

@@ -3,7 +3,8 @@ package com.lishid.openinv.util.profile;
 import com.github.jikoo.planarwrappers.scheduler.TickTimeUnit;
 import me.nahu.scheduler.wrapper.WrappedJavaPlugin;
 import me.nahu.scheduler.wrapper.runnable.WrappedRunnable;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,18 +12,19 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+@NullMarked
 public abstract class BatchProfileStore implements ProfileStore {
 
   private final Set<Profile> pending = Collections.synchronizedSet(new HashSet<>());
-  private final AtomicReference<WrappedRunnable> insertTask = new AtomicReference<>();
-  protected final @NotNull WrappedJavaPlugin plugin;
+  private final AtomicReference<@UnknownNullability WrappedRunnable> insertTask = new AtomicReference<>();
+  protected final WrappedJavaPlugin plugin;
 
-  protected BatchProfileStore(@NotNull WrappedJavaPlugin plugin) {
+  protected BatchProfileStore(WrappedJavaPlugin plugin) {
     this.plugin = plugin;
   }
 
   @Override
-  public void addProfile(@NotNull Profile profile) {
+  public void addProfile(Profile profile) {
     pending.add(profile);
     buildBatch();
   }
@@ -73,6 +75,6 @@ public abstract class BatchProfileStore implements ProfileStore {
     insertTask.set(null);
   }
 
-  protected abstract void pushBatch(@NotNull Set<Profile> batch);
+  protected abstract void pushBatch(Set<Profile> batch);
 
 }

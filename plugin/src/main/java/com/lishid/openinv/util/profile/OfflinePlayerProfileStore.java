@@ -3,21 +3,22 @@ package com.lishid.openinv.util.profile;
 import com.lishid.openinv.util.FuzzyJaroWinkler;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.logging.Logger;
 
+@NullMarked
 public class OfflinePlayerProfileStore implements ProfileStore {
 
-  private final @NotNull Logger logger;
+  private final Logger logger;
 
-  public OfflinePlayerProfileStore(@NotNull Logger logger) {
+  public OfflinePlayerProfileStore(Logger logger) {
     this.logger = logger;
   }
 
   @Override
-  public void addProfile(@NotNull Profile profile) {
+  public void addProfile(Profile profile) {
     // No-op. Server handles profile creation and storage.
   }
 
@@ -37,7 +38,7 @@ public class OfflinePlayerProfileStore implements ProfileStore {
   }
 
   @Override
-  public @Nullable Profile getProfileExact(@NotNull String name) {
+  public @Nullable Profile getProfileExact(String name) {
     ProfileStore.warnMainThread(logger);
     @SuppressWarnings("deprecation")
     OfflinePlayer offline = Bukkit.getOfflinePlayer(name);
@@ -55,7 +56,7 @@ public class OfflinePlayerProfileStore implements ProfileStore {
   }
 
   @Override
-  public @Nullable Profile getProfileInexact(@NotNull String search) {
+  public @Nullable Profile getProfileInexact(String search) {
     ProfileStore.warnMainThread(logger);
 
     double bestMatch = 0.0F;

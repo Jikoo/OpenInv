@@ -7,16 +7,17 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A slot allowing viewing of the crafting result.
  *
  * <p>Unmodifiable because I said so. Use your own crafting grid.</p>
  */
+@NullMarked
 public class ContentCraftingResult extends ContentViewOnly {
 
-  public ContentCraftingResult(@NotNull ServerPlayer holder) {
+  public ContentCraftingResult(ServerPlayer holder) {
     super(holder);
   }
 

@@ -16,61 +16,62 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@NullMarked
 public class InternalAccessor implements Accessor {
 
-  protected final @NotNull Logger logger;
-  private final @NotNull PlayerManager manager;
-  private final @NotNull AnySilentContainer anySilentContainer;
+  protected final Logger logger;
+  private final PlayerManager manager;
+  private final AnySilentContainer anySilentContainer;
 
-  public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
+  public InternalAccessor(Logger logger, LanguageManager lang) {
     this.logger = logger;
     manager = createPlayerManager(logger);
     anySilentContainer = createAnySilentContainer(logger, lang);
   }
 
-  protected @NotNull PlayerManager createPlayerManager(@NotNull Logger logger) {
+  protected PlayerManager createPlayerManager(Logger logger) {
     return new PlayerManager(logger);
   }
 
-  protected @NotNull AnySilentContainer createAnySilentContainer(
-      @NotNull Logger logger,
-      @NotNull LanguageManager lang
+  protected AnySilentContainer createAnySilentContainer(
+      Logger logger,
+      LanguageManager lang
   ) {
     return new AnySilentContainer(logger, lang);
   }
 
-  protected @NotNull PlaceholderLoader createPlaceholderLoader() {
+  protected PlaceholderLoader createPlaceholderLoader() {
     return new PlaceholderLoader();
   }
 
   @Override
-  public @NotNull PlayerManager getPlayerManager() {
+  public PlayerManager getPlayerManager() {
     return manager;
   }
 
   @Override
-  public @NotNull IAnySilentContainer getAnySilentContainer() {
+  public IAnySilentContainer getAnySilentContainer() {
     return anySilentContainer;
   }
 
   @Override
-  public @NotNull ISpecialPlayerInventory createPlayerInventory(@NotNull Player player) {
+  public ISpecialPlayerInventory createPlayerInventory(Player player) {
     return new OpenInventory(player);
   }
 
   @Override
-  public @NotNull ISpecialEnderChest createEnderChest(@NotNull Player player) {
+  public ISpecialEnderChest createEnderChest(Player player) {
     return new OpenEnderChest(player);
   }
 
   @Override
-  public <T extends ISpecialInventory> @Nullable T get(@NotNull Inventory bukkitInventory, @NotNull Class<T> clazz) {
+  public <T extends ISpecialInventory> @Nullable T get(Inventory bukkitInventory, Class<T> clazz) {
     if (!(bukkitInventory instanceof CraftInventory craftInventory)) {
       return null;
     }
@@ -82,7 +83,7 @@ public class InternalAccessor implements Accessor {
   }
 
   @Override
-  public void reload(@NotNull ConfigurationSection config) {
+  public void reload(ConfigurationSection config) {
     ConfigurationSection placeholders = config.getConfigurationSection("placeholders");
     try {
       // Reset placeholders to defaults and try to load configuration.

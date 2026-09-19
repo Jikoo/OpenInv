@@ -11,29 +11,30 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
+@NullMarked
 public class OpenPlayerInventory extends CraftInventory implements PlayerInventory {
 
-  public OpenPlayerInventory(@NotNull BaseOpenInventory inventory) {
+  public OpenPlayerInventory(BaseOpenInventory inventory) {
     super(inventory);
   }
 
   @Override
-  public @NotNull BaseOpenInventory getInventory() {
+  public BaseOpenInventory getInventory() {
     return (BaseOpenInventory) super.getInventory();
   }
 
   @Override
-  public ItemStack @NotNull [] getContents() {
+  public ItemStack[] getContents() {
     return asCraftMirror(getInventory().getOwnerHandle().getInventory().getContents());
   }
 
   @Override
-  public void setContents(ItemStack[] items) {
+  public void setContents(@Nullable ItemStack[] items) {
     Inventory internal = getInventory().getOwnerHandle().getInventory();
     int size = internal.getContainerSize();
     Preconditions.checkArgument(items.length <= size, "items.length must be <= %s", size);
@@ -48,12 +49,12 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public ItemStack @NotNull [] getStorageContents() {
+  public ItemStack[] getStorageContents() {
     return asCraftMirror(getInventory().getOwnerHandle().getInventory().getNonEquipmentItems());
   }
 
   @Override
-  public void setStorageContents(ItemStack[] items) throws IllegalArgumentException {
+  public void setStorageContents(@Nullable ItemStack[] items) throws IllegalArgumentException {
     NonNullList<net.minecraft.world.item.ItemStack> list = getInventory().getOwnerHandle().getInventory().getNonEquipmentItems();
     int size = list.size();
     Preconditions.checkArgument(items.length <= size, "items.length must be <= %s", size);
@@ -63,22 +64,22 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull InventoryType getType() {
+  public InventoryType getType() {
     return InventoryType.PLAYER;
   }
 
   @Override
-  public @NotNull Player getHolder() {
+  public Player getHolder() {
     return getInventory().getOwner();
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getArmorContents() {
+  public ItemStack[] getArmorContents() {
     return asCraftMirror(getInventory().getOwnerHandle().getInventory().getArmorContents());
   }
 
   @Override
-  public void setArmorContents(ItemStack @NotNull [] items) {
+  public void setArmorContents(@Nullable ItemStack[] items) {
     int size = Inventory.EQUIPMENT_SLOTS_SORTED_BY_INDEX.length;
     Preconditions.checkArgument(items.length <= size, "items.length must be <= %s", size);
     for (int index = 0; index < items.length; ++index) {
@@ -90,12 +91,12 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getExtraContents() {
+  public ItemStack[] getExtraContents() {
     return asCraftMirror(List.of(getInventory().getOwnerHandle().getInventory().equipment.get(EquipmentSlot.OFFHAND)));
   }
 
   @Override
-  public void setExtraContents(ItemStack @NotNull [] items) {
+  public void setExtraContents(@Nullable ItemStack[] items) {
     Preconditions.checkArgument(items.length <= 1, "items.length must be <= 1");
     for (ItemStack item : items) {
       getInventory().getOwnerHandle().getInventory().equipment.set(EquipmentSlot.OFFHAND, CraftItemStack.asNMSCopy(item));
@@ -103,7 +104,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getHelmet() {
+  public ItemStack getHelmet() {
     return getInventory().getOwner().getInventory().getHelmet();
   }
 
@@ -113,7 +114,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getChestplate() {
+  public ItemStack getChestplate() {
     return getInventory().getOwner().getInventory().getChestplate();
   }
 
@@ -123,7 +124,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getLeggings() {
+  public ItemStack getLeggings() {
     return getInventory().getOwner().getInventory().getLeggings();
   }
 
@@ -133,7 +134,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getBoots() {
+  public ItemStack getBoots() {
     return getInventory().getOwner().getInventory().getBoots();
   }
 
@@ -143,7 +144,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getItemInMainHand() {
+  public ItemStack getItemInMainHand() {
     return getInventory().getOwner().getInventory().getItemInMainHand();
   }
 
@@ -153,7 +154,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getItemInOffHand() {
+  public ItemStack getItemInOffHand() {
     return getInventory().getOwner().getInventory().getItemInOffHand();
   }
 
@@ -165,7 +166,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   @SuppressWarnings("InlineMeSuggester")
   @Deprecated
   @Override
-  public @NotNull ItemStack getItemInHand() {
+  public ItemStack getItemInHand() {
     return getItemInMainHand();
   }
 
@@ -189,7 +190,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public @NotNull ItemStack getItem(@NotNull org.bukkit.inventory.EquipmentSlot slot) {
+  public ItemStack getItem(org.bukkit.inventory.EquipmentSlot slot) {
     return switch (slot) {
       case HAND -> getItemInMainHand();
       case OFF_HAND -> getItemInOffHand();
@@ -202,7 +203,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public void setItem(@NotNull org.bukkit.inventory.EquipmentSlot slot, @Nullable ItemStack item) {
+  public void setItem(org.bukkit.inventory.EquipmentSlot slot, @Nullable ItemStack item) {
     switch (slot) {
       case HAND -> setItemInMainHand(item);
       case OFF_HAND -> setItemInOffHand(item);

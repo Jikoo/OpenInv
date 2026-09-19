@@ -6,8 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ import java.util.ListIterator;
 /**
  * A locked down "empty" inventory that rejects plugin interaction.
  */
+@NullMarked
 public class OpenDummyInventory extends CraftInventory implements ViewOnly {
 
   private final InventoryType type;
@@ -26,7 +27,7 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
   }
 
   @Override
-  public @NotNull InventoryType getType() {
+  public InventoryType getType() {
     return type;
   }
 
@@ -42,18 +43,18 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
 
   @SuppressWarnings("NonApiType")
   @Override
-  public @NotNull HashMap<Integer, ItemStack> addItem(@NotNull ItemStack... items) throws IllegalArgumentException {
+  public HashMap<Integer, ItemStack> addItem(ItemStack... items) throws IllegalArgumentException {
     return arrayToHashMap(items);
   }
 
   @SuppressWarnings("NonApiType")
   @Override
-  public @NotNull HashMap<Integer, ItemStack> removeItem(@NotNull ItemStack... items) throws IllegalArgumentException {
+  public HashMap<Integer, ItemStack> removeItem(ItemStack... items) throws IllegalArgumentException {
     return arrayToHashMap(items);
   }
 
   @SuppressWarnings("NonApiType")
-  private static @NotNull HashMap<Integer, ItemStack> arrayToHashMap(@NotNull ItemStack[] items) {
+  private static HashMap<Integer, ItemStack> arrayToHashMap(ItemStack[] items) {
     HashMap<Integer, ItemStack> ignored = new HashMap<>();
     for (int index = 0; index < items.length; ++index) {
       ignored.put(index, items[index]);
@@ -62,27 +63,27 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
   }
 
   @Override
-  public ItemStack @NotNull [] getContents() {
+  public ItemStack[] getContents() {
     return new ItemStack[getSize()];
   }
 
   @Override
-  public void setContents(@NotNull ItemStack[] items) throws IllegalArgumentException {
+  public void setContents(ItemStack[] items) throws IllegalArgumentException {
 
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getStorageContents() {
+  public ItemStack[] getStorageContents() {
     return new ItemStack[getSize()];
   }
 
   @Override
-  public void setStorageContents(@NotNull ItemStack[] items) throws IllegalArgumentException {
+  public void setStorageContents(ItemStack[] items) throws IllegalArgumentException {
 
   }
 
   @Override
-  public boolean contains(@NotNull Material material) throws IllegalArgumentException {
+  public boolean contains(Material material) throws IllegalArgumentException {
     return false;
   }
 
@@ -92,7 +93,7 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
   }
 
   @Override
-  public boolean contains(@NotNull Material material, int amount) throws IllegalArgumentException {
+  public boolean contains(Material material, int amount) throws IllegalArgumentException {
     return false;
   }
 
@@ -108,25 +109,25 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
 
   @SuppressWarnings("NonApiType")
   @Override
-  public @NotNull HashMap<Integer, ItemStack> all(
-      @NotNull Material material
+  public HashMap<Integer, ItemStack> all(
+      Material material
   ) throws IllegalArgumentException {
     return new HashMap<>();
   }
 
   @SuppressWarnings("NonApiType")
   @Override
-  public @NotNull HashMap<Integer, ItemStack> all(@Nullable ItemStack item) {
+  public HashMap<Integer, ItemStack> all(@Nullable ItemStack item) {
     return new HashMap<>();
   }
 
   @Override
-  public int first(@NotNull Material material) throws IllegalArgumentException {
+  public int first(Material material) throws IllegalArgumentException {
     return -1;
   }
 
   @Override
-  public int first(@NotNull ItemStack item) {
+  public int first(ItemStack item) {
     return -1;
   }
 
@@ -141,12 +142,12 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
   }
 
   @Override
-  public void remove(@NotNull Material material) throws IllegalArgumentException {
+  public void remove(Material material) throws IllegalArgumentException {
 
   }
 
   @Override
-  public void remove(@NotNull ItemStack item) {
+  public void remove(ItemStack item) {
 
   }
 
@@ -161,12 +162,12 @@ public class OpenDummyInventory extends CraftInventory implements ViewOnly {
   }
 
   @Override
-  public @NotNull ListIterator<ItemStack> iterator() {
+  public ListIterator<ItemStack> iterator() {
     return Collections.emptyListIterator();
   }
 
   @Override
-  public @NotNull ListIterator<ItemStack> iterator(int index) {
+  public ListIterator<ItemStack> iterator(int index) {
     return Collections.emptyListIterator();
   }
 

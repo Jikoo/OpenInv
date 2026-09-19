@@ -49,8 +49,9 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.PluginManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.Locale;
@@ -61,13 +62,14 @@ import java.util.logging.Level;
 /**
  * The main class for OpenInv.
  */
+@NullMarked
 public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
 
-  private InternalAccessor accessor;
-  private Config config;
-  private InventoryManager inventoryManager;
-  private LanguageManager languageManager;
-  private PlayerLoader playerLoader;
+  private @UnknownNullability InternalAccessor accessor;
+  private @UnknownNullability Config config;
+  private @UnknownNullability InventoryManager inventoryManager;
+  private @UnknownNullability LanguageManager languageManager;
+  private @UnknownNullability PlayerLoader playerLoader;
   private boolean isSpigot = false;
 
   public PlayerLoader getPlayerLoader() {
@@ -86,10 +88,10 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
 
   @Override
   public boolean onCommand(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
-      @NotNull String[] args
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args
   ) {
     if (!isSpigot || !this.accessor.isSupported()) {
       this.sendVersionError(sender::sendMessage);
@@ -176,7 +178,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
     }
   }
 
-  private void setCommandExecutor(@NotNull CommandExecutor executor, String @NotNull ... commands) {
+  private void setCommandExecutor(CommandExecutor executor, String... commands) {
     for (String commandName : commands) {
       PluginCommand command = this.getCommand(commandName);
       if (command != null) {
@@ -185,7 +187,7 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
     }
   }
 
-  private void sendVersionError(@NotNull Consumer<String> messageMethod) {
+  private void sendVersionError(Consumer<String> messageMethod) {
     if (!accessor.isSupported()) {
       messageMethod.accept("Your server version (" + accessor.getVersion() + ") is not supported.");
       messageMethod.accept("Please check https://github.com/Jikoo/OpenInv/wiki/Supported-Versions to find a matching OI version.");
@@ -219,43 +221,43 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   }
 
   @Override
-  public @NotNull IAnySilentContainer getAnySilentContainer() {
+  public IAnySilentContainer getAnySilentContainer() {
     return this.accessor.getAnySilentContainer();
   }
 
   @Override
-  public boolean getAnyContainerStatus(@NotNull final OfflinePlayer offline) {
+  public boolean getAnyContainerStatus(final OfflinePlayer offline) {
     return PlayerToggles.any().is(offline.getUniqueId());
   }
 
   @Override
-  public void setAnyContainerStatus(@NotNull final OfflinePlayer offline, final boolean status) {
+  public void setAnyContainerStatus(final OfflinePlayer offline, final boolean status) {
     PlayerToggles.any().set(offline.getUniqueId(), status);
   }
 
   @Override
-  public boolean getSilentContainerStatus(@NotNull final OfflinePlayer offline) {
+  public boolean getSilentContainerStatus(final OfflinePlayer offline) {
     return PlayerToggles.silent().is(offline.getUniqueId());
   }
 
   @Override
-  public void setSilentContainerStatus(@NotNull final OfflinePlayer offline, final boolean status) {
+  public void setSilentContainerStatus(final OfflinePlayer offline, final boolean status) {
     PlayerToggles.silent().set(offline.getUniqueId(), status);
   }
 
   @Override
-  public @NotNull ISpecialEnderChest getSpecialEnderChest(@NotNull final Player player, final boolean online) {
+  public ISpecialEnderChest getSpecialEnderChest(final Player player, final boolean online) {
     return inventoryManager.getEnderChest(player);
   }
 
   @Override
-  public @NotNull ISpecialPlayerInventory getSpecialInventory(@NotNull final Player player, final boolean online) {
+  public ISpecialPlayerInventory getSpecialInventory(final Player player, final boolean online) {
     return inventoryManager.getInventory(player);
   }
 
   @Override
   @Deprecated(forRemoval = true)
-  public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory) {
+  public @Nullable InventoryView openInventory(Player player, ISpecialInventory inventory) {
     Permissions edit = null;
     HumanEntity target = inventory.getPlayer();
     boolean ownContainer = player.equals(target);
@@ -301,27 +303,27 @@ public class OpenInv extends FoliaWrappedJavaPlugin implements IOpenInv {
   }
 
   @Override
-  public @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly) {
+  public @Nullable InventoryView openInventory(Player player, ISpecialInventory inventory, boolean viewOnly) {
     return this.accessor.openInventory(player, inventory, viewOnly);
   }
 
   @Override
-  public boolean isPlayerLoaded(@NotNull UUID playerUuid) {
+  public boolean isPlayerLoaded(UUID playerUuid) {
     return inventoryManager.getLoadedPlayer(playerUuid) != null;
   }
 
   @Override
-  public @Nullable Player loadPlayer(@NotNull final OfflinePlayer offline) {
+  public @Nullable Player loadPlayer(final OfflinePlayer offline) {
     return playerLoader.load(offline);
   }
 
   @Override
-  public @Nullable OfflinePlayer matchPlayer(@NotNull String name) {
+  public @Nullable OfflinePlayer matchPlayer(String name) {
     return playerLoader.match(name);
   }
 
   @Override
-  public void unload(@NotNull final OfflinePlayer offline) {
+  public void unload(final OfflinePlayer offline) {
     inventoryManager.unload(offline.getUniqueId());
   }
 

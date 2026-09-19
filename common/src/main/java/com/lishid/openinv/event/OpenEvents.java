@@ -6,24 +6,25 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.UUID;
 
 /**
  * Construct and call events.
  */
+@NullMarked
 public final class OpenEvents {
 
-  public static boolean saveCancelled(@NotNull Player player) {
+  public static boolean saveCancelled(Player player) {
     return call(new PlayerSaveEvent(player));
   }
 
-  public static boolean saveCancelled(@NotNull ISpecialInventory inventory) {
+  public static boolean saveCancelled(ISpecialInventory inventory) {
     return call(new OpenPlayerSaveEvent((Player) inventory.getPlayer(), inventory));
   }
 
-  public static void notifyPlayerToggle(@NotNull PlayerToggle toggle, @NotNull UUID uuid, boolean state) {
+  public static void notifyPlayerToggle(PlayerToggle toggle, UUID uuid, boolean state) {
     Bukkit.getPluginManager().callEvent(new PlayerToggledEvent(toggle, uuid, state));
   }
 

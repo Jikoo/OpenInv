@@ -12,36 +12,37 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.logging.Level;
 
+@NullMarked
 public class ClearInvCommand extends PlayerLookupCommand {
 
-  private final @NotNull InventoryManager manager;
+  private final InventoryManager manager;
 
   public ClearInvCommand(
-      @NotNull OpenInv plugin,
-      @NotNull Config config,
-      @NotNull InventoryManager manager,
-      @NotNull LanguageManager lang,
-      @NotNull PlayerLoader playerLoader
+      OpenInv plugin,
+      Config config,
+      InventoryManager manager,
+      LanguageManager lang,
+      PlayerLoader playerLoader
   ) {
     super(plugin, lang, config, playerLoader);
     this.manager = manager;
   }
 
   @Override
-  protected boolean isAccessInventory(@NotNull Command command) {
+  protected boolean isAccessInventory(Command command) {
     return command.getName().equals("clearinv");
   }
 
   @Override
   protected @Nullable String getTargetIdentifer(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
+      CommandSender sender,
+      Command command,
       @Nullable String argument,
       boolean accessInv
   ) {
@@ -72,12 +73,12 @@ public class ClearInvCommand extends PlayerLookupCommand {
   }
 
   @Override
-  protected @Nullable OfflinePlayer getTarget(@NotNull String identifier) {
+  protected @Nullable OfflinePlayer getTarget(String identifier) {
     return playerLoader.matchExact(identifier);
   }
 
   @Override
-  protected boolean deniedCommand(@NotNull CommandSender sender, @NotNull Player onlineTarget, boolean accessInv) {
+  protected boolean deniedCommand(CommandSender sender, Player onlineTarget, boolean accessInv) {
     if (onlineTarget.equals(sender)) {
       return !Permissions.CLEAR_SELF.hasPermission(sender);
     }
@@ -86,10 +87,10 @@ public class ClearInvCommand extends PlayerLookupCommand {
 
   @Override
   protected void handle(
-      @NotNull CommandSender sender,
-      @NotNull PlayerAccess playerAccess,
+      CommandSender sender,
+      PlayerAccess playerAccess,
       boolean accessInv,
-      @NotNull String @NotNull [] args
+      String[] args
   ) {
     Player onlineTarget = playerAccess.player();
     // Create the inventory
@@ -113,11 +114,11 @@ public class ClearInvCommand extends PlayerLookupCommand {
   }
 
   @Override
-  public List<String> onTabComplete(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
-      @NotNull String[] args
+  public @Nullable List<String> onTabComplete(
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args
   ) {
     if (!Permissions.CLEAR_OTHER.hasPermission(sender)) {
       return List.of();

@@ -8,21 +8,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A slot wrapping the active menu's cursor. Unavailable when not online in a survival mode.
  */
+@NullMarked
 public class ContentCursor implements Content {
 
-  private @NotNull ServerPlayer holder;
+  private ServerPlayer holder;
 
-  public ContentCursor(@NotNull ServerPlayer holder) {
+  public ContentCursor(ServerPlayer holder) {
     this.holder = holder;
   }
 
   @Override
-  public void setHolder(@NotNull ServerPlayer holder) {
+  public void setHolder(ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -94,12 +95,12 @@ public class ContentCursor implements Content {
     }
 
     @Override
-    public boolean mayPickup(@NotNull Player player) {
+    public boolean mayPickup(Player player) {
       return isAvailable();
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack itemStack) {
+    public boolean mayPlace(ItemStack itemStack) {
       return isAvailable();
     }
 

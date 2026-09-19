@@ -16,10 +16,10 @@
 
 package com.lishid.openinv.command;
 
+import com.lishid.openinv.util.SearchHelper;
 import com.lishid.openinv.util.TabCompleter;
 import com.lishid.openinv.util.lang.LanguageManager;
 import com.lishid.openinv.util.lang.Replacement;
-import com.lishid.openinv.util.SearchHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -30,8 +30,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,20 +43,21 @@ import java.util.Locale;
  *
  * @author Jikoo
  */
+@NullMarked
 public class SearchEnchantCommand implements TabExecutor {
 
-  private final @NotNull LanguageManager lang;
+  private final LanguageManager lang;
 
-  public SearchEnchantCommand(@NotNull LanguageManager lang) {
+  public SearchEnchantCommand(LanguageManager lang) {
     this.lang = lang;
   }
 
   @Override
   public boolean onCommand(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
-      @NotNull String[] args
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args
   ) {
     if (args.length == 0) {
       return false;
@@ -167,10 +168,10 @@ public class SearchEnchantCommand implements TabExecutor {
 
   @Override
   public List<String> onTabComplete(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
-      @NotNull String[] args
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args
   ) {
     if (!command.testPermissionSilent(sender) || args.length < 1 || args.length > 2) {
       return Collections.emptyList();

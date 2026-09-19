@@ -47,19 +47,20 @@ import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
+@NullMarked
 public class AnySilentContainer extends AnySilentContainerBase {
 
-  private final @NotNull Logger logger;
-  private final @NotNull LanguageManager lang;
+  private final Logger logger;
+  private final LanguageManager lang;
   private @Nullable Field serverPlayerGameModeGameType;
 
-  public AnySilentContainer(@NotNull Logger logger, @NotNull LanguageManager lang) {
+  public AnySilentContainer(Logger logger, LanguageManager lang) {
     this.logger = logger;
     this.lang = lang;
     try {
@@ -81,9 +82,9 @@ public class AnySilentContainer extends AnySilentContainerBase {
 
   @Override
   public boolean activateContainer(
-      @NotNull final Player bukkitPlayer,
+      final Player bukkitPlayer,
       final boolean silentchest,
-      @NotNull final org.bukkit.block.Block bukkitBlock
+      final org.bukkit.block.Block bukkitBlock
   ) {
 
     // Silent ender chest is API-only
@@ -120,7 +121,7 @@ public class AnySilentContainer extends AnySilentContainerBase {
       return true;
     }
 
-    if (!(blockEntity instanceof MenuProvider menuProvider)) {
+    if (!(blockEntity instanceof @Nullable MenuProvider menuProvider)) {
       return false;
     }
 
@@ -177,12 +178,12 @@ public class AnySilentContainer extends AnySilentContainerBase {
     return true;
   }
 
-  protected boolean hasLootTable(@NotNull RandomizableContainerBlockEntity lootable) {
+  protected boolean hasLootTable(RandomizableContainerBlockEntity lootable) {
     return lootable.getLootTable() != null;
   }
 
   @Override
-  public void deactivateContainer(@NotNull final Player bukkitPlayer) {
+  public void deactivateContainer(final Player bukkitPlayer) {
     if (this.serverPlayerGameModeGameType == null || bukkitPlayer.getGameMode() == GameMode.SPECTATOR) {
       return;
     }
@@ -220,12 +221,12 @@ public class AnySilentContainer extends AnySilentContainerBase {
   }
 
   @Override
-  protected org.bukkit.block.BlockState getState(@NotNull org.bukkit.block.Block block) {
+  protected org.bukkit.block.BlockState getState(org.bukkit.block.Block block) {
     return block.getState(false);
   }
 
   @Override
-  protected InventoryHolder getHolder(@NotNull Inventory inventory) {
+  protected @Nullable InventoryHolder getHolder(Inventory inventory) {
     return inventory.getHolder(false);
   }
 

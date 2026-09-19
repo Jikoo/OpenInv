@@ -19,9 +19,10 @@ package com.lishid.openinv.internal;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public interface PlayerManager {
 
   /**
@@ -32,14 +33,14 @@ public interface PlayerManager {
    * @param offline the OfflinePlayer
    * @return the Player loaded
    */
-  @Nullable Player loadPlayer(@NotNull OfflinePlayer offline);
+  @Nullable Player loadPlayer(OfflinePlayer offline);
 
   /**
    * Creates a new Player from an existing one that will function slightly better offline.
    *
    * @return the Player
    */
-  @NotNull Player inject(@NotNull Player player);
+  Player inject(Player player);
 
   /**
    * Opens an ISpecialInventory for a Player.
@@ -49,6 +50,6 @@ public interface PlayerManager {
    *
    * @return the InventoryView opened
    */
-  @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly);
+  @Nullable InventoryView openInventory(Player player, ISpecialInventory inventory, boolean viewOnly);
 
 }

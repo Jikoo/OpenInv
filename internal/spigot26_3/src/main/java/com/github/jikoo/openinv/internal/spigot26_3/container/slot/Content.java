@@ -4,11 +4,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * An interface defining behaviors for entries in a {@link Container}. Used to reduce duplicate content reordering.
  */
+@NullMarked
 public interface Content {
 
   /**
@@ -16,7 +17,7 @@ public interface Content {
    *
    * @param holder the new holder
    */
-  void setHolder(@NotNull ServerPlayer holder);
+  void setHolder(ServerPlayer holder);
 
   /**
    * Get the current item.

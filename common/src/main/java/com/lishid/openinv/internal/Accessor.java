@@ -3,22 +3,22 @@ package com.lishid.openinv.internal;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public interface Accessor {
 
-  @NotNull
   PlayerManager getPlayerManager();
 
-  @NotNull IAnySilentContainer getAnySilentContainer();
+  IAnySilentContainer getAnySilentContainer();
 
-  @NotNull ISpecialPlayerInventory createPlayerInventory(@NotNull Player player);
+  ISpecialPlayerInventory createPlayerInventory(Player player);
 
-  @NotNull ISpecialEnderChest createEnderChest(@NotNull Player player);
+  ISpecialEnderChest createEnderChest(Player player);
 
-  <T extends ISpecialInventory> @Nullable T get(@NotNull Inventory bukkitInventory, @NotNull Class<T> clazz);
+  <T extends ISpecialInventory> @Nullable T get(Inventory bukkitInventory, Class<T> clazz);
 
-  void reload(@NotNull ConfigurationSection config);
+  void reload(ConfigurationSection config);
 
 }

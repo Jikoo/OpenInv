@@ -15,9 +15,9 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
+@NullMarked
 public class OpenPlayer extends CraftPlayer {
 
   /**
@@ -112,10 +113,10 @@ public class OpenPlayer extends CraftPlayer {
   }
 
   protected void saveSafe(
-      @NotNull ServerPlayer player,
+      ServerPlayer player,
       @Nullable CompoundTag oldData,
-      @NotNull CompoundTag playerData,
-      @NotNull PlayerDataStorage worldNbtStorage
+      CompoundTag playerData,
+      PlayerDataStorage worldNbtStorage
   ) throws IOException {
     // Revert certain special data values when offline.
     revertSpecialValues(playerData, oldData);
@@ -129,15 +130,15 @@ public class OpenPlayer extends CraftPlayer {
   }
 
   protected void safeReplaceFile(
-      @NotNull Path dataFile,
-      @NotNull Path tempFile,
-      @NotNull Path backupFile
+      Path dataFile,
+      Path tempFile,
+      Path backupFile
   ) {
     net.minecraft.util.Util.safeReplaceFile(dataFile, tempFile, backupFile);
   }
 
   @Contract("null -> new")
-  protected @NotNull CompoundTag getWritableTag(@Nullable CompoundTag oldData) {
+  protected CompoundTag getWritableTag(@Nullable CompoundTag oldData) {
     if (oldData == null) {
       return new CompoundTag();
     }
@@ -155,7 +156,7 @@ public class OpenPlayer extends CraftPlayer {
     return oldData;
   }
 
-  protected void revertSpecialValues(@NotNull CompoundTag newData, @Nullable CompoundTag oldData) {
+  protected void revertSpecialValues(CompoundTag newData, @Nullable CompoundTag oldData) {
     if (oldData == null) {
       return;
     }
@@ -167,11 +168,11 @@ public class OpenPlayer extends CraftPlayer {
   }
 
   private <T extends Tag> void copyValue(
-      @NotNull CompoundTag source,
-      @NotNull CompoundTag target,
-      @NotNull String container,
-      @NotNull String key,
-      @SuppressWarnings("SameParameterValue") @NotNull Class<T> tagType
+      CompoundTag source,
+      CompoundTag target,
+      String container,
+      String key,
+      @SuppressWarnings("SameParameterValue") Class<T> tagType
   ) {
     CompoundTag oldContainer = getTag(source, container, CompoundTag.class);
     CompoundTag newContainer = getTag(target, container, CompoundTag.class);
@@ -187,8 +188,8 @@ public class OpenPlayer extends CraftPlayer {
 
   private <T extends Tag> @Nullable T getTag(
       @Nullable CompoundTag container,
-      @NotNull String key,
-      @NotNull Class<T> dataType
+      String key,
+      Class<T> dataType
   ) {
     if (container == null) {
       return null;
@@ -201,8 +202,8 @@ public class OpenPlayer extends CraftPlayer {
   }
 
   private <T extends Tag> void setTag(
-      @NotNull CompoundTag container,
-      @NotNull String key,
+      CompoundTag container,
+      String key,
       @Nullable T data
   ) {
     if (data == null) {
@@ -212,7 +213,7 @@ public class OpenPlayer extends CraftPlayer {
     }
   }
 
-  protected void remove(@NotNull CompoundTag tag, @NotNull String key) {
+  protected void remove(CompoundTag tag, String key) {
     tag.remove(key);
   }
 

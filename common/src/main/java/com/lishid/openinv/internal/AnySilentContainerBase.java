@@ -10,12 +10,13 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public abstract class AnySilentContainerBase implements IAnySilentContainer {
 
   @Override
-  public boolean isAnyContainerNeeded(@NotNull Block block) {
+  public boolean isAnyContainerNeeded(Block block) {
     BlockState blockState = getState(block);
 
     // Barrels do not require AnyContainer.
@@ -73,17 +74,17 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
   }
 
   @Override
-  public boolean isAnySilentContainer(@NotNull Block block) {
+  public boolean isAnySilentContainer(Block block) {
     return isAnySilentContainer(getState(block));
   }
 
   @Override
-  public boolean isAnySilentContainer(@NotNull Inventory inventory) {
+  public boolean isAnySilentContainer(Inventory inventory) {
     return isAnySilentContainer(getHolder(inventory));
   }
 
-  protected abstract BlockState getState(@NotNull Block block);
+  protected abstract BlockState getState(Block block);
 
-  protected abstract InventoryHolder getHolder(@NotNull Inventory inventory);
+  protected abstract InventoryHolder getHolder(Inventory inventory);
 
 }

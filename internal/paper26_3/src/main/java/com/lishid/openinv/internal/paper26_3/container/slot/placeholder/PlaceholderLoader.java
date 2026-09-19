@@ -23,12 +23,13 @@ import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.world.level.block.entity.BannerPatterns;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.CraftRegistry;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedHashSet;
 import java.util.List;
 
+@NullMarked
 public class PlaceholderLoader {
 
   public void load(@Nullable ConfigurationSection section) throws Exception {
@@ -57,10 +58,10 @@ public class PlaceholderLoader {
     Placeholders.BLOCKED_GAME_TYPE.put(GameType.SPECTATOR, parse(section, "blocked.spectator", Placeholders.BLOCKED_GAME_TYPE.get(GameType.SPECTATOR)));
   }
 
-  protected @NotNull ItemStack parse(
+  protected ItemStack parse(
       @Nullable ConfigurationSection section,
-      @NotNull String path,
-      @NotNull ItemStack defaultStack
+      String path,
+      ItemStack defaultStack
   ) throws Exception {
     if (section == null) {
       return defaultStack;
@@ -86,15 +87,15 @@ public class PlaceholderLoader {
   private static final CustomModelData DEFAULT_CUSTOM_MODEL_DATA = new CustomModelData(List.of(), List.of(), List.of("openinv:custom"), List.of());
   private static final TooltipDisplay HIDE_TOOLTIP = new TooltipDisplay(true, new LinkedHashSet<>());
 
-  protected void addModelData(@NotNull ItemStack itemStack) {
+  protected void addModelData(ItemStack itemStack) {
     itemStack.set(DataComponents.CUSTOM_MODEL_DATA, DEFAULT_CUSTOM_MODEL_DATA);
   }
 
-  protected void hideTooltip(@NotNull ItemStack itemStack) {
+  protected void hideTooltip(ItemStack itemStack) {
     itemStack.set(DataComponents.TOOLTIP_DISPLAY, HIDE_TOOLTIP);
   }
 
-  protected @NotNull ItemStack defaultCraftingOutput() {
+  protected ItemStack defaultCraftingOutput() {
     // Crafting table: "Crafting"
     ItemStack itemStack = new ItemStack(Items.CRAFTING_TABLE);
     itemStack.set(DataComponents.ITEM_NAME, Component.translatable("container.crafting"));
@@ -102,7 +103,7 @@ public class PlaceholderLoader {
     return itemStack;
   }
 
-  protected @NotNull ItemStack defaultCursor() {
+  protected ItemStack defaultCursor() {
     // Cursor-like banner with no tooltip
     ItemStack itemStack = new ItemStack(getDefaultCursorItem());
     RegistryAccess minecraftRegistry = CraftRegistry.getMinecraftRegistry();
@@ -122,7 +123,7 @@ public class PlaceholderLoader {
     return itemStack;
   }
 
-  protected @NotNull ItemStack defaultDrop() {
+  protected ItemStack defaultDrop() {
     // Dropper: "Drop Selected Item"
     ItemStack itemStack = new ItemStack(Items.DROPPER);
     // Note: translatable component, not keybind component! We want the text identifying the keybind, not the key.
@@ -131,7 +132,7 @@ public class PlaceholderLoader {
     return itemStack;
   }
 
-  protected @NotNull ItemStack getEmptyArmor(@NotNull ItemLike item) {
+  protected ItemStack getEmptyArmor(ItemLike item) {
     // Inventory-background-grey-ish leather armor with no tooltip
     ItemStack itemStack = new ItemStack(item);
     DyedItemColor color = new DyedItemColor(0xC8C8C8);
@@ -141,7 +142,7 @@ public class PlaceholderLoader {
     return itemStack;
   }
 
-  protected @NotNull ItemStack defaultShield() {
+  protected ItemStack defaultShield() {
     // Shield with "missing texture" pattern, magenta and black squares.
     ItemStack itemStack = new ItemStack(Items.SHIELD);
     itemStack.set(DataComponents.BASE_COLOR, DyeColor.MAGENTA);
@@ -166,7 +167,7 @@ public class PlaceholderLoader {
     return itemStack;
   }
 
-  protected @NotNull ItemStack defaultNotSlot() {
+  protected ItemStack defaultNotSlot() {
     // White pane with no tooltip
     ItemStack itemStack = new ItemStack(getDefaultNotSlotItem());
     hideTooltip(itemStack);
@@ -174,15 +175,15 @@ public class PlaceholderLoader {
     return itemStack;
   }
 
-  protected @NotNull Item getDefaultCursorItem() {
+  protected Item getDefaultCursorItem() {
     return Items.BANNER.white();
   }
 
-  protected @NotNull Item getDefaultNotSlotItem() {
+  protected Item getDefaultNotSlotItem() {
     return Items.STAINED_GLASS_PANE.white();
   }
 
-  protected @NotNull ItemStack defaultBlockedOffline() {
+  protected ItemStack defaultBlockedOffline() {
     // Barrier: "Not available - Offline"
     ItemStack itemStack = new ItemStack(Items.BARRIER);
     itemStack.set(DataComponents.ITEM_NAME,

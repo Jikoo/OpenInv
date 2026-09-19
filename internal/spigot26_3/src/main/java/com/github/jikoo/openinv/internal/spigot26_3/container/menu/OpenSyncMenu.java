@@ -1,9 +1,9 @@
 package com.github.jikoo.openinv.internal.spigot26_3.container.menu;
 
+import com.github.jikoo.openinv.internal.spigot26_3.container.slot.SlotPlaceholder;
 import com.google.common.base.Suppliers;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.InternalOwned;
-import com.github.jikoo.openinv.internal.spigot26_3.container.slot.SlotPlaceholder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.HashedStack;
@@ -18,8 +18,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.RemoteSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 /**
  * An extension of {@link OpenChestMenu} that supports {@link SlotPlaceholder placeholders}.
  */
+@NullMarked
 @SuppressWarnings("HidingField") // Revisit when removing 1.21.4 support
 public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & InternalOwned<ServerPlayer>>
     extends OpenChestMenu<T> {
@@ -41,10 +42,10 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   protected boolean suppressRemoteUpdates;
 
   protected OpenSyncMenu(
-      @NotNull MenuType<ChestMenu> type,
+      MenuType<ChestMenu> type,
       int containerCounter,
-      @NotNull T container,
-      @NotNull ServerPlayer viewer,
+      T container,
+      ServerPlayer viewer,
       boolean viewOnly
   ) {
     super(type, containerCounter, container, viewer, viewOnly);
@@ -52,7 +53,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
 
   // Overrides from here on are purely to modify the sync process to send placeholder items.
   @Override
-  protected @NotNull Slot addSlot(@NotNull Slot slot) {
+  protected Slot addSlot(Slot slot) {
     slot.index = this.slots.size();
     this.slots.add(slot);
     this.lastSlots.add(ItemStack.EMPTY);
@@ -61,7 +62,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   }
 
   @Override
-  protected @NotNull DataSlot addDataSlot(@NotNull DataSlot dataSlot) {
+  protected DataSlot addDataSlot(DataSlot dataSlot) {
     this.dataSlots.add(dataSlot);
     this.remoteDataSlots.add(0);
     return dataSlot;
@@ -75,7 +76,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   }
 
   @Override
-  public void addSlotListener(@NotNull ContainerListener containerListener) {
+  public void addSlotListener(ContainerListener containerListener) {
     if (!this.containerListeners.contains(containerListener)) {
       this.containerListeners.add(containerListener);
       this.broadcastChanges();
@@ -83,7 +84,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   }
 
   @Override
-  public void setSynchronizer(@NotNull ContainerSynchronizer containerSynchronizer) {
+  public void setSynchronizer(ContainerSynchronizer containerSynchronizer) {
     this.synchronizer = containerSynchronizer;
     this.remoteCarried = synchronizer.createSlot();
     this.remoteSlots.replaceAll(slot -> synchronizer.createSlot());
@@ -121,7 +122,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   }
 
   @Override
-  public void removeSlotListener(@NotNull ContainerListener containerListener) {
+  public void removeSlotListener(ContainerListener containerListener) {
     this.containerListeners.remove(containerListener);
   }
 
@@ -171,7 +172,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
     }
   }
 
-  private void triggerSlotListeners(int index, @NotNull ItemStack itemStack, @NotNull Supplier<ItemStack> supplier) {
+  private void triggerSlotListeners(int index, ItemStack itemStack, Supplier<ItemStack> supplier) {
     ItemStack itemStack1 = this.lastSlots.get(index);
     if (!ItemStack.matches(itemStack1, itemStack)) {
       ItemStack itemStack2 = supplier.get();
@@ -183,7 +184,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
     }
   }
 
-  private void synchronizeSlotToRemote(int i, @NotNull ItemStack itemStack, @NotNull Supplier<ItemStack> supplier) {
+  private void synchronizeSlotToRemote(int i, ItemStack itemStack, Supplier<ItemStack> supplier) {
     if (!this.suppressRemoteUpdates) {
       RemoteSlot slot = this.remoteSlots.get(i);
       if (!slot.matches(itemStack)) {
@@ -220,7 +221,7 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   }
 
   @Override
-  public void setRemoteCarried(@NotNull HashedStack stack) {
+  public void setRemoteCarried(HashedStack stack) {
     this.remoteCarried.receive(stack);
   }
 

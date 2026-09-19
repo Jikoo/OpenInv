@@ -6,12 +6,14 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
 /**
  * A normal slot backed by an item list.
  */
+@NullMarked
 public abstract class ContentList implements Content {
 
   private final int index;
@@ -23,6 +25,13 @@ public abstract class ContentList implements Content {
     this.slotType = slotType;
     setHolder(holder);
   }
+
+  @Override
+  public void setHolder(ServerPlayer holder) {
+    this.items = getItems(holder);
+  }
+
+  protected abstract List<ItemStack> getItems(ServerPlayer holder);
 
   @Override
   public ItemStack get() {

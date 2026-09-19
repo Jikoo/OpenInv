@@ -1,15 +1,15 @@
 package com.lishid.openinv.internal.paper26_3.container.bukkit;
 
 import net.minecraft.world.Container;
-import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class OpenDummyPlayerInventory extends OpenDummyInventory implements PlayerInventory {
 
   public OpenDummyPlayerInventory(Container inventory) {
@@ -22,52 +22,52 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getArmorContents() {
+  public ItemStack[] getArmorContents() {
     return new ItemStack[4];
   }
 
   @Override
-  public @NotNull ItemStack @NotNull [] getExtraContents() {
+  public ItemStack[] getExtraContents() {
     return new ItemStack[4];
   }
 
   @Override
-  public @Nullable ItemStack getHelmet() {
-    return null;
+  public ItemStack getHelmet() {
+    return ItemStack.empty();
   }
 
   @Override
-  public @Nullable ItemStack getChestplate() {
-    return null;
+  public ItemStack getChestplate() {
+    return ItemStack.empty();
   }
 
   @Override
-  public @Nullable ItemStack getLeggings() {
-    return null;
+  public ItemStack getLeggings() {
+    return ItemStack.empty();
   }
 
   @Override
-  public @Nullable ItemStack getBoots() {
-    return null;
+  public ItemStack getBoots() {
+    return ItemStack.empty();
   }
 
   @Override
-  public void setItem(@NotNull EquipmentSlot slot, @Nullable ItemStack item) {
-
-  }
-
-  @Override
-  public @NotNull ItemStack getItem(@NotNull EquipmentSlot slot) {
-    return new ItemStack(Material.AIR);
-  }
-
-  @Override
-  public void setArmorContents(ItemStack @NotNull [] items) {
+  public void setItem(EquipmentSlot slot, @Nullable ItemStack item) {
 
   }
 
   @Override
-  public void setExtraContents(ItemStack @NotNull [] items) {
+  public ItemStack getItem(EquipmentSlot slot) {
+    return ItemStack.empty();
+  }
+
+  @Override
+  public void setArmorContents(@Nullable ItemStack[] items) {
+
+  }
+
+  @Override
+  public void setExtraContents(@Nullable ItemStack[] items) {
 
   }
 
@@ -92,8 +92,8 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public @NotNull ItemStack getItemInMainHand() {
-    return new ItemStack(Material.AIR);
+  public ItemStack getItemInMainHand() {
+    return ItemStack.empty();
   }
 
   @Override
@@ -102,8 +102,8 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   }
 
   @Override
-  public @NotNull ItemStack getItemInOffHand() {
-    return new ItemStack(Material.AIR);
+  public ItemStack getItemInOffHand() {
+    return ItemStack.empty();
   }
 
   @Override
@@ -114,8 +114,8 @@ public class OpenDummyPlayerInventory extends OpenDummyInventory implements Play
   @SuppressWarnings("InlineMeSuggester")
   @Deprecated
   @Override
-  public @NotNull ItemStack getItemInHand() {
-    return new ItemStack(Material.AIR);
+  public ItemStack getItemInHand() {
+    return ItemStack.empty();
   }
 
   @Deprecated

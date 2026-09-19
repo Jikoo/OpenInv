@@ -24,8 +24,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 /**
  * Interface defining behavior for the OpenInv plugin.
  */
+@NullMarked
 public interface IOpenInv {
 
   /**
@@ -76,7 +77,7 @@ public interface IOpenInv {
    * @return the active implementation for the server version
    * @throws IllegalStateException if the server version is unsupported
    */
-  @NotNull IAnySilentContainer getAnySilentContainer();
+  IAnySilentContainer getAnySilentContainer();
 
   /**
    * Get whether a user has AnyContainer mode enabled.
@@ -84,7 +85,7 @@ public interface IOpenInv {
    * @param offline the user to obtain the state of
    * @return true if AnyContainer mode is enabled
    */
-  boolean getAnyContainerStatus(@NotNull OfflinePlayer offline);
+  boolean getAnyContainerStatus(OfflinePlayer offline);
 
   /**
    * Set whether a user has AnyContainer mode enabled.
@@ -92,7 +93,7 @@ public interface IOpenInv {
    * @param offline the user to set the state of
    * @param status the state of the mode
    */
-  void setAnyContainerStatus(@NotNull OfflinePlayer offline, boolean status);
+  void setAnyContainerStatus(OfflinePlayer offline, boolean status);
 
   /**
    * Get whether a user has SilentContainer mode enabled.
@@ -100,7 +101,7 @@ public interface IOpenInv {
    * @param offline the user to obtain the state of
    * @return true if SilentContainer mode is enabled
    */
-  boolean getSilentContainerStatus(@NotNull OfflinePlayer offline);
+  boolean getSilentContainerStatus(OfflinePlayer offline);
 
   /**
    * Set whether a user has SilentContainer mode enabled.
@@ -108,7 +109,7 @@ public interface IOpenInv {
    * @param offline the user to set the state of
    * @param status the state of the mode
    */
-  void setSilentContainerStatus(@NotNull OfflinePlayer offline, boolean status);
+  void setSilentContainerStatus(OfflinePlayer offline, boolean status);
 
   /**
    * Get an {@link ISpecialEnderChest} for a user.
@@ -119,8 +120,8 @@ public interface IOpenInv {
    * @throws IllegalStateException if the server version is unsupported
    * @throws InstantiationException if there was an issue creating the inventory
    */
-  @NotNull ISpecialEnderChest getSpecialEnderChest(
-      @NotNull Player player,
+  ISpecialEnderChest getSpecialEnderChest(
+      Player player,
       boolean online
   ) throws InstantiationException;
 
@@ -133,8 +134,8 @@ public interface IOpenInv {
    * @throws IllegalStateException if the server version is unsupported
    * @throws InstantiationException if there was an issue creating the inventory
    */
-  @NotNull ISpecialPlayerInventory getSpecialInventory(
-      @NotNull Player player,
+  ISpecialPlayerInventory getSpecialInventory(
+      Player player,
       boolean online
   ) throws InstantiationException;
 
@@ -142,7 +143,7 @@ public interface IOpenInv {
    * @deprecated Use {@link #openInventory(Player, ISpecialInventory, boolean)}
    */
   @Deprecated(forRemoval = true, since = "5.2.0")
-  @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory);
+  @Nullable InventoryView openInventory(Player player, ISpecialInventory inventory);
 
   /**
    * Open an {@link ISpecialInventory} for a {@link Player}.
@@ -152,7 +153,7 @@ public interface IOpenInv {
    * @param viewOnly whether the inventory should be view-only
    * @return the resulting {@link InventoryView}
    */
-  @Nullable InventoryView openInventory(@NotNull Player player, @NotNull ISpecialInventory inventory, boolean viewOnly);
+  @Nullable InventoryView openInventory(Player player, ISpecialInventory inventory, boolean viewOnly);
 
   /**
    * Check if a {@link Player} is currently loaded by OpenInv.
@@ -161,7 +162,7 @@ public interface IOpenInv {
    * @return whether the {@code Player} is loaded
    * @since 4.2.0
    */
-  boolean isPlayerLoaded(@NotNull UUID playerUuid);
+  boolean isPlayerLoaded(UUID playerUuid);
 
   /**
    * Load a {@link Player} from an {@link OfflinePlayer}. If the user has not played before or the default world for
@@ -171,7 +172,7 @@ public interface IOpenInv {
    * @return the loaded {@code Player}
    * @throws IllegalStateException if the server version is unsupported
    */
-  @Nullable Player loadPlayer(@NotNull final OfflinePlayer offline);
+  @Nullable Player loadPlayer(final OfflinePlayer offline);
 
   /**
    * Match an existing {@link OfflinePlayer}. If the name is a {@link UUID#toString() UUID string}, this will only
@@ -184,14 +185,14 @@ public interface IOpenInv {
    * @param name the string to match
    * @return the user with the closest matching name
    */
-  @Nullable OfflinePlayer matchPlayer(@NotNull String name);
+  @Nullable OfflinePlayer matchPlayer(String name);
 
   /**
    * Forcibly close inventories of and unload any cached data for a user.
    *
    * @param offline the {@link OfflinePlayer} to unload
    */
-  void unload(@NotNull OfflinePlayer offline);
+  void unload(OfflinePlayer offline);
 
   Logger getLogger();
 

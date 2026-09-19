@@ -8,17 +8,18 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class OpenInventory extends BaseOpenInventory {
 
-  public OpenInventory(@NotNull Player bukkitPlayer) {
+  public OpenInventory(Player bukkitPlayer) {
     super(bukkitPlayer);
   }
 
   @Override
-  public @NotNull Component getTitle(@Nullable ServerPlayer viewer, @Nullable OpenChestMenu<?> menu) {
+  public Component getTitle(@Nullable ServerPlayer viewer, @Nullable OpenChestMenu<?> menu) {
     MutableComponent component = Component.empty();
     // Prefix for use with custom bitmap image fonts.
     if (owner.equals(viewer)) {

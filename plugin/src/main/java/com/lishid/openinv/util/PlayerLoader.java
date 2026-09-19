@@ -15,8 +15,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -29,22 +29,23 @@ import java.util.logging.Logger;
 /**
  * A utility for looking up and loading players.
  */
+@NullMarked
 public class PlayerLoader implements Listener {
 
-  private final @NotNull OpenInv plugin;
-  private final @NotNull Config config;
-  private final @NotNull InventoryManager inventoryManager;
-  private final @NotNull InternalAccessor internalAccessor;
-  private final @NotNull Logger logger;
-  private final @NotNull Cache<String, Profile> lookupCache;
-  private @NotNull ProfileStore profileStore;
+  private final OpenInv plugin;
+  private final Config config;
+  private final InventoryManager inventoryManager;
+  private final InternalAccessor internalAccessor;
+  private final Logger logger;
+  private final Cache<String, Profile> lookupCache;
+  private ProfileStore profileStore;
 
   public PlayerLoader(
-      @NotNull OpenInv plugin,
-      @NotNull Config config,
-      @NotNull InventoryManager inventoryManager,
-      @NotNull InternalAccessor internalAccessor,
-      @NotNull Logger logger
+      OpenInv plugin,
+      Config config,
+      InventoryManager inventoryManager,
+      InternalAccessor internalAccessor,
+      Logger logger
   ) {
     this.plugin = plugin;
     this.config = config;
@@ -62,11 +63,11 @@ public class PlayerLoader implements Listener {
     this.lookupCache = CacheBuilder.newBuilder().maximumSize(20).build();
   }
 
-  public @NotNull ProfileStore getProfileStore() {
+  public ProfileStore getProfileStore() {
     return profileStore;
   }
 
-  public void setProfileStore(@NotNull ProfileStore profileStore) {
+  public void setProfileStore(ProfileStore profileStore) {
     plugin.getLogger().log(
         Level.INFO,
         () -> "Setting profile store implementation to " + profileStore.getClass().getName()
@@ -82,7 +83,7 @@ public class PlayerLoader implements Listener {
    * @return the loaded {@code Player}
    * @throws IllegalStateException if the server version is unsupported
    */
-  public @Nullable Player load(@NotNull OfflinePlayer offline) {
+  public @Nullable Player load(OfflinePlayer offline) {
     Player player = offline.getPlayer();
     if (player != null) {
       return player;
@@ -101,7 +102,7 @@ public class PlayerLoader implements Listener {
       return internalAccessor.getPlayerDataManager().loadPlayer(offline);
     }
 
-    CompletableFuture<Player> future = new CompletableFuture<>();
+    CompletableFuture<@Nullable Player> future = new CompletableFuture<>();
     plugin.getScheduler().runTask(() -> future.complete(internalAccessor.getPlayerDataManager().loadPlayer(offline)));
 
     try {
@@ -114,7 +115,7 @@ public class PlayerLoader implements Listener {
     return player;
   }
 
-  public @Nullable OfflinePlayer matchExact(@NotNull String name) {
+  public @Nullable OfflinePlayer matchExact(String name) {
     OfflinePlayer player;
 
     try {
@@ -165,7 +166,7 @@ public class PlayerLoader implements Listener {
     return null;
   }
 
-  public @Nullable OfflinePlayer match(@NotNull String name) {
+  public @Nullable OfflinePlayer match(String name) {
     OfflinePlayer player = this.matchExact(name);
 
     if (player != null) {
@@ -199,11 +200,11 @@ public class PlayerLoader implements Listener {
 
   @Keep
   @EventHandler
-  private void onPlayerJoin(@NotNull PlayerJoinEvent event) {
+  private void onPlayerJoin(PlayerJoinEvent event) {
     plugin.getScheduler().runTaskLaterAsynchronously(() -> updateMatches(event), 7L);
   }
 
-  private void updateMatches(@NotNull PlayerJoinEvent event) {
+  private void updateMatches(PlayerJoinEvent event) {
     // Update profile store.
     profileStore.addProfile(new Profile(event.getPlayer()));
 

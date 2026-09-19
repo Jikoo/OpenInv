@@ -8,7 +8,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,6 +17,7 @@ import java.util.function.BiConsumer;
 /**
  * A fake slot used to drop items. Unavailable offline.
  */
+@NullMarked
 public class ContentDrop implements Content {
 
   static final BiConsumer<ServerPlayer, ItemStack> DROP;
@@ -47,12 +48,12 @@ public class ContentDrop implements Content {
 
   private ServerPlayer holder;
 
-  public ContentDrop(@NotNull ServerPlayer holder) {
+  public ContentDrop(ServerPlayer holder) {
     this.holder = holder;
   }
 
   @Override
-  public void setHolder(@NotNull ServerPlayer holder) {
+  public void setHolder(ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -101,7 +102,7 @@ public class ContentDrop implements Content {
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack itemStack) {
+    public boolean mayPlace(ItemStack itemStack) {
       return OpenPlayer.isConnected(holder.connection);
     }
 

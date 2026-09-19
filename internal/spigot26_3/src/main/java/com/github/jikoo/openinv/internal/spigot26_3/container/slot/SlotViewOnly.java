@@ -5,16 +5,17 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Optional;
 
 /**
  * A view-only {@link Slot}. "Blank" by default, but can wrap another slot to display its content.
  */
+@NullMarked
 public class SlotViewOnly extends SlotPlaceholder {
 
-  public static @NotNull SlotViewOnly wrap(@NotNull Slot wrapped) {
+  public static SlotViewOnly wrap(Slot wrapped) {
     SlotViewOnly wrapper;
     if (wrapped instanceof SlotPlaceholder placeholder) {
       wrapper = new SlotViewOnly(wrapped.container, wrapped.slot, wrapped.x, wrapped.y) {
@@ -45,20 +46,20 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
-  public void onQuickCraft(@NotNull ItemStack itemStack1, @NotNull ItemStack itemStack2) {
+  public void onQuickCraft(ItemStack itemStack1, ItemStack itemStack2) {
   }
 
   @Override
-  public void onTake(@NotNull Player player, @NotNull ItemStack itemStack) {
+  public void onTake(Player player, ItemStack itemStack) {
   }
 
   @Override
-  public boolean mayPlace(@NotNull ItemStack itemStack) {
+  public boolean mayPlace(ItemStack itemStack) {
     return false;
   }
 
   @Override
-  public @NotNull ItemStack getItem() {
+  public ItemStack getItem() {
     return ItemStack.EMPTY;
   }
 
@@ -68,15 +69,15 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
-  public void setByPlayer(@NotNull ItemStack newStack) {
+  public void setByPlayer(ItemStack newStack) {
   }
 
   @Override
-  public void setByPlayer(@NotNull ItemStack newStack, @NotNull ItemStack oldStack) {
+  public void setByPlayer(ItemStack newStack, ItemStack oldStack) {
   }
 
   @Override
-  public void set(@NotNull ItemStack itemStack) {
+  public void set(ItemStack itemStack) {
   }
 
   @Override
@@ -89,17 +90,17 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
-  public int getMaxStackSize(@NotNull ItemStack itemStack) {
+  public int getMaxStackSize(ItemStack itemStack) {
     return 0;
   }
 
   @Override
-  public @NotNull ItemStack remove(int amount) {
+  public ItemStack remove(int amount) {
     return ItemStack.EMPTY;
   }
 
   @Override
-  public boolean mayPickup(@NotNull Player player) {
+  public boolean mayPickup(Player player) {
     return false;
   }
 
@@ -109,32 +110,32 @@ public class SlotViewOnly extends SlotPlaceholder {
   }
 
   @Override
-  public @NotNull Optional<ItemStack> tryRemove(int var0, int var1, @NotNull Player player) {
+  public Optional<ItemStack> tryRemove(int var0, int var1, Player player) {
     return Optional.empty();
   }
 
   @Override
-  public @NotNull ItemStack safeTake(int var0, int var1, @NotNull Player player) {
+  public ItemStack safeTake(int var0, int var1, Player player) {
     return ItemStack.EMPTY;
   }
 
   @Override
-  public @NotNull ItemStack safeClone(@NotNull Player player) {
+  public ItemStack safeClone(Player player) {
     return ItemStack.EMPTY;
   }
 
   @Override
-  public @NotNull ItemStack safeInsert(@NotNull ItemStack itemStack) {
+  public ItemStack safeInsert(ItemStack itemStack) {
     return itemStack;
   }
 
   @Override
-  public @NotNull ItemStack safeInsert(@NotNull ItemStack itemStack, int amount) {
+  public ItemStack safeInsert(ItemStack itemStack, int amount) {
     return itemStack;
   }
 
   @Override
-  public boolean allowModification(@NotNull Player player) {
+  public boolean allowModification(Player player) {
     return false;
   }
 

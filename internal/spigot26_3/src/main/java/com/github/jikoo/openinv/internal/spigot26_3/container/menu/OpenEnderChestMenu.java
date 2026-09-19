@@ -5,13 +5,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class OpenEnderChestMenu extends OpenSyncMenu<OpenEnderChest> {
 
   public OpenEnderChestMenu(
-      @NotNull OpenEnderChest enderChest,
-      @NotNull ServerPlayer viewer,
+      OpenEnderChest enderChest,
+      ServerPlayer viewer,
       int containerId,
       boolean viewOnly
   ) {
@@ -19,7 +20,7 @@ public class OpenEnderChestMenu extends OpenSyncMenu<OpenEnderChest> {
   }
 
   @Override
-  public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
+  public ItemStack quickMoveStack(Player player, int index) {
     if (viewOnly) {
       return ItemStack.EMPTY;
     }

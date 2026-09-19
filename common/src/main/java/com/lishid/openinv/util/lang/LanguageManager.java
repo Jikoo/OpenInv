@@ -25,8 +25,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,6 +47,7 @@ import java.util.logging.Level;
  *
  * @author Jikoo
  */
+@NullMarked
 public class LanguageManager {
 
   private final Plugin plugin;
@@ -54,7 +55,7 @@ public class LanguageManager {
   private final String defaultLocale;
   private final Map<String, YamlConfiguration> locales;
 
-  public LanguageManager(@NotNull Plugin plugin, @NotNull String defaultLocale) {
+  public LanguageManager(Plugin plugin, String defaultLocale) {
     this.plugin = plugin;
     this.defaultLocale = defaultLocale;
     this.locales = new HashMap<>();
@@ -72,7 +73,7 @@ public class LanguageManager {
     getOrLoadLocale(defaultLocale);
   }
 
-  private @NotNull YamlConfiguration getOrLoadLocale(@NotNull String locale) {
+  private YamlConfiguration getOrLoadLocale(String locale) {
     YamlConfiguration loaded = locales.get(locale);
     if (loaded != null) {
       return loaded;
@@ -110,7 +111,7 @@ public class LanguageManager {
     return localeConfig;
   }
 
-  private @NotNull LangLocation bestMatch(@NotNull String locale, @Nullable LangLocation initial) {
+  private LangLocation bestMatch(String locale, @Nullable LangLocation initial) {
     File file = new File(folder, locale + ".yml");
     InputStream bundled = plugin.getResource("locale/" + locale + ".yml");
 
@@ -132,7 +133,7 @@ public class LanguageManager {
     return bestMatch(locale.substring(0, lastSeparator), initial);
   }
 
-  private @NotNull YamlConfiguration loadLocale(@NotNull LangLocation lang) {
+  private YamlConfiguration loadLocale(LangLocation lang) {
     YamlConfiguration localeConfigDefaults;
     if (lang.bundled == null) {
       localeConfigDefaults = new YamlConfiguration();
@@ -195,7 +196,7 @@ public class LanguageManager {
     return localeConfig;
   }
 
-  private void addTranslationFallthrough(@NotNull LangLocation location, @NotNull YamlConfiguration localeConfig) {
+  private void addTranslationFallthrough(LangLocation location, YamlConfiguration localeConfig) {
     YamlConfiguration defaultLocaleConfig = locales.get(defaultLocale);
 
     // Get missing keys. Keys that already have a guess value are not new and don't need to trigger another write.
@@ -222,9 +223,9 @@ public class LanguageManager {
     localeConfig.setDefaults(defaultLocaleConfig);
   }
 
-  private @NotNull List<String> getMissingKeys(
-      @NotNull Configuration configurationDefault,
-      @NotNull Predicate<String> nodeSetPredicate
+  private List<String> getMissingKeys(
+      Configuration configurationDefault,
+      Predicate<String> nodeSetPredicate
   ) {
     List<String> missingKeys = new ArrayList<>();
     for (String key : configurationDefault.getKeys(true)) {
@@ -236,7 +237,7 @@ public class LanguageManager {
     return missingKeys;
   }
 
-  public @Nullable String getValue(@NotNull String key, @Nullable String locale) {
+  public @Nullable String getValue(String key, @Nullable String locale) {
     String value = getOrLoadLocale(locale == null ? defaultLocale : locale.toLowerCase(Locale.ENGLISH)).getString(key);
     if (value == null || value.isBlank()) {
       return null;
@@ -248,9 +249,9 @@ public class LanguageManager {
   }
 
   public @Nullable String getValue(
-      @NotNull String key,
+      String key,
       @Nullable String locale,
-      Replacement @NotNull ... replacements
+      Replacement... replacements
   ) {
     String value = getValue(key, locale);
 
@@ -265,19 +266,19 @@ public class LanguageManager {
     return value;
   }
 
-  public @Nullable String getLocalizedMessage(@NotNull CommandSender sender, @NotNull String key) {
+  public @Nullable String getLocalizedMessage(CommandSender sender, String key) {
     return getValue(key, getLocale(sender));
   }
 
   public @Nullable String getLocalizedMessage(
-      @NotNull CommandSender sender,
-      @NotNull String key,
-      Replacement @NotNull ... replacements
+      CommandSender sender,
+      String key,
+      Replacement... replacements
   ) {
     return getValue(key, getLocale(sender), replacements);
   }
 
-  private @NotNull String getLocale(@NotNull CommandSender sender) {
+  private String getLocale(CommandSender sender) {
     if (sender instanceof Player player) {
       return player.getLocale();
     } else {
@@ -285,7 +286,7 @@ public class LanguageManager {
     }
   }
 
-  public void sendMessage(@NotNull CommandSender sender, @NotNull String key) {
+  public void sendMessage(CommandSender sender, String key) {
     String message = getLocalizedMessage(sender, key);
 
     if (message != null && !message.isEmpty()) {
@@ -293,7 +294,7 @@ public class LanguageManager {
     }
   }
 
-  public void sendMessage(@NotNull CommandSender sender, @NotNull String key, Replacement @NotNull ... replacements) {
+  public void sendMessage(CommandSender sender, String key, Replacement... replacements) {
     String message = getLocalizedMessage(sender, key, replacements);
 
     if (message != null && !message.isEmpty()) {
@@ -301,7 +302,7 @@ public class LanguageManager {
     }
   }
 
-  public void sendSystemMessage(@NotNull Player player, @NotNull String key) {
+  public void sendSystemMessage(Player player, String key) {
     String message = getLocalizedMessage(player, key);
 
     if (message == null) {
@@ -321,6 +322,6 @@ public class LanguageManager {
     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(message));
   }
 
-  private record LangLocation(@NotNull String locale, @NotNull File file, @Nullable InputStream bundled) {}
+  private record LangLocation(String locale, File file, @Nullable InputStream bundled) {}
 
 }

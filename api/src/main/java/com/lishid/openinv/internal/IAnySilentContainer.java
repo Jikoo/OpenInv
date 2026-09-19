@@ -26,8 +26,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.util.BoundingBox;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public interface IAnySilentContainer {
 
   /**
@@ -39,14 +41,14 @@ public interface IAnySilentContainer {
    * @param block  the {@link Block} of the container
    * @return true if the container can be opened
    */
-  boolean activateContainer(@NotNull Player player, boolean silent, @NotNull Block block);
+  boolean activateContainer(Player player, boolean silent, Block block);
 
   /**
    * Perform operations required to close the current container silently.
    *
    * @param player the {@link Player} closing a container
    */
-  void deactivateContainer(@NotNull Player player);
+  void deactivateContainer(Player player);
 
   /**
    * Check if the container at the given coordinates is blocked.
@@ -54,7 +56,7 @@ public interface IAnySilentContainer {
    * @param block the {@link Block} of the container
    * @return true if the container is blocked
    */
-  boolean isAnyContainerNeeded(@NotNull Block block);
+  boolean isAnyContainerNeeded(Block block);
 
   /**
    * Check if a shulker box block cannot be opened under ordinary circumstances.
@@ -62,7 +64,7 @@ public interface IAnySilentContainer {
    * @param shulkerBox the shulker box block
    * @return whether the container is blocked
    */
-  default boolean isShulkerBlocked(@NotNull Block shulkerBox) {
+  default boolean isShulkerBlocked(Block shulkerBox) {
     Directional directional = (Directional) shulkerBox.getBlockData();
     BlockFace facing = directional.getFacing();
     // Construct a new 1-block bounding box at the origin.
@@ -81,7 +83,7 @@ public interface IAnySilentContainer {
    * @param chest the chest block
    * @return whether the container is blocked
    */
-  default boolean isChestBlocked(@NotNull Block chest) {
+  default boolean isChestBlocked(Block chest) {
     org.bukkit.block.Block relative = chest.getRelative(0, 1, 0);
     return relative.getType().isOccluding()
         || !chest.getWorld().getNearbyEntities(BoundingBox.of(relative), Cat.class::isInstance).isEmpty();
@@ -93,7 +95,7 @@ public interface IAnySilentContainer {
    * @param block the potential container
    * @return true if the type is a supported container
    */
-  boolean isAnySilentContainer(@NotNull Block block);
+  boolean isAnySilentContainer(Block block);
 
   /**
    * Check if the given {@link BlockState} is a container which can be unblocked or silenced.
@@ -101,7 +103,7 @@ public interface IAnySilentContainer {
    * @param blockState the potential container
    * @return true if the type is a supported container
    */
-  default boolean isAnySilentContainer(@NotNull BlockState blockState) {
+  default boolean isAnySilentContainer(BlockState blockState) {
     return (blockState instanceof InventoryHolder holder && isAnySilentContainer(holder))
         || blockState instanceof EnderChest;
   }
@@ -112,7 +114,7 @@ public interface IAnySilentContainer {
    * @param holder the potential container
    * @return true if the type is a supported container
    */
-  default boolean isAnySilentContainer(@NotNull InventoryHolder holder) {
+  default boolean isAnySilentContainer(@Nullable InventoryHolder holder) {
     return holder instanceof org.bukkit.block.EnderChest
         || holder instanceof org.bukkit.block.Chest
         || holder instanceof org.bukkit.block.DoubleChest
@@ -126,6 +128,6 @@ public interface IAnySilentContainer {
    * @param inventory the potential container inventory
    * @return true if the type is a supported container
    */
-  boolean isAnySilentContainer(@NotNull Inventory inventory);
+  boolean isAnySilentContainer(Inventory inventory);
 
 }

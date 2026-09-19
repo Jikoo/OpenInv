@@ -10,8 +10,9 @@ import org.bukkit.craftbukkit.CraftEquipmentSlot;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.PlayerInventory;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ContentEquipment implements Content {
 
   private PlayerInventory equipment;
@@ -31,7 +32,7 @@ public class ContentEquipment implements Content {
   }
 
   @Override
-  public void setHolder(@NotNull ServerPlayer holder) {
+  public void setHolder(ServerPlayer holder) {
     this.equipment = holder.getBukkitEntity().getInventory();
   }
 
@@ -102,7 +103,7 @@ public class ContentEquipment implements Content {
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack itemStack) {
+    public boolean mayPlace(ItemStack itemStack) {
       if (viewer == null) {
         return true;
       }

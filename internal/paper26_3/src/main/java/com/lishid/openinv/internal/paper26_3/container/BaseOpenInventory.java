@@ -32,24 +32,25 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+@NullMarked
 public abstract class BaseOpenInventory implements Container, InternalOwned<ServerPlayer>, ISpecialPlayerInventory {
 
   protected final List<Content> slots;
   private final int size;
   protected ServerPlayer owner;
   private int maxStackSize = 99;
-  protected CraftInventory bukkitEntity;
+  protected @Nullable CraftInventory bukkitEntity;
   public List<HumanEntity> transaction = new ArrayList<>();
 
-  public BaseOpenInventory(@NotNull org.bukkit.entity.Player bukkitPlayer) {
+  public BaseOpenInventory(org.bukkit.entity.Player bukkitPlayer) {
     owner = PlayerManager.getHandle(bukkitPlayer);
 
     // Get total size, rounding up to nearest 9 for client compatibility.
@@ -113,8 +114,8 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
           localIndex,
           new ContentList(owner, invIndex, type) {
             @Override
-            public void setHolder(@NotNull ServerPlayer holder) {
-              items = holder.getInventory().getNonEquipmentItems();
+            protected List<ItemStack> getItems(ServerPlayer holder) {
+              return holder.getInventory().getNonEquipmentItems();
             }
           }
       );
@@ -187,7 +188,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
     return startIndex + listSize;
   }
 
-  protected Content getCraftingResult(@NotNull ServerPlayer serverPlayer) {
+  protected Content getCraftingResult(ServerPlayer serverPlayer) {
     return new ContentCraftingResult(serverPlayer);
   }
 
@@ -207,7 +208,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
   }
 
   @Override
-  public @NotNull org.bukkit.inventory.Inventory getBukkitInventory() {
+  public org.bukkit.inventory.Inventory getBukkitInventory() {
     if (bukkitEntity == null) {
       bukkitEntity = new OpenPlayerInventory(this);
     }
@@ -215,7 +216,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
   }
 
   @Override
-  public void setPlayerOnline(@NotNull org.bukkit.entity.Player player) {
+  public void setPlayerOnline(org.bukkit.entity.Player player) {
     ServerPlayer newOwner = PlayerManager.getHandle(player);
     // Only transfer regular inventory - crafting and cursor slots are transient.
     newOwner.getInventory().replaceWith(owner.getInventory());
@@ -230,7 +231,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
   }
 
   @Override
-  public @NotNull org.bukkit.entity.Player getPlayer() {
+  public org.bukkit.entity.Player getPlayer() {
     return getOwner();
   }
 
@@ -245,22 +246,22 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
   }
 
   @Override
-  public @NotNull ItemStack getItem(int index) {
+  public ItemStack getItem(int index) {
     return slots.get(index).get();
   }
 
   @Override
-  public @NotNull ItemStack removeItem(int index, int amount) {
+  public ItemStack removeItem(int index, int amount) {
     return slots.get(index).removePartial(amount);
   }
 
   @Override
-  public @NotNull ItemStack removeItemNoUpdate(int index) {
+  public ItemStack removeItemNoUpdate(int index) {
     return slots.get(index).remove();
   }
 
   @Override
-  public void setItem(int index, @NotNull ItemStack itemStack) {
+  public void setItem(int index, ItemStack itemStack) {
     slots.get(index).set(itemStack);
   }
 
@@ -279,12 +280,12 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
   }
 
   @Override
-  public boolean stillValid(@NotNull Player player) {
+  public boolean stillValid(Player player) {
     return true;
   }
 
   @Override
-  public @NotNull List<ItemStack> getContents() {
+  public List<ItemStack> getContents() {
     NonNullList<ItemStack> contents = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
     for (int i = 0; i < getContainerSize(); ++i) {
       contents.set(i, getItem(i));
@@ -293,22 +294,22 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
   }
 
   @Override
-  public void onOpen(@NotNull CraftHumanEntity viewer) {
+  public void onOpen(CraftHumanEntity viewer) {
     transaction.add(viewer);
   }
 
   @Override
-  public void onClose(@NotNull CraftHumanEntity viewer) {
+  public void onClose(CraftHumanEntity viewer) {
     transaction.remove(viewer);
   }
 
   @Override
-  public @NotNull List<HumanEntity> getViewers() {
+  public List<HumanEntity> getViewers() {
     return transaction;
   }
 
   @Override
-  public @NotNull org.bukkit.entity.Player getOwner() {
+  public org.bukkit.entity.Player getOwner() {
     return owner.getBukkitEntity();
   }
 
