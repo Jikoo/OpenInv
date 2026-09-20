@@ -1,5 +1,6 @@
 package com.lishid.openinv.internal.paper26_3.container.slot;
 
+import com.lishid.openinv.internal.paper26_3.container.slot.placeholder.Placeholders;
 import com.lishid.openinv.internal.paper26_3.player.OpenPlayer;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,11 +17,11 @@ import java.util.Objects;
  * A slot for equipment that updates held items if necessary.
  */
 @NullMarked
-public class ContentOffHand extends ContentEquipment {
+class ContentOffHand extends ContentEquipment {
 
   private ServerPlayer holder;
 
-  public ContentOffHand(ServerPlayer holder) {
+  ContentOffHand(ServerPlayer holder) {
     super(holder, EquipmentSlot.OFFHAND);
     this.holder = holder; // Redundant, but silences nullity warning.
   }
@@ -38,7 +39,7 @@ public class ContentOffHand extends ContentEquipment {
 
   @Override
   public Slot asSlot(Container container, int slot, int x, int y) {
-    return new SlotEquipment(container, slot, x, y) {
+    return new SlotEquipment(container, slot, x, y, Placeholders.emptyOffHand, EquipmentSlot.OFFHAND) {
       @Override
       public void setChanged() {
         if (OpenPlayer.isConnected(holder.connection) && !Objects.equals(holder.containerMenu, holder.inventoryMenu)) {

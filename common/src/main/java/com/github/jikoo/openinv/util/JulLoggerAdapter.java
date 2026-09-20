@@ -1,4 +1,4 @@
-package com.lishid.openinv.util;
+package com.github.jikoo.openinv.util;
 
 import org.jspecify.annotations.NullMarked;
 import org.slf4j.Marker;

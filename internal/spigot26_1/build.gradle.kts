@@ -30,6 +30,9 @@ dependencies {
   compileOnly(project(":openinvapi"))
   compileOnly(project(":openinvcommon"))
 
+  compileOnly(project(":openinvadapterspigot26_2")) {
+    exclude(group = "org.spigotmc", module = "spigot")
+  }
   compileOnly(project(":openinvadapterspigot26_3")) {
     exclude(group = "org.spigotmc", module = "spigot")
   }

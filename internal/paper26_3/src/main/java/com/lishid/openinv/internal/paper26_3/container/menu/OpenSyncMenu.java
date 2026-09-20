@@ -2,10 +2,12 @@ package com.lishid.openinv.internal.paper26_3.container.menu;
 
 import com.google.common.base.Suppliers;
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.internal.InternalOwned;
+import com.github.jikoo.openinv.internal.container.InternalOwned;
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.lishid.openinv.internal.paper26_3.container.slot.SlotPlaceholder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.ContainerListener;
@@ -41,11 +43,12 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   protected OpenSyncMenu(
       MenuType<ChestMenu> type,
       int containerCounter,
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory,
       T container,
       ServerPlayer viewer,
       boolean viewOnly
   ) {
-    super(type, containerCounter, container, viewer, viewOnly);
+    super(type, containerCounter, factory, container, viewer, viewOnly);
   }
 
   @Override

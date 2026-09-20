@@ -1,5 +1,6 @@
 package com.github.jikoo.openinv.internal.spigot26_3.container.slot;
 
+import com.github.jikoo.openinv.internal.container.slot.Content;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -14,13 +15,13 @@ import java.util.List;
  * A normal slot backed by an item list.
  */
 @NullMarked
-public abstract class ContentList implements Content {
+abstract class ContentList implements Content<ServerPlayer, ItemStack, Container, Slot> {
 
   private final int index;
   private final InventoryType.SlotType slotType;
-  protected List<ItemStack> items;
+  private List<ItemStack> items;
 
-  public ContentList(ServerPlayer holder, int index, InventoryType.SlotType slotType) {
+  ContentList(ServerPlayer holder, int index, InventoryType.SlotType slotType) {
     this.index = index;
     this.slotType = slotType;
     setHolder(holder);
@@ -41,7 +42,7 @@ public abstract class ContentList implements Content {
   @Override
   public ItemStack remove() {
     ItemStack removed = items.remove(index);
-    return removed == null || removed.isEmpty() ? ItemStack.EMPTY : removed;
+    return removed.isEmpty() ? ItemStack.EMPTY : removed;
   }
 
   @Override

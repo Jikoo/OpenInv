@@ -1,4 +1,4 @@
-package com.lishid.openinv.internal;
+package com.github.jikoo.openinv.internal.container;
 
 import org.jspecify.annotations.NullMarked;
 

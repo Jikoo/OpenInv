@@ -57,7 +57,7 @@ dependencies {
   implementation(project(":openinvcommon")) {
     exclude(group = "org.spigotmc", module = "spigot-api")
   }
-  api(project(":openinvadapterpaper26_3")) {
+  api(project(":openinvadapterpaper26_2")) {
     exclude(group = "io.papermc.paper", module = "dev-bundle")
   }
 

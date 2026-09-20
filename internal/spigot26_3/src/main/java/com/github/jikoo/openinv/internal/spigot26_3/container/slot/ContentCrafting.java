@@ -2,7 +2,9 @@ package com.github.jikoo.openinv.internal.spigot26_3.container.slot;
 
 import com.github.jikoo.openinv.internal.spigot26_3.container.slot.placeholder.Placeholders;
 import com.github.jikoo.openinv.internal.spigot26_3.player.OpenPlayer;
+import com.github.jikoo.openinv.internal.container.slot.Content;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
@@ -17,19 +19,15 @@ import java.util.List;
  * A slot in a survival crafting inventory. Unavailable when not online in a survival mode.
  */
 @NullMarked
-public class ContentCrafting implements Content {
+public class ContentCrafting implements Content<ServerPlayer, ItemStack, Container, Slot> {
 
   private final int index;
-  private ServerPlayer holder;
-  private List<ItemStack> items;
+  protected ServerPlayer holder;
+  protected List<ItemStack> items;
 
-  public ContentCrafting(ServerPlayer holder, int index) {
+  protected ContentCrafting(ServerPlayer holder, int index) {
     setHolder(holder);
     this.index = index;
-  }
-
-  private boolean isAvailable() {
-    return isAvailable(holder);
   }
 
   public static boolean isAvailable(ServerPlayer holder) {
@@ -48,12 +46,12 @@ public class ContentCrafting implements Content {
 
   @Override
   public ItemStack get() {
-    return isAvailable() ? items.get(index) : ItemStack.EMPTY;
+    return isAvailable(holder) ? items.get(index) : ItemStack.EMPTY;
   }
 
   @Override
   public ItemStack remove() {
-    if (!this.isAvailable()) {
+    if (!isAvailable(holder)) {
       return ItemStack.EMPTY;
     }
     ItemStack removed = items.remove(index);
@@ -66,7 +64,7 @@ public class ContentCrafting implements Content {
 
   @Override
   public ItemStack removePartial(int amount) {
-    if (!this.isAvailable()) {
+    if (!isAvailable(holder)) {
       return ItemStack.EMPTY;
     }
     ItemStack removed = ContainerHelper.removeItem(items, index, amount);
@@ -79,11 +77,11 @@ public class ContentCrafting implements Content {
 
   @Override
   public void set(ItemStack itemStack) {
-    if (isAvailable()) {
+    if (isAvailable(holder)) {
       items.set(index, itemStack);
       holder.inventoryMenu.slotsChanged(holder.inventoryMenu.getCraftSlots());
     } else {
-      ContentDrop.DROP.accept(this.holder, itemStack);
+      this.holder.drop(itemStack, false, Prediction.SERVER_ONLY);
     }
   }
 
@@ -94,7 +92,7 @@ public class ContentCrafting implements Content {
 
   @Override
   public InventoryType.SlotType getSlotType() {
-    return isAvailable() ? InventoryType.SlotType.CRAFTING : InventoryType.SlotType.OUTSIDE;
+    return isAvailable(holder) ? InventoryType.SlotType.CRAFTING : InventoryType.SlotType.OUTSIDE;
   }
 
   public class SlotCrafting extends SlotPlaceholder {
@@ -105,27 +103,27 @@ public class ContentCrafting implements Content {
 
     @Override
     public ItemStack getOrDefault() {
-      return isAvailable() ? items.get(ContentCrafting.this.index) : Placeholders.survivalOnly(holder);
+      return isAvailable(holder) ? items.get(ContentCrafting.this.index) : Placeholders.survivalOnly(holder);
     }
 
     @Override
     public boolean mayPickup(Player player) {
-      return isAvailable();
+      return isAvailable(holder);
     }
 
     @Override
     public boolean mayPlace(ItemStack itemStack) {
-      return isAvailable();
+      return isAvailable(holder);
     }
 
     @Override
     public boolean hasItem() {
-      return isAvailable() && super.hasItem();
+      return isAvailable(holder) && super.hasItem();
     }
 
     @Override
     public boolean isFake() {
-      return !isAvailable();
+      return !isAvailable(holder);
     }
 
   }

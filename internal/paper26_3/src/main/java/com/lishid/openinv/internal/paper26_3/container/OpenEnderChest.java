@@ -1,7 +1,8 @@
 package com.lishid.openinv.internal.paper26_3.container;
 
 import com.lishid.openinv.internal.ISpecialEnderChest;
-import com.lishid.openinv.internal.InternalOwned;
+import com.github.jikoo.openinv.internal.container.InternalOwned;
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.lishid.openinv.internal.paper26_3.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.paper26_3.container.menu.OpenEnderChestMenu;
 import com.lishid.openinv.internal.paper26_3.player.PlayerManager;
@@ -11,8 +12,10 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.StackedContentsCompatible;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Location;
@@ -196,9 +199,14 @@ public class OpenEnderChest implements Container, StackedContentsCompatible, Int
         .append(Component.translatableWithFallback("openinv.container.enderchest.suffix", " - %s", owner.getName()));
   }
 
-  public @Nullable OpenChestMenu<?> createMenu(Player player, int i, boolean viewOnly) {
+  public @Nullable OpenChestMenu<?> createMenu(
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory,
+      Player player,
+      int i,
+      boolean viewOnly
+  ) {
     if (player instanceof ServerPlayer serverPlayer) {
-      return new OpenEnderChestMenu(this, serverPlayer, i, viewOnly);
+      return new OpenEnderChestMenu(factory, this, serverPlayer, i, viewOnly);
     }
     return null;
   }

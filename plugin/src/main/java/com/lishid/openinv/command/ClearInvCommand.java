@@ -6,8 +6,8 @@ import com.lishid.openinv.util.InventoryManager;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.PlayerLoader;
 import com.lishid.openinv.util.config.Config;
-import com.lishid.openinv.util.lang.LanguageManager;
-import com.lishid.openinv.util.lang.Replacement;
+import com.github.jikoo.openinv.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.Replacement;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -114,7 +114,7 @@ public class ClearInvCommand extends PlayerLookupCommand {
   }
 
   @Override
-  public @Nullable List<String> onTabComplete(
+  public List<String> onTabComplete(
       CommandSender sender,
       Command command,
       String label,

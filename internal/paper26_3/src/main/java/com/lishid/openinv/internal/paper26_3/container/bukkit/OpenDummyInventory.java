@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.paper26_3.container.bukkit;
 
-import com.lishid.openinv.internal.ViewOnly;
+import com.github.jikoo.openinv.internal.container.ViewOnly;
 import net.minecraft.world.Container;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftInventory;

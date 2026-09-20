@@ -15,27 +15,6 @@ import java.util.Optional;
 @NullMarked
 public class SlotViewOnly extends SlotPlaceholder {
 
-  public static SlotViewOnly wrap(Slot wrapped) {
-    SlotViewOnly wrapper;
-    if (wrapped instanceof SlotPlaceholder placeholder) {
-      wrapper = new SlotViewOnly(wrapped.container, wrapped.slot, wrapped.x, wrapped.y) {
-        @Override
-        public ItemStack getOrDefault() {
-          return placeholder.getOrDefault();
-        }
-      };
-    } else {
-      wrapper = new SlotViewOnly(wrapped.container, wrapped.slot, wrapped.x, wrapped.y) {
-        @Override
-        public ItemStack getOrDefault() {
-          return wrapped.getItem();
-        }
-      };
-    }
-    wrapper.index = wrapped.index;
-    return wrapper;
-  }
-
   public SlotViewOnly(Container container, int index, int x, int y) {
     super(container, index, x, y);
   }

@@ -18,13 +18,13 @@ package com.lishid.openinv.util;
 
 import com.github.jikoo.planarwrappers.util.version.BukkitVersions;
 import com.github.jikoo.planarwrappers.util.version.Version;
-import com.lishid.openinv.internal.Accessor;
+import com.github.jikoo.openinv.internal.Accessor;
 import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import com.lishid.openinv.internal.PlayerManager;
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.internal.PlayerManager;
+import com.github.jikoo.openinv.lang.LanguageManager;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;

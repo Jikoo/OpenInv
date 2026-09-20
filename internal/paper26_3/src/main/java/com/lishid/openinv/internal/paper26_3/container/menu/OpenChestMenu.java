@@ -1,11 +1,13 @@
 package com.lishid.openinv.internal.paper26_3.container.menu;
 
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.internal.InternalOwned;
+import com.github.jikoo.openinv.internal.container.InternalOwned;
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.lishid.openinv.internal.paper26_3.container.bukkit.OpenDummyInventory;
 import com.lishid.openinv.internal.paper26_3.container.slot.SlotViewOnly;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
@@ -28,6 +30,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
 
   protected static final int BOTTOM_INVENTORY_SIZE = 36;
 
+  protected final InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory;
   protected final T container;
   protected final ServerPlayer viewer;
   protected final boolean viewOnly;
@@ -38,11 +41,13 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   protected OpenChestMenu(
       MenuType<ChestMenu> type,
       int containerCounter,
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory,
       T container,
       ServerPlayer viewer,
       boolean viewOnly
   ) {
     super(type, containerCounter);
+    this.factory = factory;
     this.container = container;
     this.viewer = viewer;
     this.viewOnly = viewOnly;
@@ -109,7 +114,7 @@ public abstract class OpenChestMenu<T extends Container & ISpecialInventory & In
   protected Slot getUpperSlot(int index, int x, int y) {
     Slot slot = new Slot(container, index, x, y);
     if (viewOnly) {
-      return SlotViewOnly.wrap(slot);
+      return factory.wrapViewOnly(slot);
     }
     return slot;
   }

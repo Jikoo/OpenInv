@@ -1,10 +1,10 @@
 package com.lishid.openinv.internal.paper1_21_11;
 
+import com.github.jikoo.openinv.lang.LanguageManager;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import com.lishid.openinv.internal.paper1_21_11.container.OpenEnderChest;
 import com.lishid.openinv.internal.paper1_21_11.container.OpenInventory;
-import com.lishid.openinv.util.lang.LanguageManager;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NullMarked;
 
@@ -24,7 +24,7 @@ public class InternalAccessor extends com.lishid.openinv.internal.paper26_1.Inte
 
   @Override
   public ISpecialPlayerInventory createPlayerInventory(Player player) {
-    return new OpenInventory(player);
+    return new OpenInventory(factory, player);
   }
 
 }

@@ -1,14 +1,16 @@
 package com.github.jikoo.openinv.internal.spigot26_3.container.menu;
 
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.github.jikoo.openinv.internal.spigot26_3.container.OpenInventory;
 import com.github.jikoo.openinv.internal.spigot26_3.container.bukkit.OpenDummyPlayerInventory;
 import com.github.jikoo.openinv.internal.spigot26_3.container.bukkit.OpenPlayerInventorySelf;
 import com.github.jikoo.openinv.internal.spigot26_3.container.slot.ContentDrop;
-import com.github.jikoo.openinv.internal.spigot26_3.container.slot.ContentEquipment;
+import com.github.jikoo.openinv.internal.spigot26_3.container.slot.SlotEquipment;
 import com.github.jikoo.openinv.internal.spigot26_3.container.slot.SlotViewOnly;
 import com.google.common.base.Preconditions;
 import com.lishid.openinv.util.Permissions;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
@@ -28,8 +30,12 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
 
   private int offset;
 
-  public OpenInventoryMenu(OpenInventory inventory, ServerPlayer viewer, int i, boolean viewOnly) {
-    super(getMenuType(inventory, viewer), i, inventory, viewer, viewOnly);
+  public OpenInventoryMenu(
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory,
+      OpenInventory inventory,
+      ServerPlayer viewer, int i, boolean viewOnly
+  ) {
+    super(getMenuType(inventory, viewer), i, factory, inventory, viewer, viewOnly);
   }
 
   private static MenuType<ChestMenu> getMenuType(OpenInventory inventory, ServerPlayer viewer) {
@@ -64,9 +70,9 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
       return new SlotViewOnly(container, index, x, y);
     }
 
-    if (slot instanceof ContentEquipment.SlotEquipment equipment) {
+    if (slot instanceof SlotEquipment equipment) {
       if (viewOnly) {
-        return SlotViewOnly.wrap(slot);
+        return factory.wrapViewOnly(slot);
       }
 
       Permissions perm = switch (equipment.getEquipmentSlot()) {
@@ -93,7 +99,7 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
     }
 
     if (viewOnly) {
-      return SlotViewOnly.wrap(slot);
+      return factory.wrapViewOnly(slot);
     }
 
     return slot;
@@ -112,7 +118,7 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
 
     return new CraftInventoryView<>(viewer.getBukkitEntity(), bukkitInventory, this) {
       @Override
-      public org.bukkit.inventory.ItemStack getItem(int index) {
+      public org.bukkit.inventory.@Nullable ItemStack getItem(int index) {
         if (viewOnly || index < 0) {
           return null;
         }
@@ -227,8 +233,7 @@ public class OpenInventoryMenu extends OpenSyncMenu<OpenInventory> {
           // Locate the correct slot in the contents following the main inventory.
           for (int extra = container.getOwnerHandle().getInventory().getNonEquipmentItems().size() - offset; extra < topSize; ++extra) {
             Slot extraSlot = getSlot(extra);
-            if (extraSlot instanceof ContentEquipment.SlotEquipment equipSlot
-                && equipSlot.getEquipmentSlot() == equipmentSlot) {
+            if (extraSlot instanceof SlotEquipment equipSlot && equipSlot.getEquipmentSlot() == equipmentSlot) {
               // If we've found a matching slot, try to move to it.
               // If this succeeds, even partially, we will not attempt to move to other slots.
               // Otherwise, armor is already occupied, so we'll fall through to main inventory.

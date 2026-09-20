@@ -16,11 +16,11 @@
 
 package com.lishid.openinv.internal.paper26_3.container;
 
-import com.lishid.openinv.internal.AnySilentContainerBase;
+import com.github.jikoo.openinv.internal.container.AnySilentContainerBase;
 import com.lishid.openinv.internal.paper26_3.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.paper26_3.player.PlayerManager;
-import com.lishid.openinv.util.ReflectionHelper;
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.util.ReflectionHelper;
+import com.github.jikoo.openinv.lang.LanguageManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

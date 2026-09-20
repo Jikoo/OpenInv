@@ -1,17 +1,23 @@
 package com.lishid.openinv.internal.paper26_3;
 
-import com.lishid.openinv.internal.Accessor;
+import com.github.jikoo.openinv.internal.Accessor;
 import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.lishid.openinv.internal.paper26_3.container.AnySilentContainer;
 import com.lishid.openinv.internal.paper26_3.container.OpenEnderChest;
 import com.lishid.openinv.internal.paper26_3.container.OpenInventory;
+import com.lishid.openinv.internal.paper26_3.container.slot.OpenInventoryFactory;
 import com.lishid.openinv.internal.paper26_3.container.slot.placeholder.PlaceholderLoader;
 import com.lishid.openinv.internal.paper26_3.player.PlayerManager;
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.LanguageManager;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.entity.Player;
@@ -27,16 +33,25 @@ public class InternalAccessor implements Accessor {
 
   protected final Logger logger;
   private final PlayerManager manager;
+  protected final InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory;
   private final AnySilentContainer anySilentContainer;
 
   public InternalAccessor(Logger logger, LanguageManager lang) {
     this.logger = logger;
-    manager = createPlayerManager(logger);
+    factory = createInventoryFactory();
+    manager = createPlayerManager(logger, factory);
     anySilentContainer = createAnySilentContainer(logger, lang);
   }
 
-  protected PlayerManager createPlayerManager(Logger logger) {
-    return new PlayerManager(logger);
+  protected InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> createInventoryFactory() {
+    return new OpenInventoryFactory();
+  }
+
+  protected PlayerManager createPlayerManager(
+      Logger logger,
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory
+  ) {
+    return new PlayerManager(logger, factory);
   }
 
   protected AnySilentContainer createAnySilentContainer(
@@ -62,7 +77,7 @@ public class InternalAccessor implements Accessor {
 
   @Override
   public ISpecialPlayerInventory createPlayerInventory(Player player) {
-    return new OpenInventory(player);
+    return new OpenInventory(factory, player);
   }
 
   @Override

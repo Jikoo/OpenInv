@@ -13,7 +13,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public abstract class SlotPlaceholder extends Slot {
 
-  public SlotPlaceholder(Container container, int index, int x, int y) {
+  SlotPlaceholder(Container container, int index, int x, int y) {
     super(container, index, x, y);
   }
 

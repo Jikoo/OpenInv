@@ -1,6 +1,8 @@
 package com.lishid.openinv.internal.paper26_3.container.slot;
 
+import com.github.jikoo.openinv.internal.container.slot.Content;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -11,11 +13,11 @@ import org.jspecify.annotations.NullMarked;
  * A view-only slot that can't be interacted with.
  */
 @NullMarked
-public class ContentViewOnly implements Content {
+public class ContentViewOnly implements Content<ServerPlayer, ItemStack, Container, Slot> {
 
   protected ServerPlayer holder;
 
-  public ContentViewOnly(ServerPlayer holder) {
+  protected ContentViewOnly(ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -41,7 +43,7 @@ public class ContentViewOnly implements Content {
 
   @Override
   public void set(ItemStack itemStack) {
-    ContentDrop.DROP.accept(this.holder, itemStack);
+    this.holder.drop(itemStack, false, Prediction.SERVER_ONLY);
   }
 
   @Override

@@ -15,9 +15,9 @@ import org.jspecify.annotations.NullMarked;
  * <p>Unmodifiable because I said so. Use your own crafting grid.</p>
  */
 @NullMarked
-public class ContentCraftingResult extends ContentViewOnly {
+class ContentCraftingResult extends ContentViewOnly {
 
-  public ContentCraftingResult(ServerPlayer holder) {
+  ContentCraftingResult(ServerPlayer holder) {
     super(holder);
   }
 

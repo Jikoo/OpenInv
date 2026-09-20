@@ -1,6 +1,6 @@
 package com.lishid.openinv.internal.paper26_1.container;
 
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.LanguageManager;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import org.jspecify.annotations.NullMarked;
 

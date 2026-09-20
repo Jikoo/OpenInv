@@ -1,5 +1,9 @@
-package com.lishid.openinv.internal;
+package com.github.jikoo.openinv.internal;
 
+import com.lishid.openinv.internal.IAnySilentContainer;
+import com.lishid.openinv.internal.ISpecialEnderChest;
+import com.lishid.openinv.internal.ISpecialInventory;
+import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

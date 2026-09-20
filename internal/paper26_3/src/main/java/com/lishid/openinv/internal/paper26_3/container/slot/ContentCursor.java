@@ -1,8 +1,10 @@
 package com.lishid.openinv.internal.paper26_3.container.slot;
 
+import com.github.jikoo.openinv.internal.container.slot.Content;
 import com.lishid.openinv.internal.paper26_3.container.slot.placeholder.Placeholders;
 import com.lishid.openinv.internal.paper26_3.player.OpenPlayer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -14,11 +16,11 @@ import org.jspecify.annotations.NullMarked;
  * A slot wrapping the active menu's cursor. Unavailable when not online in a survival mode.
  */
 @NullMarked
-public class ContentCursor implements Content {
+public class ContentCursor implements Content<ServerPlayer, ItemStack, Container, Slot> {
 
-  private ServerPlayer holder;
+  protected ServerPlayer holder;
 
-  public ContentCursor(ServerPlayer holder) {
+  protected ContentCursor(ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -57,11 +59,11 @@ public class ContentCursor implements Content {
     if (isAvailable()) {
       holder.containerMenu.setCarried(itemStack);
     } else {
-      ContentDrop.DROP.accept(this.holder, itemStack);
+      this.holder.drop(itemStack, false, Prediction.SERVER_ONLY);
     }
   }
 
-  private boolean isAvailable() {
+  protected boolean isAvailable() {
     // Player must be online and not in creative - since the creative client is (semi-)authoritative,
     // it ignores changes without extra help, and will delete the item as a result.
     // Spectator mode is technically possible but may cause the item to be dropped if the client opens an inventory.

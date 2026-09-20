@@ -1,54 +1,50 @@
-package com.lishid.openinv.internal.paper26_3.container.slot;
+package com.github.jikoo.openinv.internal.container.slot;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NullMarked;
 
 /**
- * An interface defining behaviors for entries in a {@link Container}. Used to reduce duplicate content reordering.
+ * An interface defining behaviors for entries in a {@link net.minecraft.world.Container Container}. Used to reduce duplicate content reordering.
  */
 @NullMarked
-public interface Content {
+public interface Content<P, I, C, S> {
 
   /**
    * Update internal holder.
    *
    * @param holder the new holder
    */
-  void setHolder(ServerPlayer holder);
+  void setHolder(P holder);
 
   /**
    * Get the current item.
    *
    * @return the current item
    */
-  ItemStack get();
+  I get();
 
   /**
    * Remove the current item.
    *
    * @return the current item
    */
-  ItemStack remove();
+  I remove();
 
   /**
    * Remove some of the current item.
    *
    * @return the current item
    */
-  ItemStack removePartial(int amount);
+  I removePartial(int amount);
 
   /**
    * Set the current item. If slot is currently not usable, will drop item instead.
    *
    * @param itemStack the item to set
    */
-  void set(ItemStack itemStack);
+  void set(I itemStack);
 
   /**
-   * Get a {@link Slot} for use in a {@link net.minecraft.world.inventory.AbstractContainerMenu ContainerMenu}. Will
+   * Get a {@link net.minecraft.world.inventory.Slot Slot} for use in a {@link net.minecraft.world.inventory.AbstractContainerMenu ContainerMenu}. Will
    * impose any specific restrictions to insertion or removal.
    *
    * @param container the backing container
@@ -57,7 +53,7 @@ public interface Content {
    * @param y clientside y dimension from top left of inventory, not used
    * @return a menu slot
    */
-  Slot asSlot(Container container, int slot, int x, int y);
+  S asSlot(C container, int slot, int x, int y);
 
   /**
    * Get a loose Bukkit translation of what this slot stores. For example, any slot that drops items at the owner rather

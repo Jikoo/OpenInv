@@ -22,7 +22,7 @@ import com.lishid.openinv.util.InventoryManager;
 import com.lishid.openinv.util.Permissions;
 import com.lishid.openinv.util.PlayerLoader;
 import com.lishid.openinv.util.config.Config;
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.LanguageManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

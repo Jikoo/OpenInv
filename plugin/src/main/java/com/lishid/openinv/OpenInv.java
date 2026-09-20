@@ -36,7 +36,7 @@ import com.lishid.openinv.util.PlayerLoader;
 import com.lishid.openinv.util.config.Config;
 import com.lishid.openinv.util.config.ConfigUpdater;
 import com.lishid.openinv.util.lang.LangMigrator;
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.LanguageManager;
 import com.lishid.openinv.util.setting.PlayerToggle;
 import com.lishid.openinv.util.setting.PlayerToggles;
 import me.nahu.scheduler.wrapper.FoliaWrappedJavaPlugin;

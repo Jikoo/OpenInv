@@ -1,10 +1,11 @@
 package com.github.jikoo.openinv.internal.spigot26_3.player;
 
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.github.jikoo.openinv.internal.spigot26_3.container.OpenEnderChest;
 import com.github.jikoo.openinv.internal.spigot26_3.container.OpenInventory;
 import com.github.jikoo.openinv.internal.spigot26_3.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.util.JulLoggerAdapter;
+import com.github.jikoo.openinv.util.JulLoggerAdapter;
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -17,9 +18,13 @@ import net.minecraft.server.level.ParticleStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
@@ -39,13 +44,18 @@ import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
 @NullMarked
-public class PlayerManager implements com.lishid.openinv.internal.PlayerManager {
+public class PlayerManager implements com.github.jikoo.openinv.internal.PlayerManager {
 
   private final Logger logger;
+  protected final InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory;
   private @Nullable Field bukkitEntity;
 
-  public PlayerManager(Logger logger) {
+  public PlayerManager(
+      Logger logger,
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory
+  ) {
     this.logger = logger;
+    this.factory = factory;
     try {
       bukkitEntity = Entity.class.getDeclaredField("bukkitEntity");
     } catch (NoSuchFieldException e) {
@@ -227,7 +237,7 @@ public class PlayerManager implements com.lishid.openinv.internal.PlayerManager 
       menu = playerInv.createMenu(player, player.nextContainerCounter(), viewOnly);
       title = playerInv.getTitle(player, menu);
     } else if (inventory instanceof OpenEnderChest enderChest) {
-      menu = enderChest.createMenu(player, player.nextContainerCounter(), viewOnly);
+      menu = enderChest.createMenu(factory, player, player.nextContainerCounter(), viewOnly);
       title = enderChest.getTitle(menu);
     } else {
       return null;

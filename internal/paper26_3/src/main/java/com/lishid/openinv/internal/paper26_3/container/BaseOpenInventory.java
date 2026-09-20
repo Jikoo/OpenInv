@@ -1,20 +1,12 @@
 package com.lishid.openinv.internal.paper26_3.container;
 
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import com.lishid.openinv.internal.InternalOwned;
+import com.github.jikoo.openinv.internal.container.InternalOwned;
+import com.github.jikoo.openinv.internal.container.slot.Content;
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.lishid.openinv.internal.paper26_3.container.bukkit.OpenPlayerInventory;
 import com.lishid.openinv.internal.paper26_3.container.menu.OpenChestMenu;
 import com.lishid.openinv.internal.paper26_3.container.menu.OpenInventoryMenu;
-import com.lishid.openinv.internal.paper26_3.container.slot.Content;
-import com.lishid.openinv.internal.paper26_3.container.slot.ContentCrafting;
-import com.lishid.openinv.internal.paper26_3.container.slot.ContentCraftingResult;
-import com.lishid.openinv.internal.paper26_3.container.slot.ContentCursor;
-import com.lishid.openinv.internal.paper26_3.container.slot.ContentDrop;
-import com.lishid.openinv.internal.paper26_3.container.slot.ContentEquipment;
-import com.lishid.openinv.internal.paper26_3.container.slot.ContentList;
-import com.lishid.openinv.internal.paper26_3.container.slot.ContentOffHand;
-import com.lishid.openinv.internal.paper26_3.container.slot.ContentViewOnly;
-import com.lishid.openinv.internal.paper26_3.container.slot.SlotViewOnly;
 import com.lishid.openinv.internal.paper26_3.container.slot.placeholder.Placeholders;
 import com.lishid.openinv.internal.paper26_3.player.PlayerManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -43,21 +35,26 @@ import java.util.Map;
 @NullMarked
 public abstract class BaseOpenInventory implements Container, InternalOwned<ServerPlayer>, ISpecialPlayerInventory {
 
-  protected final List<Content> slots;
+  protected final InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory;
+  protected final List<Content<ServerPlayer, ItemStack, Container, Slot>> slots;
   private final int size;
   protected ServerPlayer owner;
   private int maxStackSize = 99;
   protected @Nullable CraftInventory bukkitEntity;
   public List<HumanEntity> transaction = new ArrayList<>();
 
-  public BaseOpenInventory(org.bukkit.entity.Player bukkitPlayer) {
+  public BaseOpenInventory(
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory,
+      org.bukkit.entity.Player bukkitPlayer
+  ) {
+    this.factory = factory;
     owner = PlayerManager.getHandle(bukkitPlayer);
 
     // Get total size, rounding up to nearest 9 for client compatibility.
     int rawSize = owner.getInventory().getContainerSize() + owner.inventoryMenu.getCraftSlots().getContainerSize() + 1;
     size = ((int) Math.ceil(rawSize / 9.0)) * 9;
 
-    slots = NonNullList.withSize(size, new ContentViewOnly(owner));
+    slots = NonNullList.withSize(size, factory.newViewOnly(owner));
     setupSlots();
   }
 
@@ -75,9 +72,9 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
       // Off-hand: Below chestplate.
       addOffHand(46);
       // Drop slot: Bottom right.
-      slots.set(53, new ContentDrop(owner));
+      slots.set(53, factory.newDrop(owner));
       // Cursor slot: Above drop.
-      slots.set(44, new ContentCursor(owner));
+      slots.set(44, factory.newCursor(owner));
 
       // Crafting is displayed in the bottom right corner.
       // As we're using the pretty view, this is a 3x2.
@@ -89,9 +86,9 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
     nextIndex = addArmor(nextIndex);
     nextIndex = addOffHand(nextIndex);
     nextIndex = addCrafting(nextIndex, false);
-    slots.set(nextIndex, new ContentCursor(owner));
+    slots.set(nextIndex, factory.newCursor(owner));
     // Drop slot last.
-    slots.set(slots.size() - 1, new ContentDrop(owner));
+    slots.set(slots.size() - 1, factory.newDrop(owner));
   }
 
   private int addMainInventory() {
@@ -112,12 +109,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
 
       slots.set(
           localIndex,
-          new ContentList(owner, invIndex, type) {
-            @Override
-            protected List<ItemStack> getItems(ServerPlayer holder) {
-              return holder.getInventory().getNonEquipmentItems();
-            }
-          }
+          factory.newList(owner, invIndex, type, holder -> holder.getInventory().getNonEquipmentItems())
       );
     }
     return listSize;
@@ -139,7 +131,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
         continue;
       }
 
-      slots.set(startIndex + localIndex, new ContentEquipment(owner, sorted[i]));
+      slots.set(startIndex + localIndex, factory.newEquipment(owner, sorted[i]));
       ++localIndex;
     }
 
@@ -152,7 +144,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
       return startIndex;
     }
 
-    slots.set(startIndex, new ContentOffHand(owner));
+    slots.set(startIndex, factory.newOffHand(owner));
     return startIndex + 1;
   }
 
@@ -166,30 +158,15 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
       // Otherwise, subtract 2 and add 9 to start in the same position on the next row.
       int modIndex = startIndex + (localIndex < 2 || !pretty ? localIndex : localIndex + 7);
 
-      slots.set(modIndex, new ContentCrafting(owner, localIndex));
+      slots.set(modIndex, factory.newCrafting(owner, localIndex));
     }
 
     if (pretty) {
-      slots.set(startIndex + 2, new ContentViewOnly(owner) {
-            @Override
-            public Slot asSlot(Container container, int slot, int x, int y) {
-              return new SlotViewOnly(container, slot, x, y) {
-                @Override
-                public ItemStack getOrDefault() {
-                  return Placeholders.craftingOutput;
-                }
-              };
-            }
-          }
-      );
-      slots.set(startIndex + 11, getCraftingResult(owner));
+      slots.set(startIndex + 2, factory.newViewOnly(owner, Placeholders.craftingOutput));
+      slots.set(startIndex + 11, factory.newCraftingResult(owner));
     }
 
     return startIndex + listSize;
-  }
-
-  protected Content getCraftingResult(ServerPlayer serverPlayer) {
-    return new ContentCraftingResult(serverPlayer);
   }
 
   public Slot getMenuSlot(int index, int x, int y) {
@@ -328,7 +305,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
 
   public @Nullable OpenChestMenu<?> createMenu(Player player, int i, boolean viewOnly) {
     if (player instanceof ServerPlayer serverPlayer) {
-      return new OpenInventoryMenu(this, serverPlayer, i, viewOnly);
+      return new OpenInventoryMenu(factory, this, serverPlayer, i, viewOnly);
     }
     return null;
   }

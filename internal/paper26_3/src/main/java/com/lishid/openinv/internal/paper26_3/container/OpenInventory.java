@@ -1,5 +1,6 @@
 package com.lishid.openinv.internal.paper26_3.container;
 
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.lishid.openinv.internal.paper26_3.container.menu.OpenChestMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -7,6 +8,10 @@ import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -14,8 +19,11 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class OpenInventory extends BaseOpenInventory {
 
-  public OpenInventory(Player bukkitPlayer) {
-    super(bukkitPlayer);
+  public OpenInventory(
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory,
+      Player bukkitPlayer
+  ) {
+    super(factory, bukkitPlayer);
   }
 
   @Override

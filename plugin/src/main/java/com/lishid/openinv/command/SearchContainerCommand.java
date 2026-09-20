@@ -17,8 +17,8 @@
 package com.lishid.openinv.command;
 
 import com.lishid.openinv.util.TabCompleter;
-import com.lishid.openinv.util.lang.LanguageManager;
-import com.lishid.openinv.util.lang.Replacement;
+import com.github.jikoo.openinv.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.Replacement;
 import com.lishid.openinv.util.SearchHelper;
 import org.bukkit.Chunk;
 import org.bukkit.Material;

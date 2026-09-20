@@ -1,14 +1,16 @@
 package com.github.jikoo.openinv.internal.spigot26_3.container.menu;
 
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.github.jikoo.openinv.internal.spigot26_3.container.slot.SlotPlaceholder;
 import com.google.common.base.Suppliers;
 import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.internal.InternalOwned;
+import com.github.jikoo.openinv.internal.container.InternalOwned;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.HashedStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerListener;
@@ -29,7 +31,7 @@ import java.util.function.Supplier;
  * An extension of {@link OpenChestMenu} that supports {@link SlotPlaceholder placeholders}.
  */
 @NullMarked
-@SuppressWarnings("HidingField") // Revisit when removing 1.21.4 support
+@SuppressWarnings("HidingField")
 public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & InternalOwned<ServerPlayer>>
     extends OpenChestMenu<T> {
 
@@ -44,11 +46,12 @@ public abstract class OpenSyncMenu<T extends Container & ISpecialInventory & Int
   protected OpenSyncMenu(
       MenuType<ChestMenu> type,
       int containerCounter,
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory,
       T container,
       ServerPlayer viewer,
       boolean viewOnly
   ) {
-    super(type, containerCounter, container, viewer, viewOnly);
+    super(type, containerCounter, factory, container, viewer, viewOnly);
   }
 
   // Overrides from here on are purely to modify the sync process to send placeholder items.

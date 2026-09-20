@@ -1,5 +1,6 @@
-package com.lishid.openinv.internal;
+package com.github.jikoo.openinv.internal.container;
 
+import com.lishid.openinv.internal.IAnySilentContainer;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -11,6 +12,7 @@ import org.bukkit.block.data.type.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public abstract class AnySilentContainerBase implements IAnySilentContainer {
@@ -85,6 +87,6 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
 
   protected abstract BlockState getState(Block block);
 
-  protected abstract InventoryHolder getHolder(Inventory inventory);
+  protected abstract @Nullable InventoryHolder getHolder(Inventory inventory);
 
 }

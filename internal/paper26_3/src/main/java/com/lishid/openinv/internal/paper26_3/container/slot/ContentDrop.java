@@ -1,5 +1,6 @@
 package com.lishid.openinv.internal.paper26_3.container.slot;
 
+import com.github.jikoo.openinv.internal.container.slot.Content;
 import com.lishid.openinv.internal.paper26_3.container.slot.placeholder.Placeholders;
 import com.lishid.openinv.internal.paper26_3.player.OpenPlayer;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,45 +11,15 @@ import net.minecraft.world.item.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
 import org.jspecify.annotations.NullMarked;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.function.BiConsumer;
-
 /**
  * A fake slot used to drop items. Unavailable offline.
  */
 @NullMarked
-public class ContentDrop implements Content {
+public class ContentDrop implements Content<ServerPlayer, ItemStack, Container, Slot> {
 
-  static final BiConsumer<ServerPlayer, ItemStack> DROP;
+  protected ServerPlayer holder;
 
-  // TODO Content factory
-  static {
-    BiConsumer<ServerPlayer, ItemStack> dropMethod = null;
-    try {
-      Class.forName("net.minecraft.util.Prediction");
-      dropMethod = (holder, itemStack) -> holder.drop(itemStack, false, Prediction.SERVER_ONLY);
-    } catch (ClassNotFoundException e) {
-      try {
-        Method method = ServerPlayer.class.getMethod("drop", ItemStack.class, boolean.class);
-        dropMethod = (holder, itemStack) -> {
-          try {
-            method.invoke(holder, itemStack, false);
-          } catch (IllegalAccessException | InvocationTargetException ex) {
-            // Shouldn't be possible. Eat the item until I write a slot factory.
-          }
-        };
-      } catch (NoSuchMethodException ex) {
-        // As above, eat for now.
-        dropMethod = (holder, itemStack) -> {};
-      }
-    }
-    DROP = dropMethod;
-  }
-
-  private ServerPlayer holder;
-
-  public ContentDrop(ServerPlayer holder) {
+  protected ContentDrop(ServerPlayer holder) {
     this.holder = holder;
   }
 
@@ -74,7 +45,7 @@ public class ContentDrop implements Content {
 
   @Override
   public void set(ItemStack itemStack) {
-    DROP.accept(this.holder, itemStack);
+    this.holder.drop(itemStack, false, Prediction.SERVER_ONLY);
   }
 
   @Override
