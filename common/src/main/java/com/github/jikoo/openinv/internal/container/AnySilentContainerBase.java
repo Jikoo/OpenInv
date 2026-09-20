@@ -17,30 +17,35 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public abstract class AnySilentContainerBase implements IAnySilentContainer {
 
+  public enum StateType {
+    ENDER_CHEST,
+    SHULKER_BOX,
+    CHEST,
+    BARREL,
+    OTHER
+  }
+
   @Override
   public boolean isAnyContainerNeeded(Block block) {
-    BlockState blockState = getState(block);
+    return isAnyContainerNeeded(getStateType(block), block);
+  }
 
-    // Barrels do not require AnyContainer.
-    if (blockState instanceof Barrel) {
-      return false;
-    }
+  protected boolean isAnyContainerNeeded(StateType material, Block block) {
+    return switch (material) {
+      // Enderchests require a non-occluding block on top to open.
+      case ENDER_CHEST -> block.getRelative(0, 1, 0).getType().isOccluding();
+      // Shulker boxes require half a block clear in the direction they open.
+      case SHULKER_BOX -> isShulkerBlocked(block);
+      // Chests require that the block above not be occluding or occupied by a cat.
+      case CHEST -> isChestBlocked(block);
+      // Barrels need silent but not any. All others unsupported.
+      default -> false;
+    };
+  }
 
-    // Enderchests require a non-occluding block on top to open.
-    if (blockState instanceof EnderChest) {
-      return block.getRelative(0, 1, 0).getType().isOccluding();
-    }
-
-    // Shulker boxes require half a block clear in the direction they open.
-    if (blockState instanceof ShulkerBox) {
-      return isShulkerBlocked(block);
-    }
-
-    if (!(blockState instanceof org.bukkit.block.Chest)) {
-      return false;
-    }
-
-    if (isChestBlocked(block)) {
+  @Override
+  public boolean isChestBlocked(Block block) {
+    if (IAnySilentContainer.super.isChestBlocked(block)) {
       return true;
     }
 
@@ -72,7 +77,7 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
       return false;
     }
 
-    return isChestBlocked(relative);
+    return IAnySilentContainer.super.isChestBlocked(relative);
   }
 
   @Override
@@ -83,6 +88,16 @@ public abstract class AnySilentContainerBase implements IAnySilentContainer {
   @Override
   public boolean isAnySilentContainer(Inventory inventory) {
     return isAnySilentContainer(getHolder(inventory));
+  }
+
+  protected StateType getStateType(Block block) {
+    return switch (getState(block)) {
+      case Barrel ignored -> StateType.BARREL;
+      case EnderChest ignored -> StateType.ENDER_CHEST;
+      case ShulkerBox ignored -> StateType.SHULKER_BOX;
+      case org.bukkit.block.Chest ignored -> StateType.CHEST;
+      default -> StateType.OTHER;
+    };
   }
 
   protected abstract BlockState getState(Block block);
