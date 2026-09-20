@@ -34,11 +34,14 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @NullMarked
 public class AnySilentContainer extends AnySilentContainerBase {
 
+  private final Map<Material, StateType> blockStateTypes = new HashMap<>();
   private final Logger logger;
   private final LanguageManager lang;
   private @Nullable Field serverPlayerGameModeGameType;
@@ -61,6 +64,16 @@ public class AnySilentContainer extends AnySilentContainerBase {
       logger.warning("Unable to directly write player game mode! SilentContainer will fail.");
       logger.log(java.util.logging.Level.WARNING, "Error obtaining GameType field", e);
     }
+  }
+
+  @Override
+  public boolean isAnyContainerNeeded(org.bukkit.block.Block block) {
+    return isAnyContainerNeeded(blockStateTypes.computeIfAbsent(block.getType(), mat -> getStateType(block)), block);
+  }
+
+  @Override
+  public boolean isAnySilentContainer(org.bukkit.block.Block block) {
+    return StateType.OTHER != blockStateTypes.computeIfAbsent(block.getType(), mat -> getStateType(block));
   }
 
   @Override
