@@ -40,6 +40,7 @@ public class OpenPlayer extends CraftPlayer {
   @Unmodifiable
   protected static final Set<String> RESET_TAGS = Set.of(
       // Entity#saveWithoutId(CompoundTag)
+      "invulnerable_time",
       "CustomName",
       "CustomNameVisible",
       "Silent",
@@ -52,7 +53,6 @@ public class OpenPlayer extends CraftPlayer {
       "Passengers",
       // ServerPlayer#addAdditionalSaveData(CompoundTag)
       // Intentional omissions to prevent mount loss: Attach, Entity, and RootVehicle
-      "entered_nether_pos",
       "last_explosion_impact_pos",
       "respawn",
       "raid_omen_position",
