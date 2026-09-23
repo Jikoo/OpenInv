@@ -73,8 +73,11 @@ public class InternalAccessor {
 
     // Spigot adapters.
     if (!PAPER) {
-      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2, 26.3
+      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 3))) { // 26.3
         return new com.github.jikoo.openinv.internal.spigot26_3.InternalAccessor(logger, lang);
+      }
+      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2
+        return new com.github.jikoo.openinv.internal.spigot26_2.InternalAccessor(logger, lang);
       }
       if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) { // 26.1.1, 26.1.2
         return new com.github.jikoo.openinv.internal.spigot26_1.InternalAccessor(logger, lang);
@@ -84,8 +87,11 @@ public class InternalAccessor {
     }
 
     // Paper or a Paper fork, can use Mojang-mapped internals.
-    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2, 26.3
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 3))) { // 26.3
       return new com.lishid.openinv.internal.paper26_3.InternalAccessor(logger, lang);
+    }
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2
+      return new com.lishid.openinv.internal.paper26_2.InternalAccessor(logger, lang);
     }
     if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) { // 26.1.1, 26.1.2
       return new com.lishid.openinv.internal.paper26_1.InternalAccessor(logger, lang);
