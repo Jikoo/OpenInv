@@ -1,6 +1,6 @@
 package com.github.jikoo.openinv.internal.spigot26_1.container.slot.placeholder;
 
-import com.github.jikoo.openinv.internal.spigot26_2.container.slot.placeholder.PlaceholderLoaderBase;
+import com.github.jikoo.openinv.internal.spigot26_3.container.slot.placeholder.PlaceholderLoaderBase;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.NullMarked;

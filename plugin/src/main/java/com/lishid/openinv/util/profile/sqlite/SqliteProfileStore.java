@@ -5,8 +5,9 @@ import com.lishid.openinv.util.profile.BatchProfileStore;
 import com.lishid.openinv.util.profile.OfflinePlayerImporter;
 import com.lishid.openinv.util.profile.Profile;
 import me.nahu.scheduler.wrapper.WrappedJavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.sqlite.Function;
 
 import java.sql.Connection;
@@ -20,14 +21,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+@NullMarked
 public class SqliteProfileStore extends BatchProfileStore {
 
   private static final int BATCH_SIZE = 1_000;
   private static final int MAX_BATCHES = 20;
 
-  private Connection connection;
+  private @UnknownNullability Connection connection;
 
-  public SqliteProfileStore(@NotNull WrappedJavaPlugin plugin) {
+  public SqliteProfileStore(WrappedJavaPlugin plugin) {
     super(plugin);
   }
 
@@ -106,7 +108,7 @@ public class SqliteProfileStore extends BatchProfileStore {
   }
 
   @Override
-  protected void pushBatch(@NotNull Set<Profile> batch) {
+  protected void pushBatch(Set<Profile> batch) {
     if (batch.isEmpty()) {
       return;
     }
@@ -161,7 +163,7 @@ public class SqliteProfileStore extends BatchProfileStore {
     }
   }
 
-  private @NotNull PreparedStatement createBulkUpsertProfile(int count) throws SQLException {
+  private PreparedStatement createBulkUpsertProfile(int count) throws SQLException {
     return connection.prepareStatement(
         """
         INSERT INTO profiles(name, uuid_least, uuid_most)
@@ -177,7 +179,7 @@ public class SqliteProfileStore extends BatchProfileStore {
   }
 
   @Override
-  public @Nullable Profile getProfileExact(@NotNull String name) {
+  public @Nullable Profile getProfileExact(String name) {
     return getProfile(
         name,
         text -> {
@@ -191,7 +193,7 @@ public class SqliteProfileStore extends BatchProfileStore {
   }
 
   @Override
-  public @Nullable Profile getProfileInexact(@NotNull String search) {
+  public @Nullable Profile getProfileInexact(String search) {
     return getProfile(
         search,
         text -> {
@@ -210,7 +212,7 @@ public class SqliteProfileStore extends BatchProfileStore {
     );
   }
 
-  private @NotNull String getLikePrefix(@NotNull String search) {
+  private String getLikePrefix(String search) {
     StringBuilder prefix = new StringBuilder();
     int searchLen = search.length();
     if (searchLen > 0) {
@@ -231,8 +233,8 @@ public class SqliteProfileStore extends BatchProfileStore {
   }
 
   private @Nullable Profile getProfile(
-      @NotNull String text,
-      @NotNull ThrowingFunction<String, PreparedStatement, SQLException> create
+      String text,
+      ThrowingFunction<String, PreparedStatement, SQLException> create
   ) {
     try (PreparedStatement statement = create.apply(text)) {
       ResultSet resultSet = statement.executeQuery();

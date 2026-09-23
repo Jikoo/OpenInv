@@ -22,11 +22,15 @@ apply<SpigotSetup>()
 dependencies {
   compileOnly(libs.spigotapi)
   extensions.getByType(SpigotDependencyExtension::class.java).version = "26.2-R0.1-SNAPSHOT"
-  compileOnly("com.mojang:logging:1.6.11")
+  compileOnly("com.mojang:logging:1.7.12")
   compileOnly("com.mojang:brigadier:1.3.10")
-  compileOnly("com.mojang:datafixerupper:9.0.19")
-  compileOnly("com.mojang:authlib:7.0.62")
+  compileOnly("com.mojang:datafixerupper:10.0.21")
+  compileOnly("com.mojang:authlib:9.0.75")
 
   compileOnly(project(":openinvapi"))
   compileOnly(project(":openinvcommon"))
+
+  compileOnly(project(":openinvadapterspigot26_3")) {
+    exclude(group = "org.spigotmc", module = "spigot")
+  }
 }

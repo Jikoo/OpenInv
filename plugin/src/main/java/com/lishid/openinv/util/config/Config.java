@@ -3,19 +3,20 @@ package com.lishid.openinv.util.config;
 import com.lishid.openinv.util.AccessEqualMode;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class Config {
 
-  private @NotNull Configuration root;
+  private Configuration root;
   private @Nullable AccessEqualMode accessEqualMode;
 
   public Config() {
     root = new MemoryConfiguration();
   }
 
-  public void reload(@NotNull Configuration configuration) {
+  public void reload(Configuration configuration) {
     root = configuration;
     accessEqualMode = null;
   }
@@ -32,7 +33,7 @@ public class Config {
     return root.getBoolean("settings.command.open.no-args-opens-self", false);
   }
 
-  public @NotNull AccessEqualMode getAccessEqualMode() {
+  public AccessEqualMode getAccessEqualMode() {
     if (accessEqualMode == null) {
       accessEqualMode = AccessEqualMode.of(root.getString("settings.equal-access"));
     }

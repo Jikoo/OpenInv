@@ -17,15 +17,16 @@
 package com.lishid.openinv.internal;
 
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * An {@link ISpecialInventory} representing a player inventory.
  */
+@NullMarked
 public interface ISpecialPlayerInventory extends ISpecialInventory {
 
   @Override
-  default @NotNull InventoryType getBukkitType() {
+  default InventoryType getBukkitType() {
     return InventoryType.PLAYER;
   }
 

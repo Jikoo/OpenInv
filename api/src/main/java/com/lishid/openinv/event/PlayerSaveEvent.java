@@ -7,11 +7,12 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Event fired before a {@link Player} loaded via OpenInv is saved.
  */
+@NullMarked
 public class PlayerSaveEvent extends PlayerEvent implements Cancellable {
 
   private static final HandlerList HANDLERS = new HandlerList();
@@ -27,10 +28,11 @@ public class PlayerSaveEvent extends PlayerEvent implements Cancellable {
    */
   @RestrictedApi(
       explanation = "Constructor is not considered part of the API and may be subject to change.",
+      link = "",
       allowedOnPath = ".*/com/lishid/openinv/event/(OpenPlayerSaveEvent|OpenEvents).java"
   )
   @ApiStatus.Internal
-  PlayerSaveEvent(@NotNull Player player) {
+  PlayerSaveEvent(Player player) {
     super(player);
   }
 
@@ -54,7 +56,6 @@ public class PlayerSaveEvent extends PlayerEvent implements Cancellable {
     this.cancelled = cancel;
   }
 
-  @NotNull
   @Override
   public HandlerList getHandlers() {
     return HANDLERS;

@@ -18,8 +18,8 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,16 +35,17 @@ import java.util.stream.Stream;
 /**
  * A manager for special inventories. Delegates creation and tracks copies in use.
  */
+@NullMarked
 public class InventoryManager implements Listener {
 
   private final Map<UUID, ISpecialPlayerInventory> inventories = new ConcurrentHashMap<>();
   private final Map<UUID, ISpecialEnderChest> enderChests = new ConcurrentHashMap<>();
   private final Set<UUID> expectedCloses = ConcurrentHashMap.newKeySet();
-  private final @NotNull OpenInv plugin;
-  private final @NotNull Config config;
-  private final @NotNull InternalAccessor accessor;
+  private final OpenInv plugin;
+  private final Config config;
+  private final InternalAccessor accessor;
 
-  public InventoryManager(@NotNull OpenInv plugin, @NotNull Config config, @NotNull InternalAccessor accessor) {
+  public InventoryManager(OpenInv plugin, Config config, InternalAccessor accessor) {
     this.plugin = plugin;
     this.config = config;
     this.accessor = accessor;
@@ -74,15 +75,15 @@ public class InventoryManager implements Listener {
     expectedCloses.clear();
   }
 
-  public @NotNull ISpecialPlayerInventory getInventory(@NotNull Player player) {
+  public ISpecialPlayerInventory getInventory(Player player) {
     return inventories.computeIfAbsent(player.getUniqueId(), uuid -> accessor.createInventory(player));
   }
 
-  public @NotNull ISpecialEnderChest getEnderChest(@NotNull Player player) {
+  public ISpecialEnderChest getEnderChest(Player player) {
     return enderChests.computeIfAbsent(player.getUniqueId(), uuid -> accessor.createEnderChest(player));
   }
 
-  public @Nullable Player getLoadedPlayer(@NotNull UUID uuid) {
+  public @Nullable Player getLoadedPlayer(UUID uuid) {
     ISpecialInventory inUse = inventories.get(uuid);
     if (inUse != null) {
       return (Player) inUse.getPlayer();
@@ -94,18 +95,18 @@ public class InventoryManager implements Listener {
     return null;
   }
 
-  public void unload(@NotNull UUID uuid) {
+  public void unload(UUID uuid) {
     inventories.computeIfPresent(uuid, this::remove);
     enderChests.computeIfPresent(uuid, this::remove);
   }
 
-  public void save(@NotNull UUID uuid) {
+  public void save(UUID uuid) {
     consumeLoaded(uuid, inventory -> {});
   }
 
   @Keep
   @EventHandler(priority = EventPriority.LOWEST)
-  private void onPlayerJoin(@NotNull PlayerJoinEvent event) {
+  private void onPlayerJoin(PlayerJoinEvent event) {
     consumeLoaded(
         event.getPlayer().getUniqueId(),
         inventory -> {
@@ -117,7 +118,7 @@ public class InventoryManager implements Listener {
 
   @Keep
   @EventHandler(priority = EventPriority.MONITOR)
-  private void onPlayerQuit(@NotNull PlayerQuitEvent event) {
+  private void onPlayerQuit(PlayerQuitEvent event) {
     consumeLoaded(
         event.getPlayer().getUniqueId(),
         inventory -> checkViewerAccess(inventory, false)
@@ -126,7 +127,7 @@ public class InventoryManager implements Listener {
 
   @Keep
   @EventHandler
-  private void onWorldChanged(@NotNull PlayerChangedWorldEvent event) {
+  private void onWorldChanged(PlayerChangedWorldEvent event) {
     Player player = event.getPlayer();
     consumeLoaded(player.getUniqueId(), inventory -> checkViewerAccess(inventory, player.isOnline()));
   }
@@ -134,7 +135,7 @@ public class InventoryManager implements Listener {
   @Keep
   @EventHandler
   @SuppressWarnings("ReferenceEquality") // We do really want to check that we have the same ref here.
-  private void onInventoryClose(@NotNull InventoryCloseEvent event) {
+  private void onInventoryClose(InventoryCloseEvent event) {
     ISpecialInventory inventory = InventoryAccess.getInventory(event.getInventory());
 
     // If this is not an ISpecialInventory or the inventory was closed elsewhere internally, don't handle.
@@ -179,7 +180,7 @@ public class InventoryManager implements Listener {
 
   @Keep
   @EventHandler(priority = EventPriority.HIGHEST)
-  private void onInventoryOpen(@NotNull InventoryOpenEvent event) {
+  private void onInventoryOpen(InventoryOpenEvent event) {
     ISpecialInventory inventory = InventoryAccess.getInventory(event.getInventory());
     if (inventory == null) {
       return;
@@ -199,7 +200,7 @@ public class InventoryManager implements Listener {
     }
   }
 
-  private <T extends ISpecialInventory> void checkViewerAccess(@NotNull T inventory, boolean online) {
+  private <T extends ISpecialInventory> void checkViewerAccess(T inventory, boolean online) {
 
     Player owner = (Player) inventory.getPlayer();
     Permissions connectedState = online ? Permissions.ACCESS_ONLINE : Permissions.ACCESS_OFFLINE;
@@ -217,16 +218,16 @@ public class InventoryManager implements Listener {
     }
   }
 
-  private void consumeLoaded(@NotNull UUID key, @NotNull Consumer<@NotNull ISpecialInventory> consumer) {
+  private void consumeLoaded(UUID key, Consumer<ISpecialInventory> consumer) {
     boolean saved = consumeLoaded(inventories, key, false, consumer);
     consumeLoaded(enderChests, key, saved, consumer);
   }
 
   private <T extends ISpecialInventory> boolean consumeLoaded(
-      @NotNull Map<UUID, T> map,
-      @NotNull UUID key,
+      Map<UUID, T> map,
+      UUID key,
       boolean saved,
-      @NotNull Consumer<@NotNull ISpecialInventory> consumer
+      Consumer<ISpecialInventory> consumer
   ) {
     T inventory = map.get(key);
 
@@ -247,7 +248,7 @@ public class InventoryManager implements Listener {
     return saved;
   }
 
-  private void save(@NotNull ISpecialInventory inventory) {
+  private void save(ISpecialInventory inventory) {
     if (config.isSaveDisabled()) {
       return;
     }
@@ -260,7 +261,7 @@ public class InventoryManager implements Listener {
   }
 
   @Contract("_, _ -> null")
-  private <T extends ISpecialInventory> @Nullable T remove(@NotNull UUID key, @NotNull T inventory) {
+  private <T extends ISpecialInventory> @Nullable T remove(UUID key, T inventory) {
     for (HumanEntity viewer : List.copyOf(inventory.getBukkitInventory().getViewers())) {
       expectedCloses.add(viewer.getUniqueId());
       plugin.getScheduler().runTaskAtEntity(viewer, viewer::closeInventory);

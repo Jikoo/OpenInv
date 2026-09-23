@@ -1,13 +1,14 @@
 package com.lishid.openinv.util.profile;
 
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.UUID;
 
-public record Profile(@NotNull String name, @NotNull UUID id) {
+@NullMarked
+public record Profile(String name, UUID id) {
 
-  public Profile(@NotNull Player player) {
+  public Profile(Player player) {
     this(player.getName(), player.getUniqueId());
   }
 

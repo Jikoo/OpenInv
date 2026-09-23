@@ -1,8 +1,11 @@
 package com.lishid.openinv.internal.paper1_21_11.container.menu;
 
-import com.lishid.openinv.internal.paper26_2.container.OpenEnderChest;
-import com.lishid.openinv.internal.paper26_2.container.menu.OpenSyncMenu;
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
+import com.lishid.openinv.internal.paper26_3.container.OpenEnderChest;
+import com.lishid.openinv.internal.paper26_3.container.menu.OpenSyncMenu;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -13,12 +16,13 @@ import org.jspecify.annotations.NullMarked;
 public class OpenEnderChestMenu extends OpenSyncMenu<OpenEnderChest> {
 
   public OpenEnderChestMenu(
+      InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> factory,
       OpenEnderChest enderChest,
       ServerPlayer viewer,
       int containerId,
       boolean viewOnly
   ) {
-    super(getChestMenuType(enderChest.getContainerSize()), containerId, enderChest, viewer, viewOnly);
+    super(getChestMenuType(enderChest.getContainerSize()), containerId, factory, enderChest, viewer, viewOnly);
   }
 
   @Override

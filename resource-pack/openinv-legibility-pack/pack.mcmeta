@@ -2,16 +2,16 @@
   "pack": {
     "description": "Improve OpenInv's legibility",
     "min_format": 34,
-    "max_format": [88, 0],
+    "max_format": [97, 1],
     "pack_format": 64,
-    "supported_formats": [ 34, 88 ]
+    "supported_formats": [ 34, 97 ]
   },
   "overlays": {
     "entries": [
       {
         "min_format": 44,
-        "max_format": [88, 0],
-        "formats": [ 44, 88 ],
+        "max_format": [97, 1],
+        "formats": [ 44, 97 ],
         "directory": "openinv_44"
       },
       {

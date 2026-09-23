@@ -5,15 +5,16 @@ import com.lishid.openinv.util.setting.PlayerToggles;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.UUID;
 
+@NullMarked
 public class ToggleListener implements Listener {
 
   @Keep
   @EventHandler
-  private void onPlayerQuit(@NotNull PlayerQuitEvent event) {
+  private void onPlayerQuit(PlayerQuitEvent event) {
     UUID playerId = event.getPlayer().getUniqueId();
     PlayerToggles.any().set(playerId, false);
     PlayerToggles.silent().set(playerId, false);

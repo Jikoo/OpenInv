@@ -1,5 +1,5 @@
 [versions]
-spigotapi = "1.21.5-R0.1-SNAPSHOT"
+spigotapi = "1.21.3-R0.1-SNAPSHOT"
 planarwrappers = "3.3.0"
 jspecify = "1.0.1"
 annotations = "26.1.0"

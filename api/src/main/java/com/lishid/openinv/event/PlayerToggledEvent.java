@@ -5,27 +5,29 @@ import com.lishid.openinv.util.setting.PlayerToggle;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.UUID;
 
 /**
  * Event fired after OpenInv modifies a toggleable setting for a player.
  */
+@NullMarked
 public class PlayerToggledEvent extends Event {
 
   private static final HandlerList HANDLERS = new HandlerList();
 
-  private final @NotNull PlayerToggle toggle;
-  private final @NotNull UUID uuid;
+  private final PlayerToggle toggle;
+  private final UUID uuid;
   private final boolean enabled;
 
   @RestrictedApi(
       explanation = "Constructor is not considered part of the API and may be subject to change.",
+      link = "",
       allowedOnPath = ".*/com/lishid/openinv/event/OpenEvents.java"
   )
   @ApiStatus.Internal
-  PlayerToggledEvent(@NotNull PlayerToggle toggle, @NotNull UUID uuid, boolean enabled) {
+  PlayerToggledEvent(PlayerToggle toggle, UUID uuid, boolean enabled) {
     this.toggle = toggle;
     this.uuid = uuid;
     this.enabled = enabled;
@@ -36,7 +38,7 @@ public class PlayerToggledEvent extends Event {
    *
    * @return the toggle
    */
-  public @NotNull PlayerToggle getToggle() {
+  public PlayerToggle getToggle() {
     return toggle;
   }
 
@@ -45,7 +47,7 @@ public class PlayerToggledEvent extends Event {
    *
    * @return the player ID
    */
-  public @NotNull UUID getPlayerId() {
+  public UUID getPlayerId() {
     return uuid;
   }
 
@@ -58,7 +60,6 @@ public class PlayerToggledEvent extends Event {
     return enabled;
   }
 
-  @NotNull
   @Override
   public HandlerList getHandlers() {
     return HANDLERS;

@@ -1,95 +1,27 @@
 package com.lishid.openinv.internal.paper26_2;
 
-import com.lishid.openinv.internal.Accessor;
-import com.lishid.openinv.internal.IAnySilentContainer;
-import com.lishid.openinv.internal.ISpecialEnderChest;
-import com.lishid.openinv.internal.ISpecialInventory;
-import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import com.lishid.openinv.internal.paper26_2.container.AnySilentContainer;
-import com.lishid.openinv.internal.paper26_2.container.OpenEnderChest;
-import com.lishid.openinv.internal.paper26_2.container.OpenInventory;
-import com.lishid.openinv.internal.paper26_2.container.slot.placeholder.PlaceholderLoader;
-import com.lishid.openinv.internal.paper26_2.player.PlayerManager;
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
+import com.lishid.openinv.internal.paper26_2.container.slot.OpenInventoryFactory;
+import com.github.jikoo.openinv.lang.LanguageManager;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.inventory.CraftInventory;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NullMarked;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class InternalAccessor implements Accessor {
+@NullMarked
+public class InternalAccessor extends com.lishid.openinv.internal.paper26_3.InternalAccessor {
 
-  protected final @NotNull Logger logger;
-  private final @NotNull PlayerManager manager;
-  private final @NotNull AnySilentContainer anySilentContainer;
-
-  public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
-    this.logger = logger;
-    manager = createPlayerManager(logger);
-    anySilentContainer = createAnySilentContainer(logger, lang);
-  }
-
-  protected @NotNull PlayerManager createPlayerManager(@NotNull Logger logger) {
-    return new PlayerManager(logger);
-  }
-
-  protected @NotNull AnySilentContainer createAnySilentContainer(
-      @NotNull Logger logger,
-      @NotNull LanguageManager lang
-  ) {
-    return new AnySilentContainer(logger, lang);
-  }
-
-  protected @NotNull PlaceholderLoader createPlaceholderLoader() {
-    return new PlaceholderLoader();
+  public InternalAccessor(Logger logger, LanguageManager lang) {
+    super(logger, lang);
   }
 
   @Override
-  public @NotNull PlayerManager getPlayerManager() {
-    return manager;
-  }
-
-  @Override
-  public @NotNull IAnySilentContainer getAnySilentContainer() {
-    return anySilentContainer;
-  }
-
-  @Override
-  public @NotNull ISpecialPlayerInventory createPlayerInventory(@NotNull Player player) {
-    return new OpenInventory(player);
-  }
-
-  @Override
-  public @NotNull ISpecialEnderChest createEnderChest(@NotNull Player player) {
-    return new OpenEnderChest(player);
-  }
-
-  @Override
-  public <T extends ISpecialInventory> @Nullable T get(@NotNull Inventory bukkitInventory, @NotNull Class<T> clazz) {
-    if (!(bukkitInventory instanceof CraftInventory craftInventory)) {
-      return null;
-    }
-    Container container = craftInventory.getInventory();
-    if (clazz.isInstance(container)) {
-      return clazz.cast(container);
-    }
-    return null;
-  }
-
-  @Override
-  public void reload(@NotNull ConfigurationSection config) {
-    ConfigurationSection placeholders = config.getConfigurationSection("placeholders");
-    try {
-      // Reset placeholders to defaults and try to load configuration.
-      createPlaceholderLoader().load(placeholders);
-    } catch (Exception e) {
-      logger.log(Level.WARNING, "Caught exception loading placeholder overrides!", e);
-    }
+  protected InventoryFactory<ServerPlayer, ItemStack, Container, Slot, EquipmentSlot> createInventoryFactory() {
+    return new OpenInventoryFactory();
   }
 
 }

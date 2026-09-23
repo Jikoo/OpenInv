@@ -6,14 +6,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+@NullMarked
 public final class SearchHelper {
 
-  public static boolean findMatch(@NotNull Inventory inventory, @NotNull Predicate<@NotNull ItemStack> predicate) {
+  public static boolean findMatch(Inventory inventory, Predicate<ItemStack> predicate) {
     for (ItemStack content : inventory.getContents()) {
       if (findMatch(content, predicate)) {
         return true;
@@ -22,7 +23,7 @@ public final class SearchHelper {
     return false;
   }
 
-  private static boolean findMatch(@Nullable ItemStack itemStack, @NotNull Predicate<@NotNull ItemStack> predicate) {
+  private static boolean findMatch(@Nullable ItemStack itemStack, Predicate<ItemStack> predicate) {
     if (itemStack == null || itemStack.getType().isAir()) {
       return false;
     }

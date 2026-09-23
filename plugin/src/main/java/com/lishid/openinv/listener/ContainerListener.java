@@ -17,10 +17,10 @@
 package com.lishid.openinv.listener;
 
 import com.google.errorprone.annotations.Keep;
-import com.lishid.openinv.internal.ViewOnly;
+import com.github.jikoo.openinv.internal.container.ViewOnly;
 import com.lishid.openinv.util.InternalAccessor;
 import com.lishid.openinv.util.Permissions;
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.LanguageManager;
 import com.lishid.openinv.util.setting.PlayerToggles;
 import org.bukkit.GameMode;
 import org.bukkit.entity.HumanEntity;
@@ -36,25 +36,25 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A listener managing AnyContainer, SilentContainer, and more.
  */
+@NullMarked
 public class ContainerListener implements Listener {
 
-  private final @NotNull InternalAccessor accessor;
-  private final @NotNull LanguageManager lang;
+  private final InternalAccessor accessor;
+  private final LanguageManager lang;
 
-  public ContainerListener(@NotNull InternalAccessor accessor, @NotNull LanguageManager lang) {
+  public ContainerListener(InternalAccessor accessor, LanguageManager lang) {
     this.accessor = accessor;
     this.lang = lang;
   }
 
   @Keep
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  private void onPlayerInteract(@NotNull PlayerInteractEvent event) {
+  private void onPlayerInteract(PlayerInteractEvent event) {
     // Ignore events from other plugins.
     if (!PlayerInteractEvent.class.equals(event.getClass())) {
       return;
@@ -95,7 +95,7 @@ public class ContainerListener implements Listener {
 
   @Keep
   @EventHandler
-  private void onInventoryClose(@NotNull final InventoryCloseEvent event) {
+  private void onInventoryClose(final InventoryCloseEvent event) {
     if (!(event.getPlayer() instanceof Player player)) {
       return;
     }
@@ -108,17 +108,17 @@ public class ContainerListener implements Listener {
 
   @Keep
   @EventHandler(priority = EventPriority.LOWEST)
-  private void onInventoryClick(@NotNull final InventoryClickEvent event) {
+  private void onInventoryClick(final InventoryClickEvent event) {
     handleInventoryInteract(event);
   }
 
   @Keep
   @EventHandler(priority = EventPriority.LOWEST)
-  private void onInventoryDrag(@NotNull final InventoryDragEvent event) {
+  private void onInventoryDrag(final InventoryDragEvent event) {
     handleInventoryInteract(event);
   }
 
-  private void handleInventoryInteract(@NotNull final InventoryInteractEvent event) {
+  private void handleInventoryInteract(final InventoryInteractEvent event) {
     HumanEntity entity = event.getWhoClicked();
 
     // Un-cancel spectator interactions.

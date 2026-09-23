@@ -1,6 +1,6 @@
 package com.lishid.openinv.util.lang;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -11,13 +11,14 @@ import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@NullMarked
 public class LangMigrator {
 
-  private final @NotNull Path oldFolder;
-  private final @NotNull Path newFolder;
-  private final @NotNull Logger logger;
+  private final Path oldFolder;
+  private final Path newFolder;
+  private final Logger logger;
 
-  public LangMigrator(@NotNull Path oldFolder, @NotNull Path newFolder, @NotNull Logger logger) {
+  public LangMigrator(Path oldFolder, Path newFolder, Logger logger) {
     this.oldFolder = oldFolder;
     this.newFolder = newFolder;
     this.logger = logger;
@@ -41,10 +42,6 @@ public class LangMigrator {
 
     try (DirectoryStream<Path> files = Files.newDirectoryStream(oldFolder)) {
       files.forEach(path -> {
-        if (path == null) {
-          return;
-        }
-
         String fileName = path.getFileName().toString();
 
         if (fileName.startsWith("config") || !fileName.endsWith(".yml")) {

@@ -18,21 +18,22 @@ package com.lishid.openinv.util;
 
 import com.github.jikoo.planarwrappers.util.version.BukkitVersions;
 import com.github.jikoo.planarwrappers.util.version.Version;
-import com.lishid.openinv.internal.Accessor;
+import com.github.jikoo.openinv.internal.Accessor;
 import com.lishid.openinv.internal.IAnySilentContainer;
 import com.lishid.openinv.internal.ISpecialEnderChest;
 import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
-import com.lishid.openinv.internal.PlayerManager;
-import com.lishid.openinv.util.lang.LanguageManager;
+import com.github.jikoo.openinv.internal.PlayerManager;
+import com.github.jikoo.openinv.lang.LanguageManager;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.logging.Logger;
 
+@NullMarked
 public class InternalAccessor {
 
   private static final boolean PAPER;
@@ -50,7 +51,7 @@ public class InternalAccessor {
 
   private @Nullable Accessor internal;
 
-  public InternalAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
+  public InternalAccessor(Logger logger, LanguageManager lang) {
     try {
       internal = getAccessor(logger, lang);
 
@@ -63,39 +64,40 @@ public class InternalAccessor {
     }
   }
 
-  private @Nullable Accessor getAccessor(@NotNull Logger logger, @NotNull LanguageManager lang) {
-    if (!PAPER) {
-      if (BukkitVersions.MINECRAFT.equals(Version.of(26, 2))) {
-        return new com.github.jikoo.openinv.internal.spigot26_2.InternalAccessor(logger, lang);
-      }
-      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))
-          && BukkitVersions.MINECRAFT.lessThanOrEqual(Version.of(26, 1, 2))) {
-        // Load Spigot accessor.
-        return new com.github.jikoo.openinv.internal.spigot26_1.InternalAccessor(logger, lang);
-      }
+  private @Nullable Accessor getAccessor(Logger logger, LanguageManager lang) {
+    // Ensure version is in supported range.
+    if (BukkitVersions.MINECRAFT.greaterThan(Version.of(26, 3))
+        || BukkitVersions.MINECRAFT.lessThan(Version.of(1, 21, 11))) {
       return null;
     }
 
-    Version maxSupported = Version.of(26, 2);
-    Version minSupported = Version.of(1, 21, 9);
-
-    // Ensure version is in supported range.
-    if (BukkitVersions.MINECRAFT.greaterThan(maxSupported) || BukkitVersions.MINECRAFT.lessThan(minSupported)) {
+    // Spigot adapters.
+    if (!PAPER) {
+      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 3))) { // 26.3
+        return new com.github.jikoo.openinv.internal.spigot26_3.InternalAccessor(logger, lang);
+      }
+      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2
+        return new com.github.jikoo.openinv.internal.spigot26_2.InternalAccessor(logger, lang);
+      }
+      if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) { // 26.1.1, 26.1.2
+        return new com.github.jikoo.openinv.internal.spigot26_1.InternalAccessor(logger, lang);
+      }
+      // Spigot min version is 26.1.1, differing from Paper for one more release.
       return null;
     }
 
     // Paper or a Paper fork, can use Mojang-mapped internals.
+    if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 3))) { // 26.3
+      return new com.lishid.openinv.internal.paper26_3.InternalAccessor(logger, lang);
+    }
     if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 2))) { // 26.2
       return new com.lishid.openinv.internal.paper26_2.InternalAccessor(logger, lang);
     }
     if (BukkitVersions.MINECRAFT.greaterThanOrEqual(Version.of(26, 1))) { // 26.1.1, 26.1.2
       return new com.lishid.openinv.internal.paper26_1.InternalAccessor(logger, lang);
     }
-    if (BukkitVersions.MINECRAFT.equals(Version.of(1, 21, 11))) { // 1.21.11
-      return new com.lishid.openinv.internal.paper1_21_11.InternalAccessor(logger, lang);
-    }
-    // 1.21.9, 1.21.10
-    return new com.lishid.openinv.internal.paper1_21_10.InternalAccessor(logger, lang);
+    // 1.21.11
+    return new com.lishid.openinv.internal.paper1_21_11.InternalAccessor(logger, lang);
   }
 
   /**
@@ -112,7 +114,7 @@ public class InternalAccessor {
    *
    * @return the version
    */
-  public @NotNull String getVersion() {
+  public String getVersion() {
     return BukkitVersions.MINECRAFT.toString();
   }
 
@@ -131,7 +133,7 @@ public class InternalAccessor {
    * @return the IAnySilentContainer
    * @throws IllegalStateException if server version is unsupported
    */
-  public @NotNull IAnySilentContainer getAnySilentContainer() {
+  public IAnySilentContainer getAnySilentContainer() {
     if (internal == null) {
       throw new IllegalStateException(String.format("Unsupported server version %s!", BukkitVersions.MINECRAFT));
     }
@@ -139,8 +141,8 @@ public class InternalAccessor {
   }
 
   public @Nullable InventoryView openInventory(
-      @NotNull Player player,
-      @NotNull ISpecialInventory inventory,
+      Player player,
+      ISpecialInventory inventory,
       boolean viewOnly
   ) {
     if (internal == null) {
@@ -155,7 +157,7 @@ public class InternalAccessor {
    * @return the IPlayerDataManager
    * @throws IllegalStateException if server version is unsupported
    */
-  @NotNull PlayerManager getPlayerDataManager() {
+  PlayerManager getPlayerDataManager() {
     if (internal == null) {
       throw new IllegalStateException(String.format("Unsupported server version %s!", BukkitVersions.MINECRAFT));
     }

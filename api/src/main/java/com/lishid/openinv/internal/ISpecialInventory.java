@@ -20,11 +20,12 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Interface defining behavior for special inventories backed by other inventories' content listings.
  */
+@NullMarked
 public interface ISpecialInventory {
 
   /**
@@ -32,21 +33,21 @@ public interface ISpecialInventory {
    *
    * @return the Bukkit inventory
    */
-  @NotNull Inventory getBukkitInventory();
+  Inventory getBukkitInventory();
 
   /**
    * Get the {@link InventoryType} corresponding to this {@code ISpecialInventory}.
    *
    * @return the type of Bukkit inventory
    */
-  @NotNull InventoryType getBukkitType();
+  InventoryType getBukkitType();
 
   /**
    * Set the owning {@link Player} instance to a newly-joined user.
    *
    * @param player the user coming online
    */
-  void setPlayerOnline(@NotNull Player player);
+  void setPlayerOnline(Player player);
 
   /**
    * Mark the owner of the inventory offline.
@@ -70,6 +71,6 @@ public interface ISpecialInventory {
    *
    * @return the {@link HumanEntity} who owns the inventory
    */
-  @NotNull HumanEntity getPlayer();
+  HumanEntity getPlayer();
 
 }

@@ -17,8 +17,8 @@
 package com.lishid.openinv.command;
 
 import com.lishid.openinv.util.TabCompleter;
-import com.lishid.openinv.util.lang.LanguageManager;
-import com.lishid.openinv.util.lang.Replacement;
+import com.github.jikoo.openinv.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.Replacement;
 import com.lishid.openinv.util.SearchHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -27,26 +27,27 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@NullMarked
 public class SearchInvCommand implements TabExecutor {
 
-  private final @NotNull LanguageManager lang;
+  private final LanguageManager lang;
 
-  public SearchInvCommand(@NotNull LanguageManager lang) {
+  public SearchInvCommand(LanguageManager lang) {
     this.lang = lang;
   }
 
   @Override
   public boolean onCommand(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
-      @NotNull String[] args
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args
   ) {
 
     Material material = null;
@@ -109,7 +110,7 @@ public class SearchInvCommand implements TabExecutor {
     return true;
   }
 
-  private boolean findMatch(@NotNull Inventory inventory, @NotNull Material material, int count) {
+  private boolean findMatch(Inventory inventory, Material material, int count) {
     AtomicInteger total = new AtomicInteger();
     return SearchHelper.findMatch(
         inventory,
@@ -124,8 +125,8 @@ public class SearchInvCommand implements TabExecutor {
 
   @Override
   public List<String> onTabComplete(
-      @NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
-      @NotNull String[] args
+      CommandSender sender, Command command, String label,
+      String[] args
   ) {
     if (args.length < 1 || args.length > 2 || !command.testPermissionSilent(sender)) {
       return Collections.emptyList();

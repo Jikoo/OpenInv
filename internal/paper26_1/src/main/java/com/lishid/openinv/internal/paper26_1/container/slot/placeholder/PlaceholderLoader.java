@@ -2,17 +2,18 @@ package com.lishid.openinv.internal.paper26_1.container.slot.placeholder;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
-public class PlaceholderLoader extends com.lishid.openinv.internal.paper26_2.container.slot.placeholder.PlaceholderLoader {
+@NullMarked
+public class PlaceholderLoader extends com.lishid.openinv.internal.paper26_3.container.slot.placeholder.PlaceholderLoader {
 
   @Override
-  protected @NotNull Item getDefaultCursorItem() {
+  protected Item getDefaultCursorItem() {
     return Items.WHITE_BANNER;
   }
 
   @Override
-  protected @NotNull Item getDefaultNotSlotItem() {
+  protected Item getDefaultNotSlotItem() {
     return Items.WHITE_STAINED_GLASS_PANE;
   }
 

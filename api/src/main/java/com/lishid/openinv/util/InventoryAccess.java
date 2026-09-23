@@ -22,14 +22,15 @@ import com.lishid.openinv.internal.ISpecialInventory;
 import com.lishid.openinv.internal.ISpecialPlayerInventory;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.BiFunction;
 
+@NullMarked
 public final class InventoryAccess {
 
-  private static @Nullable BiFunction<Inventory, Class<? extends ISpecialInventory>, ISpecialInventory> provider;
+  private static @Nullable BiFunction<Inventory, Class<? extends ISpecialInventory>, @Nullable ISpecialInventory> provider;
 
   public static boolean isUsable() {
     return provider != null;
@@ -41,7 +42,7 @@ public final class InventoryAccess {
    * @param inventory the Bukkit inventory
    * @return true if backed by the correct implementation
    */
-  public static boolean isPlayerInventory(@NotNull Inventory inventory) {
+  public static boolean isPlayerInventory(Inventory inventory) {
     return getPlayerInventory(inventory) != null;
   }
 
@@ -52,7 +53,7 @@ public final class InventoryAccess {
    * @param inventory the Bukkit inventory
    * @return the backing implementation if available
    */
-  public static @Nullable ISpecialPlayerInventory getPlayerInventory(@NotNull Inventory inventory) {
+  public static @Nullable ISpecialPlayerInventory getPlayerInventory(Inventory inventory) {
     return provider == null ? null : (ISpecialPlayerInventory) provider.apply(inventory, ISpecialPlayerInventory.class);
   }
 
@@ -62,7 +63,7 @@ public final class InventoryAccess {
    * @param inventory the Bukkit inventory
    * @return true if backed by the correct implementation
    */
-  public static boolean isEnderChest(@NotNull Inventory inventory) {
+  public static boolean isEnderChest(Inventory inventory) {
     return getEnderChest(inventory) != null;
   }
 
@@ -73,7 +74,7 @@ public final class InventoryAccess {
    * @param inventory the Bukkit inventory
    * @return the backing implementation if available
    */
-  public static @Nullable ISpecialEnderChest getEnderChest(@NotNull Inventory inventory) {
+  public static @Nullable ISpecialEnderChest getEnderChest(Inventory inventory) {
     return provider == null ? null : (ISpecialEnderChest) provider.apply(inventory, ISpecialEnderChest.class);
   }
 
@@ -84,17 +85,18 @@ public final class InventoryAccess {
    * @param inventory the Bukkit inventory
    * @return the backing implementation if available
    */
-  public static @Nullable ISpecialInventory getInventory(@NotNull Inventory inventory) {
+  public static @Nullable ISpecialInventory getInventory(Inventory inventory) {
     return provider == null ? null : provider.apply(inventory, ISpecialInventory.class);
   }
 
   @RestrictedApi(
       explanation = "Not part of the API.",
+      link = "",
       allowedOnPath = ".*/com/lishid/openinv/util/InternalAccessor.java"
   )
   @ApiStatus.Internal
   static void setProvider(
-      @Nullable BiFunction<Inventory, Class<? extends ISpecialInventory>, ISpecialInventory> provider
+      @Nullable BiFunction<Inventory, Class<? extends ISpecialInventory>, @Nullable ISpecialInventory> provider
   ) {
     InventoryAccess.provider = provider;
   }

@@ -17,7 +17,7 @@
 package com.lishid.openinv.util;
 
 import org.bukkit.permissions.Permissible;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * An enum containing all permissions directly checked by OpenInv.
@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>Note that this is not an exhaustive list! This does not contain
  * all permissions managed by Bukkit, largely parent nodes.</p>
  */
+@NullMarked
 public enum Permissions {
 
   /// Permission to open one's own inventory.
@@ -121,7 +122,7 @@ public enum Permissions {
    * @param permissible the Permissible
    * @return true if the permission is granted
    */
-  public boolean hasPermission(@NotNull Permissible permissible) {
+  public boolean hasPermission(Permissible permissible) {
     return permissible.hasPermission(permission);
   }
 

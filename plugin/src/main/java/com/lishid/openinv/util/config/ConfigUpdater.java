@@ -19,12 +19,13 @@ package com.lishid.openinv.util.config;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.File;
 import java.io.IOException;
 
-public record ConfigUpdater(@NotNull Plugin plugin) {
+@NullMarked
+public record ConfigUpdater(Plugin plugin) {
 
   public void checkForUpdates() {
     final int version = plugin.getConfig().getInt("config-version", 1);

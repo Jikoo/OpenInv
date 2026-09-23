@@ -3,17 +3,18 @@ package com.lishid.openinv.util.profile;
 import me.nahu.scheduler.wrapper.runnable.WrappedRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@NullMarked
 public abstract class OfflinePlayerImporter extends WrappedRunnable {
 
-  private final @NotNull BatchProfileStore profileStore;
+  private final BatchProfileStore profileStore;
   private final int batchSize;
 
-  public OfflinePlayerImporter(@NotNull BatchProfileStore profileStore, int batchSize) {
+  public OfflinePlayerImporter(BatchProfileStore profileStore, int batchSize) {
     this.profileStore = profileStore;
     this.batchSize = batchSize;
   }

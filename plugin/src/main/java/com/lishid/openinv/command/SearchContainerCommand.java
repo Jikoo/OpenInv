@@ -17,8 +17,8 @@
 package com.lishid.openinv.command;
 
 import com.lishid.openinv.util.TabCompleter;
-import com.lishid.openinv.util.lang.LanguageManager;
-import com.lishid.openinv.util.lang.Replacement;
+import com.github.jikoo.openinv.lang.LanguageManager;
+import com.github.jikoo.openinv.lang.Replacement;
 import com.lishid.openinv.util.SearchHelper;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -31,7 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.Nameable;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,22 +40,23 @@ import java.util.Locale;
 /**
  * Command for searching containers in a radius of chunks.
  */
+@NullMarked
 public class SearchContainerCommand implements TabExecutor {
 
-  private final @NotNull Plugin plugin;
-  private final @NotNull LanguageManager lang;
+  private final Plugin plugin;
+  private final LanguageManager lang;
 
-  public SearchContainerCommand(@NotNull Plugin plugin, @NotNull LanguageManager lang) {
+  public SearchContainerCommand(Plugin plugin, LanguageManager lang) {
     this.plugin = plugin;
     this.lang = lang;
   }
 
   @Override
   public boolean onCommand(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
-      @NotNull String[] args) {
+      CommandSender sender,
+      Command command,
+      String label,
+      String[] args) {
     if (!(sender instanceof Player senderPlayer)) {
       lang.sendMessage(sender, "messages.error.consoleUnsupported");
       return true;
@@ -140,9 +141,9 @@ public class SearchContainerCommand implements TabExecutor {
 
   @Override
   public List<String> onTabComplete(
-      @NotNull CommandSender sender,
-      @NotNull Command command,
-      @NotNull String label,
+      CommandSender sender,
+      Command command,
+      String label,
       String[] args) {
     if (args.length < 1 || args.length > 2 || !command.testPermissionSilent(sender)) {
       return Collections.emptyList();
