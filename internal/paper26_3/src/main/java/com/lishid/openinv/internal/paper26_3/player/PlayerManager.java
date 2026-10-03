@@ -259,8 +259,9 @@ public class PlayerManager implements com.github.jikoo.openinv.internal.PlayerMa
         CompoundTag extraData = new CompoundTag();
 
         // Copy extra data out of existing player.
+        CraftPlayer oldPlayer = nmsPlayer.getBukkitEntity();
         ValueOutput output = TagValueOutput.createWrappingWithContext(scopedCollector, nmsPlayer.registryAccess(), extraData);
-        nmsPlayer.getBukkitEntity().setExtraData(output);
+        oldPlayer.setExtraData(output);
 
         MinecraftServer server = nmsPlayer.level().getServer();
         injectPlayer(server, nmsPlayer);
@@ -269,6 +270,9 @@ public class PlayerManager implements com.github.jikoo.openinv.internal.PlayerMa
         // Set extra data in new player.
         ValueInput input = TagValueInput.create(scopedCollector, nmsPlayer.registryAccess(), extraData);
         newPlayer.readExtraData(input);
+        // The persistent data container belongs to the Bukkit wrapper, not the ServerPlayer.
+        // Without copying it, saving drops all plugin data from the player file
+        newPlayer.getPersistentDataContainer().putAll(oldPlayer.getPersistentDataContainer().toTagCompound());
 
         return newPlayer;
       }

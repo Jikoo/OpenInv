@@ -197,8 +197,9 @@ public class PlayerManager implements com.github.jikoo.openinv.internal.PlayerMa
 
       try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(nmsPlayer.problemPath(), logger)) {
         // Copy extra data out of existing player.
+        CraftPlayer oldPlayer = nmsPlayer.getBukkitEntity();
         TagValueOutput output = TagValueOutput.createWithContext(scopedCollector, nmsPlayer.registryAccess());
-        nmsPlayer.getBukkitEntity().setExtraData(output);
+        oldPlayer.setExtraData(output);
 
         injectPlayer(nmsPlayer);
         CraftPlayer newPlayer = nmsPlayer.getBukkitEntity();
@@ -206,6 +207,9 @@ public class PlayerManager implements com.github.jikoo.openinv.internal.PlayerMa
         // Set extra data in new player.
         ValueInput input = TagValueInput.create(scopedCollector, nmsPlayer.registryAccess(), output.buildResult());
         newPlayer.readExtraData(input);
+        // The persistent data container belongs to the Bukkit wrapper, not the ServerPlayer.
+        // Without copying it, saving drops all plugin data from the player file
+        newPlayer.getPersistentDataContainer().putAll(oldPlayer.getPersistentDataContainer().toTagCompound());
 
         return newPlayer;
       }
