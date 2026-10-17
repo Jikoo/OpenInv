@@ -3,6 +3,7 @@ package com.lishid.openinv.internal.paper26_3.container.bukkit;
 import com.google.common.base.Preconditions;
 import com.lishid.openinv.internal.paper26_3.container.BaseOpenInventory;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
@@ -30,14 +31,32 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
 
   @Override
   public ItemStack[] getContents() {
-    return asCraftMirror(getInventory().getOwnerHandle().getInventory().getContents());
+    return asCraftMirror(getInventory().getContents());
   }
 
   @Override
   public void setContents(@Nullable ItemStack[] items) {
-    Inventory internal = getInventory().getOwnerHandle().getInventory();
+    Container internal = getInventory();
     int size = internal.getContainerSize();
     Preconditions.checkArgument(items.length <= size, "items.length must be <= %s", size);
+
+    if (items.length < size) {
+      // If size matches normal player inventory size, redirect to i.
+      Container ownerInternal = getInventory().getOwnerHandle().getInventory();
+      if (items.length == ownerInternal.getContainerSize()) {
+        internal = ownerInternal;
+        size = items.length;
+      }
+    } else {
+      // Otherwise, ensure that the display-only slots are not in use.
+      for (int index = 0; index < size; ++index) {
+        ItemStack itemStack = items[index];
+        if (itemStack == null || itemStack.isEmpty()) {
+          continue;
+        }
+        validateSet(index);
+      }
+    }
 
     for (int index = 0; index < size; ++index) {
       if (index < items.length) {
@@ -46,6 +65,19 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
         internal.setItem(index, net.minecraft.world.item.ItemStack.EMPTY);
       }
     }
+  }
+
+  private void validateSet(int index) {
+    InventoryType.SlotType slotType = getInventory().getSlotType(index);
+    if (slotType == InventoryType.SlotType.OUTSIDE || slotType == InventoryType.SlotType.RESULT) {
+      throw new IllegalArgumentException("A plugin attempted to add an item to a display slot, deleting it!");
+    }
+  }
+
+  @Override
+  public void setItem(int index, @Nullable ItemStack item) {
+    validateSet(index);
+    super.setItem(index, item);
   }
 
   @Override

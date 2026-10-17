@@ -3,6 +3,7 @@ package com.github.jikoo.openinv.internal.spigot26_3.container.bukkit;
 import com.github.jikoo.openinv.internal.spigot26_3.container.OpenInventory;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -27,14 +28,28 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
 
   @Override
   public ItemStack[] getContents() {
-    return asCraftMirror(getInventory().getOwnerHandle().getInventory().getContents());
+    return asCraftMirror(getInventory().getContents());
   }
 
   @Override
-  public void setContents(ItemStack[] items) {
-    Inventory internal = getInventory().getOwnerHandle().getInventory();
+  public void setContents(@Nullable ItemStack[] items) {
+    Container internal = getInventory();
     int size = internal.getContainerSize();
     Preconditions.checkArgument(items.length <= size, "items.length must be <= %s", size);
+
+    if (items.length < size) {
+      // If size matches normal player inventory size, redirect to it.
+      Container ownerInternal = getInventory().getOwnerHandle().getInventory();
+      if (items.length == ownerInternal.getContainerSize()) {
+        internal = ownerInternal;
+        size = items.length;
+      }
+    } else {
+      // Otherwise, ensure that the display-only slots are not in use.
+      for (int index = 0; index < size; ++index) {
+        validateSet(index, items[index]);
+      }
+    }
 
     for (int index = 0; index < size; ++index) {
       if (index < items.length) {
@@ -45,13 +60,29 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     }
   }
 
+  private void validateSet(int index, @Nullable ItemStack itemStack) {
+    if (itemStack == null || itemStack.getType().isAir() || itemStack.getAmount() <= 0) {
+      return;
+    }
+    InventoryType.SlotType slotType = getInventory().getSlotType(index);
+    if (slotType == InventoryType.SlotType.OUTSIDE || slotType == InventoryType.SlotType.RESULT) {
+      throw new IllegalArgumentException("A plugin attempted to add an item to a display slot, deleting it!");
+    }
+  }
+
+  @Override
+  public void setItem(int index, @Nullable ItemStack item) {
+    validateSet(index, item);
+    super.setItem(index, item);
+  }
+
   @Override
   public ItemStack[] getStorageContents() {
     return asCraftMirror(getInventory().getOwnerHandle().getInventory().getNonEquipmentItems());
   }
 
   @Override
-  public void setStorageContents(ItemStack[] items) throws IllegalArgumentException {
+  public void setStorageContents(@Nullable ItemStack[] items) throws IllegalArgumentException {
     NonNullList<net.minecraft.world.item.ItemStack> list = getInventory().getOwnerHandle().getInventory().getNonEquipmentItems();
     int size = list.size();
     Preconditions.checkArgument(items.length <= size, "items.length must be <= %s", size);
@@ -76,7 +107,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public void setArmorContents(ItemStack[] items) {
+  public void setArmorContents(@Nullable ItemStack[] items) {
     getInventory().getOwnerHandle().getBukkitEntity().getInventory().setArmorContents(items);
   }
 
@@ -86,7 +117,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public void setExtraContents(ItemStack[] items) {
+  public void setExtraContents(@Nullable ItemStack[] items) {
     getInventory().getOwnerHandle().getBukkitEntity().getInventory().setExtraContents(items);
   }
 
