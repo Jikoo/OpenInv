@@ -112,7 +112,7 @@ public class BaseOpenInventoryMenu extends OpenSyncMenu<BaseOpenInventory> {
     if (viewOnly) {
       bukkitInventory = new OpenDummyPlayerInventory(container);
     } else if (ownContainer) {
-      bukkitInventory = new OpenPlayerInventorySelf(container, offset);
+      bukkitInventory = new OpenPlayerInventorySelf(factory, container, offset);
     } else {
       bukkitInventory = container.getBukkitInventory();
     }

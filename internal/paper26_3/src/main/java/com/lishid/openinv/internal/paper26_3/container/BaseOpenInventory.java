@@ -187,7 +187,7 @@ public abstract class BaseOpenInventory implements Container, InternalOwned<Serv
   @Override
   public org.bukkit.inventory.Inventory getBukkitInventory() {
     if (bukkitEntity == null) {
-      bukkitEntity = new OpenPlayerInventory(this);
+      bukkitEntity = new OpenPlayerInventory(factory, this);
     }
     return bukkitEntity;
   }

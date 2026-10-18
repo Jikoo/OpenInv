@@ -1,13 +1,19 @@
 package com.lishid.openinv.internal.paper26_3.container.bukkit;
 
+import com.github.jikoo.openinv.internal.container.slot.InventoryFactory;
 import com.google.common.base.Preconditions;
 import com.lishid.openinv.internal.paper26_3.container.BaseOpenInventory;
 import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.inventory.CraftItemType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
@@ -15,13 +21,21 @@ import org.bukkit.inventory.PlayerInventory;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiPredicate;
 
 @NullMarked
 public class OpenPlayerInventory extends CraftInventory implements PlayerInventory {
 
-  public OpenPlayerInventory(BaseOpenInventory inventory) {
+  protected final InventoryFactory<ServerPlayer, net.minecraft.world.item.ItemStack, Container, Slot, EquipmentSlot> factory;
+
+  public OpenPlayerInventory(
+      InventoryFactory<ServerPlayer, net.minecraft.world.item.ItemStack, Container, Slot, EquipmentSlot> factory,
+      BaseOpenInventory inventory
+  ) {
     super(inventory);
+    this.factory = factory;
   }
 
   @Override
@@ -30,7 +44,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public ItemStack[] getContents() {
+  public @Nullable ItemStack[] getContents() {
     return asCraftMirror(getInventory().getContents());
   }
 
@@ -81,7 +95,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public ItemStack[] getStorageContents() {
+  public @Nullable ItemStack[] getStorageContents() {
     return asCraftMirror(getInventory().getOwnerHandle().getInventory().getNonEquipmentItems());
   }
 
@@ -95,6 +109,99 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     }
   }
 
+  @SuppressWarnings("NonApiType")
+  @Override
+  public HashMap<Integer, ItemStack> all(Material material) {
+    Preconditions.checkNotNull(material, "Material cannot be null");
+    Item item = CraftItemType.bukkitToMinecraft(material);
+    Preconditions.checkNotNull(item, "Material must be an item");
+
+    BaseOpenInventory inventory = getInventory();
+    int size = inventory.getOwnerHandle().getInventory().getNonEquipmentItems().size();
+
+    HashMap<Integer, ItemStack> slots = new HashMap<>();
+    for (int index = 0; index < size; ++index) {
+      net.minecraft.world.item.ItemStack itemStack = inventory.getItem(index);
+      if (!itemStack.isEmpty() && item.equals(itemStack.getItem())) {
+        slots.put(index, factory.asBukkitMirror(itemStack));
+      }
+    }
+
+    return slots;
+  }
+
+  @SuppressWarnings("NonApiType")
+  @Override
+  public HashMap<Integer, ItemStack> all(@Nullable ItemStack item) {
+    HashMap<Integer, ItemStack> slots = new HashMap<>();
+
+    if (item == null) {
+      return slots;
+    }
+
+    net.minecraft.world.item.ItemStack itemStack = CraftItemStack.unwrap(item);
+    BaseOpenInventory inventory = getInventory();
+    int size = inventory.getOwnerHandle().getInventory().getNonEquipmentItems().size();
+
+    for (int index = 0; index < size; ++index) {
+      net.minecraft.world.item.ItemStack slotItemStack = inventory.getItem(index);
+      if (ItemMatcher.EXACT.predicate.test(itemStack, slotItemStack)) {
+        slots.put(index, factory.asBukkitMirror(slotItemStack));
+      }
+    }
+
+    return slots;
+  }
+
+  @Override
+  public int first(Material material) {
+    Item item = CraftItemType.bukkitToMinecraft(material);
+    Preconditions.checkNotNull(item, "Material must be an item");
+    net.minecraft.world.item.ItemStack itemStack = new net.minecraft.world.item.ItemStack(item);
+    int size = getInventory().getOwnerHandle().getInventory().getNonEquipmentItems().size();
+    return first(itemStack, ItemMatcher.TYPE, 0, size);
+  }
+
+  @Override
+  public int first(ItemStack item) {
+    net.minecraft.world.item.ItemStack itemStack = CraftItemStack.unwrap(item);
+    int size = getInventory().getOwnerHandle().getInventory().getNonEquipmentItems().size();
+    return first(itemStack, ItemMatcher.EXACT, 0, size);
+  }
+
+  @Override
+  public int firstEmpty() {
+    BaseOpenInventory inventory = getInventory();
+    int size = inventory.getOwnerHandle().getInventory().getNonEquipmentItems().size();
+    return first(net.minecraft.world.item.ItemStack.EMPTY, ItemMatcher.EMPTY, 0, size);
+  }
+
+  private int first(net.minecraft.world.item.ItemStack itemStack, ItemMatcher matcher, int startIndex, int endIndex) {
+    for (int index = startIndex; index < endIndex; ++index) {
+      net.minecraft.world.item.ItemStack inventoryStack = inventory.getItem(index);
+      if (matcher.predicate.test(itemStack, inventoryStack)) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  @SuppressWarnings("ImmutableEnumChecker") // Ignore Google's style preference for predicate-like enums
+  private enum ItemMatcher {
+    EMPTY((ignored, b) -> b.isEmpty()),
+    TYPE(net.minecraft.world.item.ItemStack::isSameItem),
+    SIMILAR(net.minecraft.world.item.ItemStack::isSameItemSameComponents),
+    EXACT((a, b) -> net.minecraft.world.item.ItemStack.isSameItemSameComponents(a, b) && a.count() == b.count());
+
+    private final BiPredicate<net.minecraft.world.item.ItemStack, net.minecraft.world.item.ItemStack> predicate;
+
+    ItemMatcher(BiPredicate<net.minecraft.world.item.ItemStack, net.minecraft.world.item.ItemStack> predicate) {
+      this.predicate = predicate;
+    }
+  }
+
+  // TODO addItem, removeItem
+
   @Override
   public InventoryType getType() {
     return InventoryType.PLAYER;
@@ -106,7 +213,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public ItemStack[] getArmorContents() {
+  public @Nullable ItemStack[] getArmorContents() {
     return asCraftMirror(getInventory().getOwnerHandle().getInventory().getArmorContents());
   }
 
@@ -123,7 +230,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
   }
 
   @Override
-  public ItemStack[] getExtraContents() {
+  public @Nullable ItemStack[] getExtraContents() {
     return asCraftMirror(List.of(getInventory().getOwnerHandle().getInventory().equipment.get(EquipmentSlot.OFFHAND)));
   }
 
