@@ -200,7 +200,116 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     }
   }
 
-  // TODO addItem, removeItem
+  @SuppressWarnings("NonApiType")
+  @Override
+  public HashMap<Integer, ItemStack> addItem(ItemStack... items) {
+    Preconditions.checkNotNull(items, "items cannot be null");
+    HashMap<Integer, ItemStack> leftover = new HashMap<>();
+
+    BaseOpenInventory inventory = getInventory();
+    int storageSize = inventory.getOwnerHandle().getInventory().getNonEquipmentItems().size();
+
+    for (int i = 0; i < items.length; i++) {
+      addItem(items, i, storageSize, leftover);
+    }
+
+    return leftover;
+  }
+
+  private void addItem(
+      ItemStack[] items,
+      int leftoverIndex,
+      int storageSize,
+      HashMap<Integer, ItemStack> leftover
+  ) {
+    ItemStack bukkitStack = items[leftoverIndex];
+    Preconditions.checkNotNull(bukkitStack, "ItemStack cannot be null");
+    if (bukkitStack.isEmpty()) {
+      return;
+    }
+    net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.unwrap(bukkitStack);
+    Preconditions.checkNotNull(nmsStack, "ItemStack cannot be empty");
+
+    int maxStackSize = inventory.getMaxStackSize(nmsStack);
+    int stackCount = nmsStack.count();
+
+    // Try to fill existing stacks first. Waste of time for items that don't stack.
+    if (maxStackSize > 1) {
+      stackCount = addPartial(storageSize, nmsStack, maxStackSize, stackCount);
+      if (nmsStack.count() < 1) {
+        // All done adding, next item.
+        return;
+      }
+    }
+
+    // Add to empty slots.
+    stackCount = addEmpty(storageSize, stackCount, maxStackSize, nmsStack);
+
+    if (stackCount > 0) {
+      bukkitStack.setAmount(stackCount);
+      leftover.put(leftoverIndex, bukkitStack);
+    }
+  }
+
+  private int addPartial(
+      int storageSize,
+      net.minecraft.world.item.ItemStack nmsStack,
+      int maxStackSize,
+      int stackCount
+  ) {
+    for (
+        int firstPartial = first(nmsStack, ItemMatcher.SIMILAR, 0, storageSize);
+        firstPartial < storageSize && firstPartial > -1;
+        firstPartial = first(nmsStack, ItemMatcher.EXACT, firstPartial + 1, storageSize)
+    ) {
+      net.minecraft.world.item.ItemStack existing = inventory.getItem(firstPartial);
+      int existingCount = existing.count();
+      if (existingCount >= maxStackSize) {
+        continue;
+      }
+
+      int fit = maxStackSize - existingCount;
+
+      if (fit >= stackCount) {
+        nmsStack.setCount(0);
+        existing.setCount(existingCount + stackCount);
+        return 0;
+      }
+
+      stackCount -= fit;
+      nmsStack.setCount(stackCount);
+      existing.setCount(maxStackSize);
+    }
+    return stackCount;
+  }
+
+  private int addEmpty(
+      int storageSize,
+      int stackCount,
+      int maxStackSize,
+      net.minecraft.world.item.ItemStack nmsStack
+  ) {
+    for (
+        int firstEmpty = firstEmpty();
+        firstEmpty < storageSize && firstEmpty > -1;
+        firstEmpty = first(net.minecraft.world.item.ItemStack.EMPTY, ItemMatcher.EMPTY, firstEmpty, storageSize)
+    ) {
+      if (stackCount <= maxStackSize) {
+        inventory.setItem(firstEmpty, nmsStack.copy());
+        return 0;
+      }
+
+      var newStack = nmsStack.copy();
+      stackCount -= maxStackSize;
+      nmsStack.setCount(stackCount);
+      newStack.setCount(maxStackSize);
+      inventory.setItem(firstEmpty, newStack);
+    }
+
+    return stackCount;
+  }
+
+  // TODO removeItem
 
   @Override
   public InventoryType getType() {
