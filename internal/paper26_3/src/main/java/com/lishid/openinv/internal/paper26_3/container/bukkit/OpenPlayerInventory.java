@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -23,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiPredicate;
 
 @NullMarked
@@ -55,7 +57,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     Preconditions.checkArgument(items.length <= size, "items.length must be <= %s", size);
 
     if (items.length < size) {
-      // If size matches normal player inventory size, redirect to i.
+      // If size matches normal player inventory size, redirect to it.
       Container ownerInternal = getInventory().getOwnerHandle().getInventory();
       if (items.length == ownerInternal.getContainerSize()) {
         internal = ownerInternal;
@@ -209,8 +211,8 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     BaseOpenInventory inventory = getInventory();
     int storageSize = inventory.getOwnerHandle().getInventory().getNonEquipmentItems().size();
 
-    for (int i = 0; i < items.length; i++) {
-      addItem(items, i, storageSize, leftover);
+    for (int index = 0; index < items.length; ++index) {
+      addItem(items, index, storageSize, leftover);
     }
 
     return leftover;
@@ -220,7 +222,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
       ItemStack[] items,
       int leftoverIndex,
       int storageSize,
-      HashMap<Integer, ItemStack> leftover
+      Map<Integer, ItemStack> leftover
   ) {
     ItemStack bukkitStack = items[leftoverIndex];
     Preconditions.checkNotNull(bukkitStack, "ItemStack cannot be null");
@@ -260,7 +262,7 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     for (
         int firstPartial = first(nmsStack, ItemMatcher.SIMILAR, 0, storageSize);
         firstPartial < storageSize && firstPartial > -1;
-        firstPartial = first(nmsStack, ItemMatcher.EXACT, firstPartial + 1, storageSize)
+        firstPartial = first(nmsStack, ItemMatcher.SIMILAR, firstPartial + 1, storageSize)
     ) {
       net.minecraft.world.item.ItemStack existing = inventory.getItem(firstPartial);
       int existingCount = existing.count();
@@ -309,7 +311,93 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     return stackCount;
   }
 
-  // TODO removeItem
+  @SuppressWarnings("NonApiType")
+  @Override
+  public HashMap<Integer, ItemStack> removeItem(ItemStack... items) {
+    Preconditions.checkNotNull(items, "items cannot be null");
+    HashMap<Integer, ItemStack> leftover = new HashMap<>();
+
+    BaseOpenInventory inventory = getInventory();
+    int storageSize = inventory.getOwnerHandle().getInventory().getNonEquipmentItems().size();
+
+    for (int index = 0; index < items.length; ++index) {
+      removeItem(items[index], index, storageSize, leftover);
+    }
+
+    return leftover;
+  }
+
+  private void removeItem(
+      ItemStack bukkitStack,
+      int leftoverIndex,
+      int storageSize,
+      Map<Integer, ItemStack> leftover
+  ) {
+    Preconditions.checkNotNull(bukkitStack, "ItemStack cannot be null");
+    if (bukkitStack.isEmpty()) {
+      return;
+    }
+    net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.unwrap(bukkitStack);
+    Preconditions.checkNotNull(nmsStack, "ItemStack cannot be empty");
+
+    int stackCount = nmsStack.count();
+
+    for (
+        int first = first(nmsStack, ItemMatcher.SIMILAR, 0, storageSize);
+        first < storageSize && first > -1;
+        first = first(nmsStack, ItemMatcher.SIMILAR, first + 1, storageSize)
+    ) {
+      net.minecraft.world.item.ItemStack existing = inventory.getItem(first);
+      int existingCount = existing.count();
+      if (existingCount > stackCount) {
+        existing.setCount(existingCount - stackCount);
+        bukkitStack.setAmount(0);
+        return;
+      }
+
+      stackCount -= existingCount;
+      inventory.setItem(first, net.minecraft.world.item.ItemStack.EMPTY);
+
+      if (stackCount <= 0) {
+        break;
+      }
+    }
+
+    bukkitStack.setAmount(stackCount);
+
+    if (stackCount > 0) {
+      leftover.put(leftoverIndex, bukkitStack);
+    }
+  }
+
+  @Override
+  public void remove(Material material) {
+    Item item = CraftItemType.bukkitToMinecraft(material);
+    Preconditions.checkNotNull(item, "Material must be an item");
+
+    if (!item.equals(Items.AIR)) {
+      removeAll(new net.minecraft.world.item.ItemStack(item), ItemMatcher.SIMILAR);
+    }
+  }
+
+  @Override
+  public void remove(ItemStack bukkitStack) {
+    net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.unwrap(bukkitStack);
+
+    if (!nmsStack.isEmpty()) {
+      removeAll(nmsStack, ItemMatcher.EXACT);
+    }
+  }
+
+  private void removeAll(net.minecraft.world.item.ItemStack itemStack, ItemMatcher matcher) {
+    int storageSize = getInventory().getOwnerHandle().getInventory().getNonEquipmentItems().size();
+    for (int index = 0; index < storageSize; ++index) {
+      net.minecraft.world.item.ItemStack content = inventory.getItem(index);
+      if (matcher.predicate.test(itemStack, content)) {
+        inventory.setItem(index, net.minecraft.world.item.ItemStack.EMPTY);
+      }
+    }
+  }
 
   @Override
   public InventoryType getType() {
