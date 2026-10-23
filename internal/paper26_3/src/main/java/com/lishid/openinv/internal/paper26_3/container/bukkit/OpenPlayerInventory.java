@@ -83,10 +83,10 @@ public class OpenPlayerInventory extends CraftInventory implements PlayerInvento
     }
   }
 
-  private void validateSet(int index) {
+  protected void validateSet(int index) {
     InventoryType.SlotType slotType = getInventory().getSlotType(index);
     if (slotType == InventoryType.SlotType.OUTSIDE || slotType == InventoryType.SlotType.RESULT) {
-      throw new IllegalArgumentException("A plugin attempted to add an item to a display slot, deleting it!");
+      throw new IllegalArgumentException("A plugin tried to put an item in a display slot. That would delete it!");
     }
   }
 
