@@ -149,6 +149,7 @@ public class OpenPlayerInventorySelf extends OpenPlayerInventory {
     return map;
   }
 
+  @SuppressWarnings("NonApiType")
   @Override
   public HashMap<Integer, ItemStack> removeItem(ItemStack... items) {
     return addItem(items);
