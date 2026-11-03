@@ -20,8 +20,10 @@ tasks.withType<JavaCompile>().configureEach {
 apply<SpigotSetup>()
 
 dependencies {
-  compileOnly(libs.spigotapi)
-  extensions.getByType(SpigotDependencyExtension::class.java).version = "26.3-R0.1-SNAPSHOT"
+  val spigotVersion = "26.3-R0.1-SNAPSHOT"
+  extensions.getByType(SpigotDependencyExtension::class.java).version = spigotVersion
+  val spigotApi = libs.spigotapi.get()
+  compileOnly("${spigotApi.group}:${spigotApi.name}:$spigotVersion")
   compileOnly("com.mojang:logging:1.7.12")
   compileOnly("com.mojang:brigadier:1.3.11")
   compileOnly("com.mojang:datafixerupper:10.0.21")

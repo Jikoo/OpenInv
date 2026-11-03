@@ -59,14 +59,14 @@ public class OpenEnderChestMenu extends OpenSyncMenu<OpenEnderChest> {
   }
 
   @Override
-  public void clicked(int i, int j, ClickType clickType, Player player) {
+  public void clicked(int slotIndex, int button, ClickType clickType, Player player) {
     if (viewOnly) {
       if (clickType == ClickType.QUICK_CRAFT) {
         sendAllDataToRemote();
       }
       return;
     }
-    super.clicked(i, j, clickType, player);
+    super.clicked(slotIndex, button, clickType, player);
   }
 
 }
