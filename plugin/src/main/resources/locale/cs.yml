@@ -1,0 +1,30 @@
+messages:
+  error:
+    consoleUnsupported: 'Tento příkaz nelze použít z konzole.'
+    lootNotGenerated: '&cKořist ještě nebyla vygenerována! Vypni prosím &b/silentcontainer&c.'
+    invalidMaterial: '&cNeplatný materiál: "%target%"'
+    invalidNumber: '&cNeplatné číslo: "%target%"'
+    invalidPlayer: '&cHráč nebyl nalezen!'
+    permissionOpenSelf: '&cNemáš oprávnění otevřít vlastní inventář.'
+    permissionOpenOther: '&cNemáš oprávnění otevírat inventáře jiných hráčů.'
+    permissionExempt: '&cInventář hráče %target% je chráněný.'
+    permissionCrossWorld: '&cHráč %target% není ve tvém světě.'
+    permissionPlayerOnline: '&cNemáš oprávnění otevírat inventáře hráčů, kteří jsou online.'
+    permissionPlayerOffline: '&cNemáš oprávnění otevírat inventáře hráčů, kteří jsou offline.'
+    commandException: '&cNastala chyba. Podrobnosti najdeš v konzoli.'
+  info:
+    containerBlocked: 'Otevíráš zablokovaný kontejner.'
+    containerBlockedSilent: 'Potichu otevíráš zablokovaný kontejner.'
+    containerSilent: 'Potichu otevíráš kontejner.'
+    clear:
+      inventory: 'Inventář hráče %target% byl vymazán.'
+      enderchest: 'Truhla Enderu hráče %target% byla vymazána.'
+    settingState: '%setting%: %state%'
+    player:
+      noMatches: 'Žádný hráč nemá %target%.'
+      matches: 'Hráči, kteří mají %target%: %detail%'
+    container:
+      noMatches: 'Žádný kontejner neobsahuje %target%.'
+      matches: 'Kontejnery, které obsahují %target%: %detail%'
+    'on': 'zapnuto'
+    'off': 'vypnuto'
